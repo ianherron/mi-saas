@@ -25,6 +25,17 @@ export default async function ServiciosPage() {
     revalidatePath("/servicios");
   }
 
+  async function deleteService(id: number) {
+    "use server";
+
+    await supabase
+      .from("services")
+      .delete()
+      .eq("id", id);
+
+    revalidatePath("/servicios");
+  }
+
   const { data: services, error } = await supabase
     .from("services")
     .select("*")
@@ -130,10 +141,12 @@ export default async function ServiciosPage() {
                     <span>✏️</span>
                     Editar
                   </button>
+                 <form action={deleteService.bind(null, service.id)}>
                   <button className="flex items-center gap-1 text-sm font-medium text-red-400 transition-colors hover:text-red-500">
                     <span>🗑️</span>
                     Eliminar
                   </button>
+                </form>
                 </div>
               </div>
             ))}

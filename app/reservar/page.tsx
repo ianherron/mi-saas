@@ -1,4 +1,53 @@
-export default function ReservarPage() {
+import { revalidatePath } from "next/cache";
+import { supabase } from "../../lib/supabase";
+
+export default async function ReservarPage() {
+  async function createAppointment(formData: FormData) {
+    "use server";
+
+    const client_name = formData.get("client_name") as string;
+    const service_id = formData.get("service_id") as string;
+    const date = formData.get("date") as string;
+    const time = formData.get("time") as string;
+
+    if (!client_name || !service_id || !date || !time) {
+      return;
+    }
+
+    const { data: service, error: serviceError } = await supabase
+      .from("services")
+      .select("*")
+      .eq("id", service_id)
+      .single();
+
+    if (serviceError || !service) {
+      console.error("Error obteniendo servicio:", serviceError?.message);
+      return;
+    }
+
+    const { error } = await supabase.from("appointments").insert({
+      client_name,
+      service_id,
+      date,
+      time,
+      duration: service.duration,
+    });
+
+    if (error) {
+      console.error("Error creando cita:", error.message);
+      return;
+    }
+
+    revalidatePath("/reservar");
+    revalidatePath("/citas");
+    revalidatePath("/dashboard");
+  }
+
+  const { data: services, error } = await supabase
+    .from("services")
+    .select("*")
+    .order("created_at", { ascending: true });
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f7f6f6] text-slate-900">
       <div className="flex h-full grow flex-col">
@@ -21,7 +70,10 @@ export default function ReservarPage() {
         </header>
 
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
-          <div className="flex w-full max-w-[800px] flex-col gap-10">
+          <form
+            action={createAppointment}
+            className="flex w-full max-w-[800px] flex-col gap-10"
+          >
             <div className="flex flex-col gap-2 px-4">
               <h2 className="text-4xl font-black tracking-tight text-slate-900">
                 Reserva tu cita
@@ -39,75 +91,49 @@ export default function ReservarPage() {
                 <h3 className="text-xl font-bold">Selecciona el servicio</h3>
               </div>
 
+              {error && (
+                <p className="px-4 text-red-500">
+                  Error cargando servicios: {error.message}
+                </p>
+              )}
+
               <div className="grid grid-cols-1 gap-4 px-4 md:grid-cols-2">
-                <div className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 border-[#e9cece] bg-white p-4 shadow-sm transition-all hover:shadow-md">
-                  <div className="absolute top-4 right-4 text-[#e9cece]">✓</div>
-                  <div
-                    className="h-40 w-full rounded-lg bg-cover bg-center bg-no-repeat"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDClFQUFJE0UXYOr6tT4rC1CgXpy2OdVlkvbHlf9j9t5UrR5mp6LcfeEPxo1C0rZCEuYgjDkfwOv1OIKVo1tmn8IJQgKGykvgV4opMelN27cPPDYGQGzUIhh8v9Z_54rrzUNLk5PeDI-VnZxgnuwku82IGwcdODVSEXeHRXA4hIrviIAI9X8Ub1haScOe8PS6GvRD_CzFInHP5U1usp7R0VUEji3rwzFzPyjLvZQJbKl0ME_Qx-xhEIOnE3y0WcOzqEyYy1d0txzTM")',
-                    }}
-                  />
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-lg font-bold">Uñas acrílicas</p>
-                      <p className="text-sm text-slate-500">90 min • Set completo</p>
-                    </div>
-                    <p className="text-xl font-bold text-[#e9cece]">₡65</p>
-                  </div>
-                </div>
+                {services?.map((service: any, index: number) => (
+                  <label
+                    key={service.id}
+                    className={`group relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 bg-white p-4 shadow-sm transition-all hover:shadow-md ${
+                      index === 0
+                        ? "border-[#e9cece]"
+                        : "border-transparent hover:border-[#e9cece]/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="service_id"
+                      value={service.id}
+                      defaultChecked={index === 0}
+                      className="sr-only"
+                    />
 
-                <div className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 border-transparent bg-white p-4 shadow-sm transition-all hover:border-[#e9cece]/50">
-                  <div
-                    className="h-40 w-full rounded-lg bg-cover bg-center bg-no-repeat opacity-80"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuClfFJ8lWHmYzWOsi8xHcPWUnZpLpGtoXP-cTUE_zpJHwc7xiv5iuuycBZOBlfYQNIkLegR-5jYUn0KQb0TcGV3Tk_XjYimk_lNi5Av8OY7yRaS7au-lHRlC-N9iUL-cqFxlo8lL_0DvVjl1pmLu2yikzN2lm906mThDSU4PL0Q-SoEYnEVDBRHGkNo51sivzwjMQkAyqjlWjnKhAoLGG3p5komDi5LJNpopirR9B4JP71XCH4oWsnYYL6YjwkVMSbJSzyLzlVEYmQ")',
-                    }}
-                  />
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-lg font-bold">Manicure en gel</p>
-                      <p className="text-sm text-slate-500">60 min • Larga duración</p>
-                    </div>
-                    <p className="text-xl font-bold">₡45</p>
-                  </div>
-                </div>
+                    {index === 0 && (
+                      <div className="absolute top-4 right-4 text-[#e9cece]">✓</div>
+                    )}
 
-                <div className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 border-transparent bg-white p-4 shadow-sm transition-all hover:border-[#e9cece]/50">
-                  <div
-                    className="h-40 w-full rounded-lg bg-cover bg-center bg-no-repeat opacity-80"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBq2REvhIbC0TYENJ6Vd58YhWjSu_evCq7or9bXti4W_3Sc7LeWb656nAEbFZNGDpG6ijlD8bltFn1cYLZftwsEushrIYuNzfaGKq6kGEr6-QMBPJv2-N-VV05Mh288XPcAHXNH4yb8xr9otc6x3ceo0GRPdFmg6AQUb57Cq-d8a0xrMIJ1jdrkKd8n-N0BwSBo54HcFL4khx8aD481hGgcYOwee9j0uS4_Z5f-7t314TyDFLSCtefKIEZlDudd0wf7jBKRgxr_8L8")',
-                    }}
-                  />
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-lg font-bold">Mantenimiento</p>
-                      <p className="text-sm text-slate-500">45 min • Relleno</p>
-                    </div>
-                    <p className="text-xl font-bold">₡30</p>
-                  </div>
-                </div>
+                    <div className="h-40 w-full rounded-lg bg-[#e9cece]/10" />
 
-                <div className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 border-transparent bg-white p-4 shadow-sm transition-all hover:border-[#e9cece]/50">
-                  <div
-                    className="h-40 w-full rounded-lg bg-cover bg-center bg-no-repeat opacity-80"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC9i-AKy9BNb178pl1UpdDFm0HcMlmEwIrKUmD5g-T3zoF5_Q7RJ_P3O1Kd9dFcVefLfomsR3iScaowPhR2UBjb4Y4A8qWjMfhknVJjoHUMVNOcch0MC8VThKgAhM0hzhCPF7tD6szuGVRxRy3Sc5yvJYicHSatOynNND2tqLF60pLVSWBueJ_Ogb2zoYSTxII5pmKfLZ5N89WTCan95ovIrLHPguctJzkkTejCN6OCl65hx71ucq-GpHVnNhA4ha4rLjFwT73B8cs")',
-                    }}
-                  />
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-lg font-bold">Nail art</p>
-                      <p className="text-sm text-slate-500">120 min • Personalizado</p>
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <p className="text-lg font-bold">{service.name}</p>
+                        <p className="text-sm text-slate-500">
+                          {service.duration} min
+                        </p>
+                      </div>
+                      <p className="text-xl font-bold text-[#e9cece]">
+                        ₡{service.price.toLocaleString()}
+                      </p>
                     </div>
-                    <p className="text-xl font-bold">₡85</p>
-                  </div>
-                </div>
+                  </label>
+                ))}
               </div>
             </section>
 
@@ -120,17 +146,26 @@ export default function ReservarPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button className="flex items-center gap-2 rounded-full border border-[#e9cece] bg-[#e9cece]/10 px-4 py-2 text-slate-900 transition-colors">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-[#e9cece] bg-[#e9cece]/10 px-4 py-2 text-slate-900 transition-colors"
+                >
                   <span className="text-sm">+</span>
                   <span className="text-sm font-medium">Retiro (+30 min)</span>
                 </button>
 
-                <button className="flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 transition-colors hover:border-[#e9cece]">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 transition-colors hover:border-[#e9cece]"
+                >
                   <span className="text-sm">+</span>
                   <span className="text-sm font-medium">Diseño (+20 min)</span>
                 </button>
 
-                <button className="flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 transition-colors hover:border-[#e9cece]">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 transition-colors hover:border-[#e9cece]"
+                >
                   <span className="text-sm">+</span>
                   <span className="text-sm font-medium">Arte complejo (+60 min)</span>
                 </button>
@@ -142,22 +177,26 @@ export default function ReservarPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e9cece]/30 text-sm font-bold text-slate-900">
                   3
                 </span>
-                <h3 className="text-xl font-bold">Selecciona la hora</h3>
+                <h3 className="text-xl font-bold">Selecciona la fecha y hora</h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <button className="rounded-lg border-2 border-[#e9cece] bg-[#e9cece]/5 py-3 font-bold text-slate-900">
-                  10:00
-                </button>
-                <button className="rounded-lg border border-slate-200 py-3 transition-colors hover:border-[#e9cece]">
-                  11:30
-                </button>
-                <button className="rounded-lg border border-slate-200 py-3 transition-colors hover:border-[#e9cece]">
-                  13:00
-                </button>
-                <button className="rounded-lg border border-slate-200 py-3 transition-colors hover:border-[#e9cece]">
-                  15:00
-                </button>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <input
+                  name="date"
+                  type="date"
+                  className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
+                />
+
+                <select
+                  name="time"
+                  className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
+                  defaultValue="10:00"
+                >
+                  <option value="10:00">10:00</option>
+                  <option value="11:30">11:30</option>
+                  <option value="13:00">13:00</option>
+                  <option value="15:00">15:00</option>
+                </select>
               </div>
             </section>
 
@@ -172,18 +211,16 @@ export default function ReservarPage() {
                       <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
                         Cita seleccionada
                       </p>
-                      <p className="text-lg font-bold">Uñas acrílicas + Retiro</p>
+                      <p className="text-lg font-bold">
+                        La duración se calculará según el servicio elegido
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex w-full gap-8 border-t border-slate-100 pt-4 md:w-auto md:border-t-0 md:border-l md:pt-0 md:pl-8">
                     <div>
-                      <p className="text-xs uppercase text-slate-500">Duración</p>
-                      <p className="text-lg font-bold">120 min</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase text-slate-500">Precio total</p>
-                      <p className="text-lg font-bold text-[#e9cece]">₡65</p>
+                      <p className="text-xs uppercase text-slate-500">Estado</p>
+                      <p className="text-lg font-bold">Lista para reservar</p>
                     </div>
                   </div>
                 </div>
@@ -199,12 +236,13 @@ export default function ReservarPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 md:col-span-2">
                   <label className="text-sm font-medium text-slate-600">
                     Nombre completo
                   </label>
                   <input
-                    className="rounded-lg border border-slate-200 bg-white py-3 focus:border-[#e9cece] focus:ring-[#e9cece]"
+                    name="client_name"
+                    className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
                     placeholder="Jane Doe"
                     type="text"
                   />
@@ -215,18 +253,18 @@ export default function ReservarPage() {
                     Número de teléfono
                   </label>
                   <input
-                    className="rounded-lg border border-slate-200 bg-white py-3 focus:border-[#e9cece] focus:ring-[#e9cece]"
+                    className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
                     placeholder="+506 6000 0000"
                     type="tel"
                   />
                 </div>
 
-                <div className="flex flex-col gap-2 md:col-span-2">
+                <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">
                     Correo electrónico
                   </label>
                   <input
-                    className="rounded-lg border border-slate-200 bg-white py-3 focus:border-[#e9cece] focus:ring-[#e9cece]"
+                    className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
                     placeholder="jane@example.com"
                     type="email"
                   />
@@ -243,7 +281,7 @@ export default function ReservarPage() {
                 Al confirmar, aceptas nuestros términos y condiciones de reserva.
               </p>
             </div>
-          </div>
+          </form>
         </main>
 
         <footer className="mt-auto border-t border-slate-200 bg-white px-4 py-10 text-center">

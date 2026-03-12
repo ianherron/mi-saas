@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getBookedSlots } from "./actions";
 
 const EXTRAS = [
   { id: "retiro", label: "Retiro", minutes: 30 },
@@ -20,6 +21,8 @@ type TimeSlot = {
   time: string;
 };
 
+
+
 export default function BookingForm({
   services,
   timeSlots,
@@ -33,6 +36,7 @@ export default function BookingForm({
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("10:00");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
   const extraMinutes = EXTRAS.filter((e) => selectedExtras.includes(e.id)).reduce(
@@ -46,6 +50,13 @@ export default function BookingForm({
       prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
     );
   }
+
+  async function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const newDate = e.target.value;
+    setDate(newDate);
+    const booked = await getBookedSlots(newDate);
+    setBookedSlots(booked);
+}
 
   return (
     <form
@@ -157,7 +168,7 @@ export default function BookingForm({
             name="date"
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={handleDateChange}
             className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
           />
           <select
@@ -169,11 +180,18 @@ export default function BookingForm({
                 {timeSlots.length === 0 && (
                     <option value="">Sin horarios disponibles</option>
                 )}
-                {timeSlots.map((slot) => (
-                    <option key={slot.id} value={slot.time}>
-                    {slot.time}
+                {timeSlots.map((slot) => {
+                    const isBooked = bookedSlots.includes(slot.time);
+                    return (
+                    <option
+                        key={slot.id}
+                        value={slot.time}
+                        disabled={isBooked}
+                    >
+                        {slot.time} {isBooked ? "— ocupado" : ""}
                     </option>
-                ))}
+                    );
+                })}
             </select>
         </div>
       </section>

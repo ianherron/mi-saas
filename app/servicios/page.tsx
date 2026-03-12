@@ -39,14 +39,10 @@ export default async function ServiciosPage() {
   async function addTimeSlot(formData: FormData) {
     "use server";
     const time = formData.get("time") as string;
-    console.log("time recibido:", time);
     if (!time) return;
-    const { data, error } = await supabase
-      .from("time_slots")
-      .insert({ time })
-      .select();
-    console.log("data:", data);
-    console.log("error:", error);
+    // Toma solo HH:MM por si el browser incluye segundos
+    const formatted = time.slice(0, 5);
+    await supabase.from("time_slots").insert({ time: formatted });
     revalidatePath("/servicios");
 }
 
@@ -189,7 +185,7 @@ export default async function ServiciosPage() {
               >
                 <input
                   name="time"
-                  type="text"
+                  type="time"
                   placeholder="HH:MM"
                   className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
                 />

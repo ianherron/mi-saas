@@ -17,16 +17,10 @@ export default async function CitasPage() {
   }
 
   const { data: appointments, error } = await supabase
-    .from("appointments")
-    .select(
-      `
-      *,
-      services (
-        name
-      )
-    `
-    )
-    .order("created_at", { ascending: false });
+  .from("appointments")
+  .select(`*, services (name)`)
+  .order("date", { ascending: true })
+  .order("time", { ascending: true });
 
   return (
     <div className="min-h-screen bg-[#f7f6f6] font-sans text-slate-900 antialiased">
@@ -93,18 +87,16 @@ export default async function CitasPage() {
                         {appointment.client_name}
                       </p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
-                        <span className="flex items-center gap-1">
-                          ⏰ {appointment.time}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          ⏱ {appointment.duration} min
-                        </span>
-                        <span className="flex items-center gap-1">
-                          💅 {appointment.services?.name}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          📆 {appointment.date}
-                        </span>
+                        <span className="flex items-center gap-1">⏰ {appointment.time}</span>
+                        <span className="flex items-center gap-1">⏱ {appointment.duration} min</span>
+                        <span className="flex items-center gap-1">💅 {appointment.services?.name}</span>
+                        <span className="flex items-center gap-1">📆 {appointment.date}</span>
+                        {appointment.phone && (
+                          <span className="flex items-center gap-1">📞 {appointment.phone}</span>
+                        )}
+                        {appointment.email && (
+                          <span className="flex items-center gap-1">✉️ {appointment.email}</span>
+                        )}
                       </div>
                     </div>
                   </div>

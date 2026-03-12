@@ -1,4 +1,31 @@
-export default function DashboardPage() {
+import { supabase } from "../../lib/supabase";
+import CopyButton from "./CopyButton";
+
+const BOOKING_URL = "nailflow.app/reservar/maria-nails";
+
+export default async function DashboardPage() {
+  const today = new Date().toISOString().split("T")[0];
+
+  // Citas de hoy
+  const { count: todayCount } = await supabase
+    .from("appointments")
+    .select("*", { count: "exact", head: true })
+    .eq("date", today);
+
+  // Total de servicios
+  const { count: servicesCount } = await supabase
+    .from("services")
+    .select("*", { count: "exact", head: true });
+
+  // Próximas citas (hoy en adelante, ordenadas por fecha y hora)
+  const { data: upcoming } = await supabase
+    .from("appointments")
+    .select(`*, services (name)`)
+    .gte("date", today)
+    .order("date", { ascending: true })
+    .order("time", { ascending: true })
+    .limit(5);
+
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#2d2926]">
       <div className="flex min-h-screen flex-col">
@@ -22,12 +49,8 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-[#f2d4d7] shadow-sm">
-              <img
-                className="h-full w-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcVffW3M3JNlCr43uXHqd4sh77mbBkBxXd7uR9OgxcDec9YlVJq1QwQz-TQP0u4IkBRcxpsJ0wVjvJSXmQsAjj4JUmRblafdxFFA1EJBTMLDDPBgfcYlU5Aia6dHLMYh98JVYzUy7gYZmZgeihW8-H6Fk9pjL38OSwzWzcgvh_I1hZRtc34SCINv7DapdoJmH0qKRiuogrEb1SFO-ai6_zEaZfEDBTPESMBZe6xBH9kHC6ie18xlBH99K0IJi6KRpm8hvFr7PnJEo"
-                alt="Perfil de la manicurista María sonriendo"
-              />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#f2d4d7] bg-[#f2d4d7]/30 shadow-sm">
+              <span className="text-sm font-bold text-[#2d2926]">M</span>
             </div>
           </div>
         </header>
@@ -50,7 +73,9 @@ export default function DashboardPage() {
                   Citas de hoy
                 </p>
               </div>
-              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">4</p>
+              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">
+                {todayCount ?? 0}
+              </p>
             </div>
 
             <div className="rounded-xl border border-[#f2d4d7]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
@@ -60,7 +85,9 @@ export default function DashboardPage() {
                   Servicios activos
                 </p>
               </div>
-              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">6</p>
+              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">
+                {servicesCount ?? 0}
+              </p>
             </div>
           </div>
 
@@ -71,62 +98,32 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between rounded-xl border border-[#f2d4d7]/10 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-[#f2d4d7]/30">
-                      <img
-                        className="h-full w-full object-cover"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhRlCiqo8XYdJF2u-rzKeXii9LXxFHnTQDQgeccopaRBieuldogEzNVNTfsRW0f5g6EKjYzGC9Ngh8T3oBlK3k30WEd54pCMAVirBazYoJuSrPGeajhp2NiblDCar1Ng5sigIBZEeXC_ZVF3wEwX326gMKfL2086sBLbiGtnUlwWY5aqM7IDAnJLTM9KI5f_IQlq6kJSsWnLWn5pctMcpB436ZFBDvn7KNGXbnACvTdGRKBDqGGOhkMv2OirXBrZ5TI3x7dgGahFE"
-                        alt="Avatar cliente Elena"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#2d2926]">Elena Rodríguez</p>
-                      <p className="text-sm text-slate-500">Acrílicas — 10:00 AM</p>
-                    </div>
+                {!upcoming?.length && (
+                  <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center text-slate-500 shadow-sm">
+                    No hay citas próximas.
                   </div>
-                  <span className="rounded-full border border-green-100 bg-green-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-green-600">
-                    Confirmada
-                  </span>
-                </div>
+                )}
 
-                <div className="flex items-center justify-between rounded-xl border border-[#f2d4d7]/10 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-[#f2d4d7]/30">
-                      <img
-                        className="h-full w-full object-cover"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpqISCLpMECVbQ-a429ESezoUD9LRSP8eEC_8-O8uKaO-zOlNaRYvq0hzRBwKI-dGoM9YoeOQdcUx_R4Qu6dJfJixy4XeR-KaoYZ8HzJcJ2Tja7aoqGQK7aKKxni3zPVz3Ub7H3P9vbqNIsJPal-oSm96KWbIfF-G1xjb2aLlUCSlve1Bbcf9h3fPzimepW3MqCIERfZm-mgJSSz2FbMerWibCCtZpO5DQs2jUo8S3ocreZ0Pt0xe3rDNL4FwQhMKDoj-Xk7h0CJw"
-                        alt="Avatar cliente Sofía"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#2d2926]">Sofía Marín</p>
-                      <p className="text-sm text-slate-500">Gel — 12:30 PM</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-500">
-                    Pendiente
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between rounded-xl border border-[#f2d4d7]/10 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-[#f2d4d7]/30">
-                      <img
-                        className="h-full w-full object-cover"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk9jEBNcsGgVSseUegiVOm7fYY47GN_e7WYN2SuTKU8L21St7FrXKzuwrSbfcl5L1IVhsxwJqypQvC9cgKhzx8Qs74m8brpoMTKB8Sz40cLUq_hYYuLRVv92GlAej2aNe_DQqOobxCCh3l2jXJHQPr5YUAF6IpcikwCipz1j-V-GSY3jtV1h6zN1J3FreNDL00vk2fVG83xhCatm1zH-2z9BiCgx_7NSvldrC9gFot0AL0SvnH7h88YX_YhICMXmBOQ43sOJKOzAA"
-                        alt="Avatar cliente Andrea"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#2d2926]">Andrea López</p>
-                      <p className="text-sm text-slate-500">Nail Art — 3:00 PM</p>
+                {upcoming?.map((appointment: any) => (
+                  <div
+                    key={appointment.id}
+                    className="flex items-center justify-between rounded-xl border border-[#f2d4d7]/10 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex size-12 items-center justify-center rounded-full bg-[#f2d4d7]/30 text-lg font-bold text-[#2d2926]">
+                        {appointment.client_name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[#2d2926]">
+                          {appointment.client_name}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {appointment.services?.name} — {appointment.time} · {appointment.date}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <span className="rounded-full border border-green-100 bg-green-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-green-600">
-                    Confirmada
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -137,12 +134,12 @@ export default function DashboardPage() {
                 </h2>
 
                 <div className="space-y-3">
-                  <button className="flex w-full items-center justify-between rounded-xl bg-[#f2d4d7] px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#efc8cd]">
+                  <button type="button" className="flex w-full items-center justify-between rounded-xl bg-[#f2d4d7] px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#efc8cd]">
                     <span>Gestionar servicios</span>
                     <span>📝</span>
                   </button>
 
-                  <button className="flex w-full items-center justify-between rounded-xl border border-[#f2d4d7]/20 bg-white px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#f2d4d7]/10">
+                  <button type="button" className="flex w-full items-center justify-between rounded-xl border border-[#f2d4d7]/20 bg-white px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#f2d4d7]/10">
                     <span>Ver todas las citas</span>
                     <span>📋</span>
                   </button>
@@ -158,13 +155,10 @@ export default function DashboardPage() {
                 </div>
 
                 <p className="mb-4 truncate text-sm font-medium italic text-[#2d2926]">
-                  nailflow.app/reservar/maria-nails
+                  {BOOKING_URL}
                 </p>
 
-                <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#f2d4d7]/20 bg-white/80 py-3 text-xs font-bold text-[#2d2926] transition-colors hover:bg-white">
-                  <span>📋</span>
-                  Copiar enlace
-                </button>
+                <CopyButton url={`https://${BOOKING_URL}`} />
               </div>
             </div>
           </div>

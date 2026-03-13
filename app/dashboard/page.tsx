@@ -2,13 +2,15 @@ import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 
-const BOOKING_URL = "nailflow.app/reservar/maria-nails";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const business = await getBusiness();
 
   if (!business) return <p>No se encontró tu negocio.</p>;
+
+  const BOOKING_URL = `mi-saas-alpha.vercel.app/reservar/${business.slug}`;
+
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -32,7 +34,6 @@ export default async function DashboardPage() {
     .order("time", { ascending: true })
     .limit(5);
 
-  const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
 
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#2d2926]">

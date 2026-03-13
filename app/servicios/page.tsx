@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { supabase } from "../../lib/supabase";
+import EditServiceForm from "./EditServiceForm";
 
 export default async function ServiciosPage() {
   async function addService(formData: FormData) {
@@ -28,10 +29,7 @@ export default async function ServiciosPage() {
   async function deleteService(id: number) {
     "use server";
 
-    await supabase
-      .from("services")
-      .delete()
-      .eq("id", id);
+    await supabase.from("services").delete().eq("id", id);
 
     revalidatePath("/servicios");
   }
@@ -44,13 +42,46 @@ export default async function ServiciosPage() {
     const formatted = time.slice(0, 5);
     await supabase.from("time_slots").insert({ time: formatted });
     revalidatePath("/servicios");
-}
+  }
 
   async function deleteTimeSlot(id: number) {
-  "use server";
-  await supabase.from("time_slots").delete().eq("id", id);
-  revalidatePath("/servicios");
-}
+    "use server";
+    await supabase.from("time_slots").delete().eq("id", id);
+    revalidatePath("/servicios");
+  }
+
+  async function updateService(formData: FormData) {
+    "use server";
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const price = Number(formData.get("price"));
+    const duration = Number(formData.get("duration"));
+
+    console.log("update:", { id, name, price, duration });
+
+    if (!id || !name || !price || !duration) return;
+
+    await supabase
+      .from("services")
+      .update({ name, price, duration })
+      .eq("id", id);
+    revalidatePath("/servicios");
+  }
+
+  async function addExtra(formData: FormData) {
+    "use server";
+    const name = formData.get("name") as string;
+    const duration = Number(formData.get("duration"));
+    if (!name || !duration) return;
+    await supabase.from("extras").insert({ name, duration });
+    revalidatePath("/servicios");
+  }
+
+  async function deleteExtra(id: number) {
+    "use server";
+    await supabase.from("extras").delete().eq("id", id);
+    revalidatePath("/servicios");
+  }
 
   const { data: services, error } = await supabase
     .from("services")
@@ -61,6 +92,11 @@ export default async function ServiciosPage() {
     .from("time_slots")
     .select("*")
     .order("time", { ascending: true });
+
+  const { data: extras } = await supabase
+    .from("extras")
+    .select("*")
+    .order("created_at", { ascending: true });
 
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#4a4441]">
@@ -158,66 +194,135 @@ export default async function ServiciosPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4 border-t border-[#e9cece]/10 pt-4">
-                  <button className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-[#e9cece]">
-                    <span>✏️</span>
-                    Editar
-                  </button>
-                 <form action={deleteService.bind(null, service.id)}>
-              <button className="flex items-center gap-1 text-sm font-medium text-red-400 transition-colors hover:text-red-500">
-                <span>🗑️</span>
-                Eliminar
-              </button>
-            </form>
+                  <EditServiceForm
+                    service={service}
+                    updateService={updateService}
+                  />
+                  <form action={deleteService.bind(null, service.id)}>
+                    <button className="flex items-center gap-1 text-sm font-medium text-red-400 transition-colors hover:text-red-500">
+                      <span>🗑️</span>
+                      Eliminar
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}
           </div>
 
           <section className="space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="text-[#e9cece]">🕐</span>
+              <h2 className="text-2xl font-bold text-[#4a4441]">
+                Horarios disponibles
+              </h2>
+            </div>
+            <form
+              action={addTimeSlot}
+              className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
+            >
+              <input
+                name="time"
+                type="text"
+                placeholder="HH:MM"
+                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
+              >
+                Agregar horario
+              </button>
+            </form>
+
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {timeSlots?.length === 0 && (
+                <p className="text-sm text-[#4a4441]/60 col-span-full">
+                  No hay horarios configurados.
+                </p>
+              )}
+              {timeSlots?.map((slot: any) => (
+                <div
+                  key={slot.id}
+                  className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
+                >
+                  <span className="font-semibold text-[#4a4441]">
+                    {slot.time}
+                  </span>
+                  <form action={deleteTimeSlot.bind(null, slot.id)}>
+                    <button
+                      type="submit"
+                      className="text-sm text-red-400 transition-colors hover:text-red-500"
+                    >
+                      ✕
+                    </button>
+                  </form>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-6 mt-10">
               <div className="flex items-center gap-3">
-                <span className="text-[#e9cece]">🕐</span>
-                <h2 className="text-2xl font-bold text-[#4a4441]">Horarios disponibles</h2>
+                <span className="text-[#e9cece]">✨</span>
+                <h2 className="text-2xl font-bold text-[#4a4441]">Extras</h2>
               </div>
 
               <form
-                action={addTimeSlot}
+                action={addExtra}
                 className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
               >
                 <input
-                  name="time"
-                  type="time"
-                  placeholder="HH:MM"
-                  className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
+                  name="name"
+                  type="text"
+                  placeholder="Nombre del extra"
+                  className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] flex-1"
+                />
+                <input
+                  name="duration"
+                  type="number"
+                  placeholder="Minutos extra"
+                  className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] w-36"
                 />
                 <button
                   type="submit"
                   className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
                 >
-                  Agregar horario
+                  Agregar extra
                 </button>
               </form>
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {timeSlots?.length === 0 && (
+                {extras?.length === 0 && (
                   <p className="text-sm text-[#4a4441]/60 col-span-full">
-                    No hay horarios configurados.
+                    No hay extras configurados.
                   </p>
                 )}
-                {timeSlots?.map((slot: any) => (
+                {extras?.map((extra: any) => (
                   <div
-                    key={slot.id}
+                    key={extra.id}
                     className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
                   >
-                    <span className="font-semibold text-[#4a4441]">{slot.time}</span>
-                    <form action={deleteTimeSlot.bind(null, slot.id)}>
-                      <button type="submit" className="text-sm text-red-400 transition-colors hover:text-red-500">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-[#4a4441]">
+                        {extra.name}
+                      </span>
+                      <span className="text-xs text-[#4a4441]/60">
+                        +{extra.duration} min
+                      </span>
+                    </div>
+                    <form action={deleteExtra.bind(null, extra.id)}>
+                      <button
+                        type="submit"
+                        className="text-sm text-red-400 transition-colors hover:text-red-500"
+                      >
                         ✕
                       </button>
                     </form>
                   </div>
                 ))}
               </div>
-           </section>
+            </section>    
+
         </main>
 
         <footer className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#e9cece]/10 py-12 text-sm text-[#4a4441]/50 md:flex-row">

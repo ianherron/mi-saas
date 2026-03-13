@@ -46,6 +46,11 @@ export default async function ReservarPage() {
     .select("*")
     .order("time", { ascending: true });
 
+  const { data: extras } = await supabase
+    .from("extras")
+    .select("*")
+    .order("created_at", { ascending: true });
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f7f6f6] text-slate-900">
       <div className="flex h-full grow flex-col">
@@ -74,6 +79,7 @@ export default async function ReservarPage() {
             <BookingForm
               services={services}
               timeSlots={timeSlots ?? []}
+              extras={extras ?? []}
               createAppointment={createAppointment}
             />
           )}

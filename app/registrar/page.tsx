@@ -1,4 +1,30 @@
+import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase-server";
+
 export default function RegistroPage() {
+
+
+  async function register(formData: FormData) {
+    "use server";
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    console.log("email:", email);
+    console.log("password:", password);
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    console.log("error:", error);
+
+
+    if (error) {
+      redirect("/registrar?error=Error al crear la cuenta");
+    }
+
+    redirect("/dashboard");
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col bg-[#fbf9f9] font-sans text-slate-900">
       <header className="flex w-full items-center justify-between bg-transparent px-6 py-6 lg:px-20">
@@ -6,12 +32,8 @@ export default function RegistroPage() {
           <div className="flex items-center justify-center text-[#e9cece]">✨</div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900">NailFlow</h1>
         </div>
-
         <div className="hidden sm:block">
-          <a
-            className="text-sm font-medium text-[#846262] transition-colors hover:text-slate-900"
-            href="#"
-          >
+          <a className="text-sm font-medium text-[#846262] transition-colors hover:text-slate-900" href="#">
             Ayuda
           </a>
         </div>
@@ -26,44 +48,41 @@ export default function RegistroPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form action={register} className="space-y-6">
             <div className="space-y-2">
               <label className="ml-1 text-sm font-semibold text-slate-700">
                 Nombre del negocio
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Ej. Studio Belleza"
-                  className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
-                />
-              </div>
+              <input
+                name="business_name"
+                type="text"
+                placeholder="Ej. Studio Belleza"
+                className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
+              />
             </div>
 
             <div className="space-y-2">
               <label className="ml-1 text-sm font-semibold text-slate-700">
                 Nombre de la manicurista
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Tu nombre completo"
-                  className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
-                />
-              </div>
+              <input
+                name="owner_name"
+                type="text"
+                placeholder="Tu nombre completo"
+                className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
+              />
             </div>
 
             <div className="space-y-2">
               <label className="ml-1 text-sm font-semibold text-slate-700">
                 Correo electrónico
               </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="correo@ejemplo.com"
-                  className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
-                />
-              </div>
+              <input
+                name="email"
+                type="email"
+                placeholder="correo@ejemplo.com"
+                className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
+              />
             </div>
 
             <div className="space-y-2">
@@ -72,14 +91,12 @@ export default function RegistroPage() {
               </label>
               <div className="group relative">
                 <input
+                  name="password"
                   type="password"
                   placeholder="••••••••"
                   className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
                 />
-                <button
-                  type="button"
-                  className="absolute top-1/2 right-4 -translate-y-1/2 text-[#846262]"
-                >
+                <button type="button" className="absolute top-1/2 right-4 -translate-y-1/2 text-[#846262]">
                   👁
                 </button>
               </div>
@@ -96,10 +113,7 @@ export default function RegistroPage() {
           <div className="mt-8 text-center">
             <p className="text-sm text-[#846262]">
               ¿Ya tienes cuenta?
-              <a
-                className="ml-1 font-bold text-slate-900 underline-offset-4 hover:underline"
-                href="#"
-              >
+              <a className="ml-1 font-bold text-slate-900 underline-offset-4 hover:underline" href="/login">
                 Iniciar sesión
               </a>
             </p>

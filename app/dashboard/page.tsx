@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase";
 import CopyButton from "./CopyButton";
+import LogoutButton from "./LogoutButton";
 
 const BOOKING_URL = "nailflow.app/reservar/maria-nails";
 
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
               <button className="flex size-10 items-center justify-center rounded-full bg-[#f2d4d7]/20 text-[#2d2926] transition-colors hover:bg-[#f2d4d7]/40">
                 ⚙️
               </button>
+              <LogoutButton />
             </div>
 
             <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#f2d4d7] bg-[#f2d4d7]/30 shadow-sm">

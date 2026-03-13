@@ -3,12 +3,6 @@
 import { useState } from "react";
 import { getBookedSlots } from "./actions";
 
-const EXTRAS = [
-  { id: "retiro", label: "Retiro", minutes: 30 },
-  { id: "diseno", label: "Diseño", minutes: 20 },
-  { id: "arte", label: "Arte complejo", minutes: 60 },
-];
-
 type Service = {
   id: string;
   name: string;
@@ -21,33 +15,42 @@ type TimeSlot = {
   time: string;
 };
 
-
+type Extra = {
+  id: number;
+  name: string;
+  duration: number;
+};
 
 export default function BookingForm({
   services,
   timeSlots,
+  extras,
   createAppointment,
 }: {
   services: Service[];
   timeSlots: TimeSlot[];
+  extras: Extra[];
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
-  const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
+  const [selectedServiceId, setSelectedServiceId] = useState(
+    services[0]?.id ?? "",
+  );
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("10:00");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
-  const extraMinutes = EXTRAS.filter((e) => selectedExtras.includes(e.id)).reduce(
-    (acc, e) => acc + e.minutes,
-    0
-  );
+
+  const extraMinutes = extras
+    .filter((e) => selectedExtras.includes(String(e.id)))
+    .reduce((acc, e) => acc + e.duration, 0);
+
   const totalDuration = (selectedService?.duration ?? 0) + extraMinutes;
 
   function toggleExtra(id: string) {
     setSelectedExtras((prev) =>
-      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id],
     );
   }
 
@@ -56,7 +59,7 @@ export default function BookingForm({
     setDate(newDate);
     const booked = await getBookedSlots(newDate);
     setBookedSlots(booked);
-}
+  }
 
   return (
     <form
@@ -71,7 +74,8 @@ export default function BookingForm({
           Reserva tu cita
         </h2>
         <p className="text-slate-500">
-          Disfruta una experiencia premium de cuidado de uñas adaptada a tu estilo.
+          Disfruta una experiencia premium de cuidado de uñas adaptada a tu
+          estilo.
         </p>
       </div>
 
@@ -111,7 +115,9 @@ export default function BookingForm({
                 <div className="flex items-end justify-between">
                   <div>
                     <p className="text-lg font-bold">{service.name}</p>
-                    <p className="text-sm text-slate-500">{service.duration} min</p>
+                    <p className="text-sm text-slate-500">
+                      {service.duration} min
+                    </p>
                   </div>
                   <p className="text-xl font-bold text-[#e9cece]">
                     ₡{service.price.toLocaleString()}
@@ -124,35 +130,24 @@ export default function BookingForm({
       </section>
 
       {/* Paso 2 — Extras */}
-      <section className="flex flex-col gap-4 px-4">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e9cece]/30 text-sm font-bold text-slate-900">
-            2
-          </span>
-          <h3 className="text-xl font-bold">Extras opcionales</h3>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          {EXTRAS.map((extra) => {
-            const isActive = selectedExtras.includes(extra.id);
-            return (
-              <button
-                key={extra.id}
-                type="button"
-                onClick={() => toggleExtra(extra.id)}
-                className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "border-[#e9cece] bg-[#e9cece]/20 text-slate-900"
-                    : "border-slate-200 text-slate-600 hover:border-[#e9cece]"
-                }`}
-              >
-                <span>{isActive ? "✓" : "+"}</span>
-                {extra.label} (+{extra.minutes} min)
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      {extras.map((extra) => {
+        const isActive = selectedExtras.includes(String(extra.id));
+        return (
+          <button
+            key={extra.id}
+            type="button"
+            onClick={() => toggleExtra(String(extra.id))}
+            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+              isActive
+                ? "border-[#e9cece] bg-[#e9cece]/20 text-slate-900"
+                : "border-slate-200 text-slate-600 hover:border-[#e9cece]"
+            }`}
+          >
+            <span>{isActive ? "✓" : "+"}</span>
+            {extra.name} (+{extra.duration} min)
+          </button>
+        );
+      })}
 
       {/* Paso 3 — Fecha y hora */}
       <section className="flex flex-col gap-4 px-4">
@@ -172,27 +167,23 @@ export default function BookingForm({
             className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
           />
           <select
-                name="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
-                >
-                {timeSlots.length === 0 && (
-                    <option value="">Sin horarios disponibles</option>
-                )}
-                {timeSlots.map((slot) => {
-                    const isBooked = bookedSlots.includes(slot.time);
-                    return (
-                    <option
-                        key={slot.id}
-                        value={slot.time}
-                        disabled={isBooked}
-                    >
-                        {slot.time} {isBooked ? "— ocupado" : ""}
-                    </option>
-                    );
-                })}
-            </select>
+            name="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white py-3 px-4 focus:border-[#e9cece] focus:ring-[#e9cece]"
+          >
+            {timeSlots.length === 0 && (
+              <option value="">Sin horarios disponibles</option>
+            )}
+            {timeSlots.map((slot) => {
+              const isBooked = bookedSlots.includes(slot.time);
+              return (
+                <option key={slot.id} value={slot.time} disabled={isBooked}>
+                  {slot.time} {isBooked ? "— ocupado" : ""}
+                </option>
+              );
+            })}
+          </select>
         </div>
       </section>
 
@@ -212,8 +203,10 @@ export default function BookingForm({
                   {selectedService?.name ?? "—"}
                   {selectedExtras.length > 0 && (
                     <span className="text-sm font-normal text-slate-500">
-                      {" "}+ {EXTRAS.filter((e) => selectedExtras.includes(e.id))
-                        .map((e) => e.label)
+                      {" "}
+                      +{" "}
+                      {extras.filter((e) => selectedExtras.includes(String(e.id)))
+                        .map((e) => e.name)
                         .join(", ")}
                     </span>
                   )}
@@ -234,8 +227,12 @@ export default function BookingForm({
               </div>
               {date && time && (
                 <div>
-                  <p className="text-xs uppercase text-slate-500">Fecha y hora</p>
-                  <p className="text-lg font-bold">{date} · {time}</p>
+                  <p className="text-xs uppercase text-slate-500">
+                    Fecha y hora
+                  </p>
+                  <p className="text-lg font-bold">
+                    {date} · {time}
+                  </p>
                 </div>
               )}
             </div>

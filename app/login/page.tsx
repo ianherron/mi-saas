@@ -1,4 +1,22 @@
+import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase-server";
+
 export default function LoginPage() {
+  async function login(formData: FormData) {
+    "use server";
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      redirect("/login?error=Credenciales incorrectas");
+    }
+
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8">
@@ -26,12 +44,13 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form action={login} className="space-y-6">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Correo electrónico
               </label>
               <input
+                name="email"
                 type="email"
                 placeholder="ejemplo@nailflow.com"
                 className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
@@ -47,6 +66,7 @@ export default function LoginPage() {
 
               <div className="group relative">
                 <input
+                  name="password"
                   type="password"
                   placeholder="••••••••"
                   className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
@@ -81,7 +101,7 @@ export default function LoginPage() {
             <p className="text-sm text-slate-600">
               ¿No tienes cuenta?
               <a
-                href="#"
+                href="/registrar"
                 className="ml-1 font-bold text-slate-900 transition-colors hover:text-[#e9cece]"
               >
                 Crear cuenta

@@ -1,17 +1,16 @@
 import { revalidatePath } from "next/cache";
-import { supabase } from "../../lib/supabase";
+import { createClient, getBusiness } from "../../lib/supabase-server";
 
 export default async function CitasPage() {
+  const supabase = await createClient();
+  const business = await getBusiness();
+
+  if (!business) return <p>No se encontró tu negocio.</p>;
+
   async function deleteAppointment(id: number) {
     "use server";
-
-    const { error } = await supabase.from("appointments").delete().eq("id", id);
-
-    if (error) {
-      console.error("Error eliminando cita:", error.message);
-      return;
-    }
-
+    const supabase = await createClient();
+    await supabase.from("appointments").delete().eq("id", id);
     revalidatePath("/citas");
     revalidatePath("/dashboard");
   }
@@ -19,8 +18,10 @@ export default async function CitasPage() {
   const { data: appointments, error } = await supabase
   .from("appointments")
   .select(`*, services (name)`)
+  .eq("business_id", business.id)
   .order("date", { ascending: true })
   .order("time", { ascending: true });
+
 
   return (
     <div className="min-h-screen bg-[#f7f6f6] font-sans text-slate-900 antialiased">
@@ -33,8 +34,17 @@ export default async function CitasPage() {
             <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
           </div>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#e9cece]/30 bg-[#e9cece]/20">
-            <span className="text-sm font-bold text-slate-700">M</span>
+         <div className="flex items-center gap-4">
+            <a
+              href="/dashboard"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-[#e9cece]"
+            >
+              <span>←</span>
+              Volver
+            </a>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#e9cece]/30 bg-[#e9cece]/20">
+              <span className="text-sm font-bold text-slate-700">M</span>
+            </div>
           </div>
         </header>
 

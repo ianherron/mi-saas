@@ -5,25 +5,39 @@ export default function RegistroPage() {
 
 
   async function register(formData: FormData) {
-    "use server";
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  "use server";
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const business_name = formData.get("business_name") as string;
+  const owner_name = formData.get("owner_name") as string;
 
-    console.log("email:", email);
-    console.log("password:", password);
+  if (!email || !password || !business_name || !owner_name) return;
 
-    const supabase = await createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+  const supabase = await createClient();
 
-    console.log("error:", error);
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
-
-    if (error) {
-      redirect("/registrar?error=Error al crear la cuenta");
-    }
-
-    redirect("/dashboard");
+  if (error || !data.user) {
+    redirect("/registrar?error=Error al crear la cuenta");
   }
+
+  // Generar slug desde el nombre del negocio
+  const slug = business_name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  await supabase.from("businesses").insert({
+    user_id: data.user.id,
+    name: business_name,
+    owner_name,
+    slug,
+  });
+
+  redirect("/dashboard");
+}
 
   return (
     <div className="relative flex min-h-screen flex-col bg-[#fbf9f9] font-sans text-slate-900">

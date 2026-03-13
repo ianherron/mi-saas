@@ -1,11 +1,24 @@
-import { revalidatePath } from "next/cache";
-import { supabase } from "../../lib/supabase";
-import BookingForm from "./BookingForm";
+import { supabase } from "../../../lib/supabase";
+import { notFound } from "next/navigation";
+import BookingForm from "../BookingForm";
 
-export default async function ReservarPage() {
+export default async function ReservarSlugPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (!business) notFound();
+
   async function createAppointment(formData: FormData) {
     "use server";
-
     const client_name = formData.get("client_name") as string;
     const service_id = formData.get("service_id") as string;
     const date = formData.get("date") as string;
@@ -13,10 +26,11 @@ export default async function ReservarPage() {
     const phone = formData.get("phone") as string;
     const email = formData.get("email") as string;
     const duration = parseInt(formData.get("duration") as string);
+    const business_id = formData.get("business_id") as string;
 
     if (!client_name || !service_id || !date || !time) return;
 
-    const { error } = await supabase.from("appointments").insert({
+    await supabase.from("appointments").insert({
       client_name,
       service_id,
       date,
@@ -24,31 +38,26 @@ export default async function ReservarPage() {
       duration,
       phone,
       email,
+      business_id,
     });
-
-    if (error) {
-      console.error("Error creando cita:", error.message);
-      return;
-    }
-
-    revalidatePath("/reservar");
-    revalidatePath("/citas");
-    revalidatePath("/dashboard");
   }
 
-  const { data: services, error } = await supabase
+  const { data: services } = await supabase
     .from("services")
     .select("*")
+    .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
   const { data: timeSlots } = await supabase
     .from("time_slots")
     .select("*")
+    .eq("business_id", business.id)
     .order("time", { ascending: true });
 
   const { data: extras } = await supabase
     .from("extras")
     .select("*")
+    .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
   return (
@@ -57,7 +66,7 @@ export default async function ReservarPage() {
         <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[#e9cece]/20 bg-white/50 px-6 py-4 backdrop-blur-md md:px-20 lg:px-40">
           <div className="flex items-center gap-2 text-slate-900">
             <div className="text-[#e9cece]">✦</div>
-            <h1 className="text-xl font-bold tracking-tight">NailFlow</h1>
+            <h1 className="text-xl font-bold tracking-tight">{business.name}</h1>
           </div>
           <div className="flex items-center gap-4">
             <div className="hidden text-right md:block">
@@ -72,15 +81,12 @@ export default async function ReservarPage() {
         </header>
 
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
-          {error && (
-            <p className="text-red-500">Error cargando servicios: {error.message}</p>
-          )}
           {services && (
             <BookingForm
               services={services}
               timeSlots={timeSlots ?? []}
               extras={extras ?? []}
-              businessId=""
+              businessId={business.id}
               createAppointment={createAppointment}
             />
           )}

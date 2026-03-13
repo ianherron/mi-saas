@@ -23,12 +23,18 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <button className="hidden text-sm font-semibold hover:opacity-70 sm:block">
-              Ver demo
-            </button>
-            <button className="rounded-full bg-[#e9cece] px-6 py-2.5 text-sm font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-transform hover:scale-105">
+            <a
+              href="/login"
+              className="hidden text-sm font-semibold hover:opacity-70 sm:block"
+            >
+              Iniciar sesión
+            </a>
+            <a
+              href="/registrar"
+              className="rounded-full bg-[#e9cece] px-6 py-2.5 text-sm font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-transform hover:scale-105"
+            >
               Crear cuenta
-            </button>
+            </a>
           </div>
         </div>
       </header>
@@ -55,12 +61,19 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-wrap gap-4">
-                  <button className="rounded-xl bg-[#e9cece] px-8 py-4 text-base font-bold text-[#2d2424] shadow-xl shadow-[#e9cece]/20 transition-all hover:bg-[#dfc2c2]">
+  
+                  <a
+                    href="/registrar"
+                    className="rounded-xl bg-[#e9cece] px-8 py-4 text-base font-bold text-[#2d2424] shadow-xl shadow-[#e9cece]/20 transition-all hover:bg-[#dfc2c2]"
+                  >
                     Comenzar ahora
-                  </button>
-                  <button className="flex items-center gap-2 rounded-xl bg-[#f4ecec] px-8 py-4 text-base font-bold text-[#2d2424] transition-all hover:bg-[#eadede]">
+                  </a>
+                  <a
+                    href="/login"
+                    className="flex items-center gap-2 rounded-xl bg-[#f4ecec] px-8 py-4 text-base font-bold text-[#2d2424] transition-all hover:bg-[#eadede]"
+                  >
                     ▶ Ver Demo
-                  </button>
+                  </a>
                 </div>
 
                 <div className="flex items-center gap-4 pt-4">
@@ -403,12 +416,19 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <button className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105">
+  
+              <a
+                href="/registrar"
+                className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
+              >
                 Empezar gratis hoy
-              </button>
-              <button className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10">
-                Contactar ventas
-              </button>
+              </a>
+              <a
+                href="/login"
+                className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10"
+              >
+                Iniciar sesión
+              </a>
             </div>
 
             <p className="mt-8 text-sm text-[#846262]">

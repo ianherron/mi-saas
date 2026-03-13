@@ -1,31 +1,38 @@
-import { supabase } from "../../lib/supabase";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
+import { createClient, getBusiness } from "../../lib/supabase-server";
 
 const BOOKING_URL = "nailflow.app/reservar/maria-nails";
 
 export default async function DashboardPage() {
+  const supabase = await createClient();
+  const business = await getBusiness();
+
+  if (!business) return <p>No se encontró tu negocio.</p>;
+
   const today = new Date().toISOString().split("T")[0];
 
-  // Citas de hoy
   const { count: todayCount } = await supabase
     .from("appointments")
     .select("*", { count: "exact", head: true })
+    .eq("business_id", business.id)
     .eq("date", today);
 
-  // Total de servicios
   const { count: servicesCount } = await supabase
     .from("services")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact", head: true })
+    .eq("business_id", business.id);
 
-  // Próximas citas (hoy en adelante, ordenadas por fecha y hora)
   const { data: upcoming } = await supabase
     .from("appointments")
     .select(`*, services (name)`)
+    .eq("business_id", business.id)
     .gte("date", today)
     .order("date", { ascending: true })
     .order("time", { ascending: true })
     .limit(5);
+
+  const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
 
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#2d2926]">
@@ -60,7 +67,7 @@ export default async function DashboardPage() {
         <main className="mx-auto w-full max-w-6xl px-6 py-10">
           <div className="mb-10">
             <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-[#2d2926]">
-              Bienvenida, María
+              Bienvenida, {business.owner_name}
             </h1>
             <p className="text-lg text-slate-500">
               Aquí tienes un resumen de tu agenda de hoy.
@@ -96,7 +103,9 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
               <div className="px-2">
-                <h2 className="text-xl font-bold text-[#2d2926]">Próximas citas</h2>
+                <h2 className="text-xl font-bold text-[#2d2926]">
+                  Próximas citas
+                </h2>
               </div>
 
               <div className="space-y-3">
@@ -120,7 +129,8 @@ export default async function DashboardPage() {
                           {appointment.client_name}
                         </p>
                         <p className="text-sm text-slate-500">
-                          {appointment.services?.name} — {appointment.time} · {appointment.date}
+                          {appointment.services?.name} — {appointment.time} ·{" "}
+                          {appointment.date}
                         </p>
                       </div>
                     </div>
@@ -136,15 +146,20 @@ export default async function DashboardPage() {
                 </h2>
 
                 <div className="space-y-3">
-                  <button type="button" className="flex w-full items-center justify-between rounded-xl bg-[#f2d4d7] px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#efc8cd]">
+                  <a
+                    href="/servicios"
+                    className="flex w-full items-center justify-between rounded-xl bg-[#f2d4d7] px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#efc8cd]"
+                  >
                     <span>Gestionar servicios</span>
                     <span>📝</span>
-                  </button>
-
-                  <button type="button" className="flex w-full items-center justify-between rounded-xl border border-[#f2d4d7]/20 bg-white px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#f2d4d7]/10">
+                  </a>
+                  <a
+                    href="/citas"
+                    className="flex w-full items-center justify-between rounded-xl border border-[#f2d4d7]/20 bg-white px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#f2d4d7]/10"
+                  >
                     <span>Ver todas las citas</span>
                     <span>📋</span>
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -159,7 +174,6 @@ export default async function DashboardPage() {
                 <p className="mb-4 truncate text-sm font-medium italic text-[#2d2926]">
                   {BOOKING_URL}
                 </p>
-
                 <CopyButton url={`https://${BOOKING_URL}`} />
               </div>
             </div>

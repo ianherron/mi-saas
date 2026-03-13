@@ -25,11 +25,13 @@ export default function BookingForm({
   services,
   timeSlots,
   extras,
+  businessId,
   createAppointment,
 }: {
   services: Service[];
   timeSlots: TimeSlot[];
   extras: Extra[];
+  businessId: string;
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
   const [selectedServiceId, setSelectedServiceId] = useState(
@@ -37,7 +39,7 @@ export default function BookingForm({
   );
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("10:00");
+  const [time, setTime] = useState(timeSlots[0]?.time ?? "");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
@@ -57,7 +59,7 @@ export default function BookingForm({
   async function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newDate = e.target.value;
     setDate(newDate);
-    const booked = await getBookedSlots(newDate);
+    const booked = await getBookedSlots(newDate, businessId);
     setBookedSlots(booked);
   }
 
@@ -67,7 +69,7 @@ export default function BookingForm({
       className="flex w-full max-w-[800px] flex-col gap-10"
     >
       {/* Campo oculto con duración total calculada */}
-      <input type="hidden" name="duration" value={totalDuration} />
+      <input type="hidden" name="business_id" value={businessId} />
 
       <div className="flex flex-col gap-2 px-4">
         <h2 className="text-4xl font-black tracking-tight text-slate-900">

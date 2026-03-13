@@ -1,64 +1,44 @@
 import { revalidatePath } from "next/cache";
-import { supabase } from "../../lib/supabase";
 import EditServiceForm from "./EditServiceForm";
+import { createClient, getBusiness } from "../../lib/supabase-server";
 
 export default async function ServiciosPage() {
+  const supabase = await createClient();
+  const business = await getBusiness();
+
+  if (!business) return <p>No se encontró tu negocio.</p>;
+
   async function addService(formData: FormData) {
     "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
 
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
-
     if (!name || !price || !duration) return;
 
-    const { error } = await supabase.from("services").insert({
-      name,
-      price,
-      duration,
-    });
-
-    if (error) {
-      console.error("Error insertando servicio:", error.message);
-      return;
-    }
-
+    await supabase
+      .from("services")
+      .insert({ name, price, duration, business_id: business.id });
     revalidatePath("/servicios");
   }
 
-  async function deleteService(id: number) {
+  async function deleteService(id: string) {
     "use server";
-
+    const supabase = await createClient();
     await supabase.from("services").delete().eq("id", id);
-
-    revalidatePath("/servicios");
-  }
-
-  async function addTimeSlot(formData: FormData) {
-    "use server";
-    const time = formData.get("time") as string;
-    if (!time) return;
-    // Toma solo HH:MM por si el browser incluye segundos
-    const formatted = time.slice(0, 5);
-    await supabase.from("time_slots").insert({ time: formatted });
-    revalidatePath("/servicios");
-  }
-
-  async function deleteTimeSlot(id: number) {
-    "use server";
-    await supabase.from("time_slots").delete().eq("id", id);
     revalidatePath("/servicios");
   }
 
   async function updateService(formData: FormData) {
     "use server";
+    const supabase = await createClient();
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
-
-    console.log("update:", { id, name, price, duration });
-
     if (!id || !name || !price || !duration) return;
 
     await supabase
@@ -68,17 +48,47 @@ export default async function ServiciosPage() {
     revalidatePath("/servicios");
   }
 
+  async function addTimeSlot(formData: FormData) {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+
+    const time = formData.get("time") as string;
+    if (!time) return;
+    const formatted = time.slice(0, 5);
+    await supabase
+      .from("time_slots")
+      .insert({ time: formatted, business_id: business.id });
+    revalidatePath("/servicios");
+  }
+
+  async function deleteTimeSlot(id: number) {
+    "use server";
+    const supabase = await createClient();
+    await supabase.from("time_slots").delete().eq("id", id);
+    revalidatePath("/servicios");
+  }
+
   async function addExtra(formData: FormData) {
     "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+
     const name = formData.get("name") as string;
     const duration = Number(formData.get("duration"));
     if (!name || !duration) return;
-    await supabase.from("extras").insert({ name, duration });
+
+    await supabase
+      .from("extras")
+      .insert({ name, duration, business_id: business.id });
     revalidatePath("/servicios");
   }
 
   async function deleteExtra(id: number) {
     "use server";
+    const supabase = await createClient();
     await supabase.from("extras").delete().eq("id", id);
     revalidatePath("/servicios");
   }
@@ -86,16 +96,19 @@ export default async function ServiciosPage() {
   const { data: services, error } = await supabase
     .from("services")
     .select("*")
+    .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
   const { data: timeSlots } = await supabase
     .from("time_slots")
     .select("*")
+    .eq("business_id", business.id)
     .order("time", { ascending: true });
 
   const { data: extras } = await supabase
     .from("extras")
     .select("*")
+    .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
   return (
@@ -262,67 +275,66 @@ export default async function ServiciosPage() {
           </section>
 
           <section className="space-y-6 mt-10">
-              <div className="flex items-center gap-3">
-                <span className="text-[#e9cece]">✨</span>
-                <h2 className="text-2xl font-bold text-[#4a4441]">Extras</h2>
-              </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[#e9cece]">✨</span>
+              <h2 className="text-2xl font-bold text-[#4a4441]">Extras</h2>
+            </div>
 
-              <form
-                action={addExtra}
-                className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
+            <form
+              action={addExtra}
+              className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
+            >
+              <input
+                name="name"
+                type="text"
+                placeholder="Nombre del extra"
+                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] flex-1"
+              />
+              <input
+                name="duration"
+                type="number"
+                placeholder="Minutos extra"
+                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] w-36"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
               >
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="Nombre del extra"
-                  className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] flex-1"
-                />
-                <input
-                  name="duration"
-                  type="number"
-                  placeholder="Minutos extra"
-                  className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] w-36"
-                />
-                <button
-                  type="submit"
-                  className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
+                Agregar extra
+              </button>
+            </form>
+
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {extras?.length === 0 && (
+                <p className="text-sm text-[#4a4441]/60 col-span-full">
+                  No hay extras configurados.
+                </p>
+              )}
+              {extras?.map((extra: any) => (
+                <div
+                  key={extra.id}
+                  className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
                 >
-                  Agregar extra
-                </button>
-              </form>
-
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {extras?.length === 0 && (
-                  <p className="text-sm text-[#4a4441]/60 col-span-full">
-                    No hay extras configurados.
-                  </p>
-                )}
-                {extras?.map((extra: any) => (
-                  <div
-                    key={extra.id}
-                    className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-[#4a4441]">
-                        {extra.name}
-                      </span>
-                      <span className="text-xs text-[#4a4441]/60">
-                        +{extra.duration} min
-                      </span>
-                    </div>
-                    <form action={deleteExtra.bind(null, extra.id)}>
-                      <button
-                        type="submit"
-                        className="text-sm text-red-400 transition-colors hover:text-red-500"
-                      >
-                        ✕
-                      </button>
-                    </form>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-[#4a4441]">
+                      {extra.name}
+                    </span>
+                    <span className="text-xs text-[#4a4441]/60">
+                      +{extra.duration} min
+                    </span>
                   </div>
-                ))}
-              </div>
-            </section>    
-
+                  <form action={deleteExtra.bind(null, extra.id)}>
+                    <button
+                      type="submit"
+                      className="text-sm text-red-400 transition-colors hover:text-red-500"
+                    >
+                      ✕
+                    </button>
+                  </form>
+                </div>
+              ))}
+            </div>
+          </section>
         </main>
 
         <footer className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#e9cece]/10 py-12 text-sm text-[#4a4441]/50 md:flex-row">

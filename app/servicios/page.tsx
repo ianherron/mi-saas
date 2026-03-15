@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
-import EditServiceForm from "./EditServiceForm";
 import { createClient, getBusiness } from "../../lib/supabase-server";
+import EditServiceForm from "./EditServiceForm";
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -13,15 +13,11 @@ export default async function ServiciosPage() {
     const supabase = await createClient();
     const business = await getBusiness();
     if (!business) return;
-
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     if (!name || !price || !duration) return;
-
-    await supabase
-      .from("services")
-      .insert({ name, price, duration, business_id: business.id });
+    await supabase.from("services").insert({ name, price, duration, business_id: business.id });
     revalidatePath("/servicios");
   }
 
@@ -40,11 +36,7 @@ export default async function ServiciosPage() {
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     if (!id || !name || !price || !duration) return;
-
-    await supabase
-      .from("services")
-      .update({ name, price, duration })
-      .eq("id", id);
+    await supabase.from("services").update({ name, price, duration }).eq("id", id);
     revalidatePath("/servicios");
   }
 
@@ -53,13 +45,10 @@ export default async function ServiciosPage() {
     const supabase = await createClient();
     const business = await getBusiness();
     if (!business) return;
-
     const time = formData.get("time") as string;
     if (!time) return;
     const formatted = time.slice(0, 5);
-    await supabase
-      .from("time_slots")
-      .insert({ time: formatted, business_id: business.id });
+    await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
     revalidatePath("/servicios");
   }
 
@@ -75,14 +64,10 @@ export default async function ServiciosPage() {
     const supabase = await createClient();
     const business = await getBusiness();
     if (!business) return;
-
     const name = formData.get("name") as string;
     const duration = Number(formData.get("duration"));
     if (!name || !duration) return;
-
-    await supabase
-      .from("extras")
-      .insert({ name, duration, business_id: business.id });
+    await supabase.from("extras").insert({ name, duration, business_id: business.id });
     revalidatePath("/servicios");
   }
 
@@ -94,263 +79,186 @@ export default async function ServiciosPage() {
   }
 
   const { data: services, error } = await supabase
-    .from("services")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("created_at", { ascending: true });
+    .from("services").select("*").eq("business_id", business.id).order("created_at", { ascending: true });
 
   const { data: timeSlots } = await supabase
-    .from("time_slots")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("time", { ascending: true });
+    .from("time_slots").select("*").eq("business_id", business.id).order("time", { ascending: true });
 
   const { data: extras } = await supabase
-    .from("extras")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("created_at", { ascending: true });
+    .from("extras").select("*").eq("business_id", business.id).order("created_at", { ascending: true });
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#4a4441]">
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between border-b border-[#e9cece]/20 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-full bg-[#e9cece] text-[#4a4441]">
-              ✨
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#4a4441]">
-              NailFlow
-            </h2>
+    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
+
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
+        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">✦</div>
+          <span className="text-sm font-semibold tracking-tight">NailFlow</span>
+        </div>
+        <nav className="flex flex-1 flex-col gap-1 p-3">
+          <a href="/dashboard" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <span>▦</span> Dashboard
+          </a>
+          <a href="/citas" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <span>◷</span> Citas
+          </a>
+          <a href="/servicios" className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900">
+            <span>✦</span> Servicios
+          </a>
+        </nav>
+      </aside>
+
+      {/* Mobile header */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">✦</div>
+          <span className="text-sm font-semibold">NailFlow</span>
+        </div>
+        <a href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900">← Volver</a>
+      </header>
+
+      <div className="lg:pl-60">
+        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
+
+          {/* Page header */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Servicios</h1>
+            <p className="mt-1 text-sm text-slate-500">Gestiona los servicios que ofreces a tus clientas.</p>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a
-              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-[#e9cece]"
-              href="/dashboard"
-            >
-              <span>←</span>
-              Volver
-            </a>
-
-            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-[#e9cece]">
-              <img
-                className="h-full w-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXmXt4WddBJM-K7wYibQW47fcxzeSiY0mwN5fdH4TmZCz4dmYZfKcOnilVMEDPpwZOHYOvk4FmMgReDSgOShm8-V9_fra6IX39cw47VTL5-LywEmJpFmJ8R5YO6TxNt5Yf2OcG12tEwS-lfnw8e2cVXm1jc0M3X6L0lyFp-d6H5ac2us6iON5C0dImF5itfb7_y11QYPMt-Is9wb0aTGeSumMUlj5cPxmofH4SKAaAqb0k1eob5C9o3ryJHiSKX2t8f7YpZIwgoLg"
-                alt="Avatar de usuario"
+          {/* Add service form */}
+          <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">Agregar servicio</h2>
+            </div>
+            <form action={addService} className="flex flex-col gap-3 p-5 sm:flex-row">
+              <input
+                name="name" type="text" placeholder="Nombre del servicio"
+                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
               />
-            </div>
-          </div>
-        </header>
-
-        <main className="py-10">
-          <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-extrabold tracking-tight text-[#4a4441]">
-                Servicios
-              </h1>
-              <p className="text-lg text-[#4a4441]/70">
-                Gestiona los servicios que ofreces a tus clientas.
-              </p>
-            </div>
+              <input
+                name="price" type="number" placeholder="Precio"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-32"
+              />
+              <input
+                name="duration" type="number" placeholder="Duración (min)"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
+              />
+              <button type="submit" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700">
+                Agregar
+              </button>
+            </form>
           </div>
 
-          <form
-            action={addService}
-            className="mb-10 grid grid-cols-1 gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm md:grid-cols-4"
-          >
-            <input
-              name="name"
-              type="text"
-              placeholder="Nombre del servicio"
-              className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
-            />
-            <input
-              name="price"
-              type="number"
-              placeholder="Precio"
-              className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
-            />
-            <input
-              name="duration"
-              type="number"
-              placeholder="Duración en min"
-              className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
-            />
-            <button className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]">
-              Agregar servicio
-            </button>
-          </form>
+          {/* Services list */}
+          {error && <p className="mb-4 text-sm text-red-500">Error cargando servicios: {error.message}</p>}
 
-          <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {error && (
-              <p className="text-red-500">
-                Error cargando servicios: {error.message}
-              </p>
-            )}
+          {!services?.length && !error && (
+            <div className="mb-8 rounded-xl border border-dashed border-slate-200 bg-white p-10 text-center">
+              <p className="text-sm text-slate-400">No hay servicios todavía. Agrega uno arriba.</p>
+            </div>
+          )}
 
-            {services?.map((service: any) => (
-              <div
-                key={service.id}
-                className="flex flex-col justify-between rounded-xl border border-[#e9cece]/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div>
-                  <div className="mb-4 flex items-start justify-between">
-                    <h3 className="text-xl font-bold">{service.name}</h3>
-                    <span className="text-lg font-bold text-[#e9cece]">
-                      ₡{service.price.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="mb-6 flex items-center gap-2 text-[#4a4441]/60">
-                    <span>⏱</span>
-                    <span className="text-sm">{service.duration} min</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 border-t border-[#e9cece]/10 pt-4">
-                  <EditServiceForm
-                    service={service}
-                    updateService={updateService}
-                  />
-                  <form action={deleteService.bind(null, service.id)}>
-                    <button className="flex items-center gap-1 text-sm font-medium text-red-400 transition-colors hover:text-red-500">
-                      <span>🗑️</span>
-                      Eliminar
-                    </button>
-                  </form>
-                </div>
+          {services && services.length > 0 && (
+            <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
+              <ul className="divide-y divide-slate-50">
+                {services.map((service: any) => (
+                  <li key={service.id} className="flex items-center justify-between px-5 py-4">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">{service.name}</p>
+                      <p className="text-xs text-slate-400">{service.duration} min · ₡{service.price.toLocaleString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <EditServiceForm service={service} updateService={updateService} />
+                      <form action={deleteService.bind(null, service.id)}>
+                        <button type="submit" className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600">
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Extras */}
+          <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">Extras</h2>
+            </div>
+            <form action={addExtra} className="flex flex-col gap-3 border-b border-slate-50 p-5 sm:flex-row">
+              <input
+                name="name" type="text" placeholder="Nombre del extra"
+                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
+              />
+              <input
+                name="duration" type="number" placeholder="Minutos extra"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
+              />
+              <button type="submit" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700">
+                Agregar
+              </button>
+            </form>
+            {!extras?.length ? (
+              <div className="px-5 py-6 text-center">
+                <p className="text-sm text-slate-400">No hay extras configurados.</p>
               </div>
-            ))}
+            ) : (
+              <ul className="divide-y divide-slate-50">
+                {extras.map((extra: any) => (
+                  <li key={extra.id} className="flex items-center justify-between px-5 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">{extra.name}</p>
+                      <p className="text-xs text-slate-400">+{extra.duration} min</p>
+                    </div>
+                    <form action={deleteExtra.bind(null, extra.id)}>
+                      <button type="submit" className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600">
+                        Eliminar
+                      </button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <section className="space-y-6">
-            <div className="flex items-center gap-3">
-              <span className="text-[#e9cece]">🕐</span>
-              <h2 className="text-2xl font-bold text-[#4a4441]">
-                Horarios disponibles
-              </h2>
+          {/* Horarios */}
+          <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">Horarios disponibles</h2>
             </div>
-            <form
-              action={addTimeSlot}
-              className="flex flex-col gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm sm:flex-row"
-            >
+            <form action={addTimeSlot} className="flex flex-col gap-3 border-b border-slate-50 p-5 sm:flex-row">
               <input
-                name="time"
-                type="text"
-                placeholder="HH:MM"
-                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece]"
+                name="time" type="text" placeholder="09:00"
+                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
               />
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1] sm:w-auto"
-              >
-                Agregar horario
+              <button type="submit" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700">
+                Agregar
               </button>
             </form>
+            {!timeSlots?.length ? (
+              <div className="px-5 py-6 text-center">
+                <p className="text-sm text-slate-400">No hay horarios configurados.</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-50">
+                {timeSlots.map((slot: any) => (
+                  <li key={slot.id} className="flex items-center justify-between px-5 py-3">
+                    <p className="text-sm font-medium text-slate-900">{slot.time}</p>
+                    <form action={deleteTimeSlot.bind(null, slot.id)}>
+                      <button type="submit" className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600">
+                        Eliminar
+                      </button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {timeSlots?.length === 0 && (
-                <p className="text-sm text-[#4a4441]/60 col-span-full">
-                  No hay horarios configurados.
-                </p>
-              )}
-              {timeSlots?.map((slot: any) => (
-                <div
-                  key={slot.id}
-                  className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
-                >
-                  <span className="font-semibold text-[#4a4441]">
-                    {slot.time}
-                  </span>
-                  <form action={deleteTimeSlot.bind(null, slot.id)}>
-                    <button
-                      type="submit"
-                      className="text-sm text-red-400 transition-colors hover:text-red-500"
-                    >
-                      ✕
-                    </button>
-                  </form>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-6 mt-10">
-            <div className="flex items-center gap-3">
-              <span className="text-[#e9cece]">✨</span>
-              <h2 className="text-2xl font-bold text-[#4a4441]">Extras</h2>
-            </div>
-
-            <form
-              action={addExtra}
-              className="flex flex-col gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm sm:flex-row"
-            >
-              <input
-                name="name"
-                type="text"
-                placeholder="Nombre del extra"
-                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] flex-1"
-              />
-              <input
-                name="duration"
-                type="number"
-                placeholder="Minutos extra"
-                className="rounded-xl border border-[#e9cece]/20 px-4 py-3 outline-none focus:border-[#e9cece] w-36"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1] sm:w-auto"
-              >
-                Agregar extra
-              </button>
-            </form>
-
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {extras?.length === 0 && (
-                <p className="text-sm text-[#4a4441]/60 col-span-full">
-                  No hay extras configurados.
-                </p>
-              )}
-              {extras?.map((extra: any) => (
-                <div
-                  key={extra.id}
-                  className="flex items-center justify-between rounded-xl border border-[#e9cece]/20 bg-[#e9cece]/10 px-4 py-3"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-[#4a4441]">
-                      {extra.name}
-                    </span>
-                    <span className="text-xs text-[#4a4441]/60">
-                      +{extra.duration} min
-                    </span>
-                  </div>
-                  <form action={deleteExtra.bind(null, extra.id)}>
-                    <button
-                      type="submit"
-                      className="text-sm text-red-400 transition-colors hover:text-red-500"
-                    >
-                      ✕
-                    </button>
-                  </form>
-                </div>
-              ))}
-            </div>
-          </section>
         </main>
-
-        <footer className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#e9cece]/10 py-12 text-sm text-[#4a4441]/50 md:flex-row">
-          <p>© 2024 NailFlow Premium SaaS. Todos los derechos reservados.</p>
-          <div className="flex gap-6">
-            <a className="transition-colors hover:text-[#e9cece]" href="#">
-              Privacidad
-            </a>
-            <a className="transition-colors hover:text-[#e9cece]" href="#">
-              Términos
-            </a>
-            <a className="transition-colors hover:text-[#e9cece]" href="#">
-              Soporte
-            </a>
-          </div>
-        </footer>
       </div>
     </div>
   );

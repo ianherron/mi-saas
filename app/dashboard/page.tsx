@@ -1,16 +1,12 @@
+import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
-import { createClient, getBusiness } from "../../lib/supabase-server";
-
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const business = await getBusiness();
 
   if (!business) return <p>No se encontró tu negocio.</p>;
-
-  const BOOKING_URL = `mi-saas-alpha.vercel.app/reservar/${business.slug}`;
-
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -34,145 +30,187 @@ export default async function DashboardPage() {
     .order("time", { ascending: true })
     .limit(5);
 
+  const BOOKING_URL = `mi-saas-alpha.vercel.app/reservar/${business.slug}`;
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] font-sans text-[#2d2926]">
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[#f2d4d7]/20 bg-white/50 px-6 py-4 backdrop-blur-md lg:px-20">
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-[#2d2926] text-[#f2d4d7]">
-              ✨
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#2d2926]">
-              NailFlow
-            </h2>
+    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
+        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
+            ✦
           </div>
+          <span className="text-sm font-semibold tracking-tight">NailFlow</span>
+        </div>
 
-          <div className="flex flex-1 items-center justify-end gap-4">
-            <div className="hidden gap-2 md:flex">
-              <button className="flex size-10 items-center justify-center rounded-full bg-[#f2d4d7]/20 text-[#2d2926] transition-colors hover:bg-[#f2d4d7]/40">
-                🔔
-              </button>
-              <button className="flex size-10 items-center justify-center rounded-full bg-[#f2d4d7]/20 text-[#2d2926] transition-colors hover:bg-[#f2d4d7]/40">
-                ⚙️
-              </button>
+        <nav className="flex flex-1 flex-col gap-1 p-3">
+          <a
+            href="/dashboard"
+            className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
+          >
+            <span className="text-base">▦</span>
+            Dashboard
+          </a>
+          <a
+            href="/citas"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span className="text-base">◷</span>
+            Citas
+          </a>
+          <a
+            href="/servicios"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span className="text-base">✦</span>
+            Servicios
+          </a>
+        </nav>
+
+        <div className="border-t border-slate-100 p-3">
+          <div className="flex items-center justify-between rounded-md px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                {business.owner_name?.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-sm font-medium text-slate-700 truncate max-w-[100px]">
+                {business.owner_name}
+              </span>
             </div>
             <LogoutButton />
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#f2d4d7] bg-[#f2d4d7]/30 shadow-sm">
-              <span className="text-sm font-bold text-[#2d2926]">M</span>
-            </div>
           </div>
-        </header>
+        </div>
+      </aside>
 
-        <main className="mx-auto w-full max-w-6xl px-6 py-10">
-          <div className="mb-10">
-            <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-[#2d2926]">
-              Bienvenida, {business.owner_name}
+      {/* Mobile header */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-slate-900 text-white text-xs">
+            ✦
+          </div>
+          <span className="text-sm font-semibold">NailFlow</span>
+        </div>
+        <LogoutButton />
+      </header>
+
+      {/* Main content */}
+      <div className="lg:pl-60">
+        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
+          {/* Page header */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Bienvenida, {business.owner_name?.split(" ")[0]}
             </h1>
-            <p className="text-lg text-slate-500">
-              Aquí tienes un resumen de tu agenda de hoy.
+            <p className="mt-1 text-sm text-slate-500">
+              {new Date().toLocaleDateString("es-CR", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </p>
           </div>
 
-          <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-[#f2d4d7]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-2xl text-[#f2d4d7]">📅</span>
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-                  Citas de hoy
-                </p>
-              </div>
-              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">
+          {/* Stats */}
+          <div className="mb-8 grid grid-cols-2 gap-4">
+            <div className="rounded-xl border border-slate-100 bg-white p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                Citas hoy
+              </p>
+              <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {todayCount ?? 0}
               </p>
             </div>
-
-            <div className="rounded-xl border border-[#f2d4d7]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-2xl text-[#f2d4d7]">💅</span>
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-                  Servicios activos
-                </p>
-              </div>
-              <p className="text-4xl font-bold tracking-tight text-[#2d2926]">
+            <div className="rounded-xl border border-slate-100 bg-white p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                Servicios activos
+              </p>
+              <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {servicesCount ?? 0}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-            <div className="space-y-6 lg:col-span-2">
-              <div className="px-2">
-                <h2 className="text-xl font-bold text-[#2d2926]">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* Upcoming appointments */}
+            <div className="lg:col-span-2">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
                   Próximas citas
                 </h2>
+                <a
+                  href="/citas"
+                  className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900"
+                >
+                  Ver todas →
+                </a>
               </div>
 
-              <div className="space-y-3">
-                {!upcoming?.length && (
-                  <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center text-slate-500 shadow-sm">
-                    No hay citas próximas.
+              <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+                {!upcoming?.length ? (
+                  <div className="px-5 py-10 text-center">
+                    <p className="text-sm text-slate-400">
+                      No hay citas próximas.
+                    </p>
                   </div>
+                ) : (
+                  <ul className="divide-y divide-slate-50">
+                    {upcoming.map((appointment: any) => (
+                      <li
+                        key={appointment.id}
+                        className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+                            {appointment.client_name?.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-900">
+                              {appointment.client_name}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {appointment.services?.name} · {appointment.date}{" "}
+                              · {appointment.time}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-
-                {upcoming?.map((appointment: any) => (
-                  <div
-                    key={appointment.id}
-                    className="flex items-center justify-between rounded-xl border border-[#f2d4d7]/10 bg-white p-4 shadow-sm"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex size-12 items-center justify-center rounded-full bg-[#f2d4d7]/30 text-lg font-bold text-[#2d2926]">
-                        {appointment.client_name?.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-[#2d2926]">
-                          {appointment.client_name}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {appointment.services?.name} — {appointment.time} ·{" "}
-                          {appointment.date}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
 
-            <div className="space-y-8">
+            {/* Quick actions */}
+            <div className="flex flex-col gap-4">
               <div>
-                <h2 className="mb-6 px-2 text-xl font-bold text-[#2d2926]">
-                  Acciones rápidas
+                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+                  Acciones
                 </h2>
-
-                <div className="space-y-3">
+                <div className="flex flex-col gap-2">
                   <a
                     href="/servicios"
-                    className="flex w-full items-center justify-between rounded-xl bg-[#f2d4d7] px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#efc8cd]"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    <span>Gestionar servicios</span>
-                    <span>📝</span>
+                    Gestionar servicios
+                    <span className="text-slate-300">→</span>
                   </a>
                   <a
                     href="/citas"
-                    className="flex w-full items-center justify-between rounded-xl border border-[#f2d4d7]/20 bg-white px-5 py-4 font-bold text-[#2d2926] shadow-sm transition-all hover:bg-[#f2d4d7]/10"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    <span>Ver todas las citas</span>
-                    <span>📋</span>
+                    Ver todas las citas
+                    <span className="text-slate-300">→</span>
                   </a>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[#f2d4d7]/30 bg-[#f2d4d7]/20 p-6">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="text-[#2d2926]">🔗</span>
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#2d2926]/70">
-                    Tu enlace de reservas
-                  </p>
-                </div>
-
-                <p className="mb-4 truncate text-sm font-medium italic text-[#2d2926]">
+              {/* Booking link */}
+              <div className="rounded-xl border border-slate-100 bg-white p-4">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Tu enlace de reservas
+                </p>
+                <p className="mb-3 truncate text-xs text-slate-500">
                   {BOOKING_URL}
                 </p>
                 <CopyButton url={`https://${BOOKING_URL}`} />
@@ -180,12 +218,6 @@ export default async function DashboardPage() {
             </div>
           </div>
         </main>
-
-        <footer className="mt-auto px-6 py-10 text-center">
-          <p className="text-sm text-slate-400">
-            © 2024 NailFlow — El aliado perfecto para tu salón
-          </p>
-        </footer>
       </div>
     </div>
   );

@@ -16,120 +16,138 @@ export default async function CitasPage() {
   }
 
   const { data: appointments, error } = await supabase
-  .from("appointments")
-  .select(`*, services (name)`)
-  .eq("business_id", business.id)
-  .order("date", { ascending: true })
-  .order("time", { ascending: true });
+    .from("appointments")
+    .select(`*, services (name)`)
+    .eq("business_id", business.id)
+    .order("date", { ascending: true })
+    .order("time", { ascending: true });
 
+  const today = new Date().toISOString().split("T")[0];
+  const todayAppts = appointments?.filter(a => a.date === today) ?? [];
+  const upcomingAppts = appointments?.filter(a => a.date > today) ?? [];
 
   return (
-    <div className="min-h-screen bg-[#f7f6f6] font-sans text-slate-900 antialiased">
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[#e9cece]/20 bg-white px-6 py-4 backdrop-blur-sm md:px-10">
-          <div className="flex items-center gap-3 text-slate-900">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-white">
-              ✨
-            </div>
-            <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
+    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
+
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
+        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">✦</div>
+          <span className="text-sm font-semibold tracking-tight">NailFlow</span>
+        </div>
+        <nav className="flex flex-1 flex-col gap-1 p-3">
+          <a href="/dashboard" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <span>▦</span> Dashboard
+          </a>
+          <a href="/citas" className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900">
+            <span>◷</span> Citas
+          </a>
+          <a href="/servicios" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <span>✦</span> Servicios
+          </a>
+        </nav>
+      </aside>
+
+      {/* Mobile header */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">✦</div>
+          <span className="text-sm font-semibold">NailFlow</span>
+        </div>
+        <a href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900">← Volver</a>
+      </header>
+
+      <div className="lg:pl-60">
+        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
+
+          {/* Page header */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Citas</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              {appointments?.length ?? 0} citas programadas en total
+            </p>
           </div>
 
-         <div className="flex items-center gap-4">
-            <a
-              href="/dashboard"
-              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-[#e9cece]"
-            >
-              <span>←</span>
-              Volver
-            </a>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#e9cece]/30 bg-[#e9cece]/20">
-              <span className="text-sm font-bold text-slate-700">M</span>
-            </div>
-          </div>
-        </header>
+          {error && <p className="mb-4 text-sm text-red-500">Error cargando citas: {error.message}</p>}
 
-        <main className="flex flex-1 justify-center px-4 py-8 md:px-10">
-          <div className="flex max-w-[960px] flex-1 flex-col gap-8">
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black tracking-tight text-slate-900">
-                  Citas
-                </h1>
-                <p className="text-base font-normal text-slate-500">
-                  Aquí puedes ver las citas programadas por tus clientas.
-                </p>
-              </div>
+          {!appointments?.length && !error && (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-white p-10 text-center">
+              <p className="text-sm text-slate-400">Aún no hay citas registradas.</p>
             </div>
+          )}
 
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between px-2">
-                <h2 className="flex items-center gap-2 text-xl font-bold text-slate-900">
-                  <span className="text-[#e9cece]">📅</span>
-                  Hoy
-                </h2>
-                <span className="text-sm text-slate-400">
-                  {appointments?.length ?? 0} citas programadas
+          {/* Citas de hoy */}
+          {todayAppts.length > 0 && (
+            <div className="mb-6">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Hoy</h2>
+                <span className="rounded-full bg-[#e9cece]/30 px-2 py-0.5 text-xs font-medium text-[#2d2424]">
+                  {todayAppts.length} citas
                 </span>
               </div>
-
-              {error && (
-                <p className="text-red-500">Error cargando citas: {error.message}</p>
-              )}
-
-              {!appointments?.length && !error && (
-                <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center text-slate-500 shadow-sm">
-                  Aún no hay citas registradas.
-                </div>
-              )}
-
-              {appointments?.map((appointment: any) => (
-                <div
-                  key={appointment.id}
-                  className="group flex flex-col items-center gap-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:flex-row"
-                >
-                  <div className="flex w-full flex-1 items-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#e9cece]/10 bg-[#e9cece]/20 text-lg font-bold text-slate-700">
-                      {appointment.client_name?.charAt(0).toUpperCase()}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <p className="text-lg font-bold text-slate-900">
-                        {appointment.client_name}
-                      </p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
-                        <span className="flex items-center gap-1">⏰ {appointment.time}</span>
-                        <span className="flex items-center gap-1">⏱ {appointment.duration} min</span>
-                        <span className="flex items-center gap-1">💅 {appointment.services?.name}</span>
-                        <span className="flex items-center gap-1">📆 {appointment.date}</span>
-                        {appointment.phone && (
-                          <span className="flex items-center gap-1">📞 {appointment.phone}</span>
-                        )}
-                        {appointment.email && (
-                          <span className="flex items-center gap-1">✉️ {appointment.email}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-2 flex w-full items-center gap-3 border-t pt-4 sm:mt-0 sm:w-auto sm:border-t-0 sm:pt-0">
-                    <button className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#e9cece]/10 px-5 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#e9cece]/20 sm:flex-none">
-                      <span>👁</span>
-                      Ver
-                    </button>
-
-                    <form action={deleteAppointment.bind(null, appointment.id)}>
-                      <button className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-100 px-5 text-sm font-semibold text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 sm:flex-none">
-                        <span>✕</span>
-                        Cancelar
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              ))}
+              <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+                <ul className="divide-y divide-slate-50">
+                  {todayAppts.map((appointment: any) => (
+                    <AppointmentRow key={appointment.id} appointment={appointment} deleteAppointment={deleteAppointment} />
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Próximas citas */}
+          {upcomingAppts.length > 0 && (
+            <div>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Próximas</h2>
+                <span className="text-xs text-slate-400">{upcomingAppts.length} citas</span>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+                <ul className="divide-y divide-slate-50">
+                  {upcomingAppts.map((appointment: any) => (
+                    <AppointmentRow key={appointment.id} appointment={appointment} deleteAppointment={deleteAppointment} />
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
         </main>
       </div>
     </div>
+  );
+}
+
+function AppointmentRow({ appointment, deleteAppointment }: {
+  appointment: any;
+  deleteAppointment: (id: number) => Promise<void>;
+}) {
+  return (
+    <li className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-3">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/20 text-sm font-semibold text-[#2d2424]">
+          {appointment.client_name?.charAt(0).toUpperCase()}
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-900">{appointment.client_name}</p>
+          <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-slate-400">
+            <span>{appointment.date} · {appointment.time}</span>
+            <span>{appointment.services?.name}</span>
+            <span>{appointment.duration} min</span>
+            {appointment.phone && <span>{appointment.phone}</span>}
+            {appointment.email && <span>{appointment.email}</span>}
+          </div>
+        </div>
+      </div>
+
+      <form action={deleteAppointment.bind(null, appointment.id)}>
+        <button
+          type="submit"
+          className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+        >
+          Cancelar
+        </button>
+      </form>
+    </li>
   );
 }

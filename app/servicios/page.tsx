@@ -41,16 +41,22 @@ export default async function ServiciosPage() {
   }
 
   async function addTimeSlot(formData: FormData) {
-    "use server";
-    const supabase = await createClient();
-    const business = await getBusiness();
-    if (!business) return;
-    const time = formData.get("time") as string;
-    if (!time) return;
-    const formatted = time.slice(0, 5);
-    await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
-    revalidatePath("/servicios");
-  }
+  "use server";
+  const supabase = await createClient();
+  const business = await getBusiness();
+  if (!business) return;
+  const time = formData.get("time") as string;
+  if (!time) return;
+  
+  // Convertir a formato 12h con AM/PM
+  const [hours, minutes] = time.slice(0, 5).split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
+  const hours12 = hours % 12 || 12;
+  const formatted = `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
+  
+  await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
+  revalidatePath("/servicios");
+}
 
   async function deleteTimeSlot(id: number) {
     "use server";

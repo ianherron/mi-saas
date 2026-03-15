@@ -49,7 +49,7 @@ export default async function DashboardPage() {
             className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
           >
             <span className="text-base">▦</span>
-            Dashboardd
+            Dashboard
           </a>
           <a
             href="/citas"
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
       {/* Mobile header */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
         <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-md bg-slate-900 text-white text-xs">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
             ✦
           </div>
           <span className="text-sm font-semibold">NailFlow</span>

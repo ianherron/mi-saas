@@ -231,7 +231,7 @@ export default async function ServiciosPage() {
             </div>
             <form
               action={addTimeSlot}
-              className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
+              className="flex flex-col gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm sm:flex-row"
             >
               <input
                 name="time"
@@ -241,7 +241,7 @@ export default async function ServiciosPage() {
               />
               <button
                 type="submit"
-                className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
+                className="w-full rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1] sm:w-auto"
               >
                 Agregar horario
               </button>
@@ -282,7 +282,7 @@ export default async function ServiciosPage() {
 
             <form
               action={addExtra}
-              className="flex gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm"
+              className="flex flex-col gap-4 rounded-xl border border-[#e9cece]/20 bg-white p-6 shadow-sm sm:flex-row"
             >
               <input
                 name="name"
@@ -298,7 +298,7 @@ export default async function ServiciosPage() {
               />
               <button
                 type="submit"
-                className="rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1]"
+                className="w-full rounded-xl bg-[#e9cece] px-8 py-3 font-bold text-[#4a4441] shadow-sm transition-all hover:bg-[#e2c1c1] sm:w-auto"
               >
                 Agregar extra
               </button>

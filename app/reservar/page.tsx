@@ -81,6 +81,7 @@ export default async function ReservarPage() {
               timeSlots={timeSlots ?? []}
               extras={extras ?? []}
               businessId=""
+              workingDays={[]}
               createAppointment={createAppointment}
             />
           )}

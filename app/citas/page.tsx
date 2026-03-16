@@ -10,7 +10,56 @@ export default async function CitasPage() {
   async function deleteAppointment(id: number) {
     "use server";
     const supabase = await createClient();
+
+    // Obtener datos de la cita antes de borrar
+    const { data: appointment } = await supabase
+      .from("appointments")
+      .select(`*, services (name)`)
+      .eq("id", id)
+      .single();
+
+    // Borrar la cita
     await supabase.from("appointments").delete().eq("id", id);
+
+    // Enviar correo si hay email
+    if (appointment?.email) {
+      const { resend } = await import("../../lib/resend");
+      await resend.emails.send({
+        from: "NailFlow <hola@nailflow.app>",
+        to: appointment.email,
+        subject: "Tu cita ha sido cancelada",
+        html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
+          <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
+            <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Cita cancelada</h1>
+            <p style="color: #846262; margin: 0 0 24px;">Hola ${appointment.client_name}, tu cita ha sido cancelada.</p>
+            
+            <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
+                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.services?.name ?? "—"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td>
+                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.date}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Hora</td>
+                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.time}</td>
+                </tr>
+              </table>
+            </div>
+
+            <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
+              Si tienes dudas contáctanos · NailFlow
+            </p>
+          </div>
+        </div>
+      `,
+      });
+    }
+
     revalidatePath("/citas");
     revalidatePath("/dashboard");
   }

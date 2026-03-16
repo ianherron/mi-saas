@@ -31,6 +31,7 @@ export default async function ReservarSlugPage({
   const email = formData.get("email") as string;
   const duration = parseInt(formData.get("duration") as string);
   const business_id = formData.get("business_id") as string;
+  const total_price = parseInt(formData.get("total_price") as string);
 
   if (!client_name || !service_id || !date || !time) return;
 
@@ -76,7 +77,7 @@ export default async function ReservarSlugPage({
                 </tr>
                 <tr style="border-top: 1px solid #f0eaea;">
                   <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Precio</td>
-                  <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${service?.price?.toLocaleString() ?? "—"}</td>
+                  <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${total_price?.toLocaleString() ?? "—"}</td>
                 </tr>
               </table>
             </div>

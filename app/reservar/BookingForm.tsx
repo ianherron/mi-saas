@@ -135,6 +135,7 @@ export default function BookingForm({
     >
       <input type="hidden" name="duration" value={totalDuration} />
       <input type="hidden" name="business_id" value={businessId} />
+      <input type="hidden" name="total_price" value={totalPrice} />
 
       <div className="flex flex-col gap-2 px-4">
         <h2 className="text-4xl font-black tracking-tight text-slate-900">

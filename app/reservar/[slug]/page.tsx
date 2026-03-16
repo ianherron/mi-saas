@@ -32,6 +32,7 @@ export default async function ReservarSlugPage({
   const duration = parseInt(formData.get("duration") as string);
   const business_id = formData.get("business_id") as string;
   const total_price = parseInt(formData.get("total_price") as string);
+  
 
   if (!client_name || !service_id || !date || !time) return;
 
@@ -40,6 +41,8 @@ export default async function ReservarSlugPage({
     .select("name, price")
     .eq("id", service_id)
     .single();
+
+
 
   await supabase.from("appointments").insert({
     client_name, service_id, date, time, duration, phone, email, business_id,
@@ -111,6 +114,14 @@ export default async function ReservarSlugPage({
     .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
+   const { data: workingDaysData } = await supabase
+    .from("working_days")
+    .select("day")
+    .eq("business_id", business.id);
+
+  const workingDays = workingDaysData?.map((d) => d.day) ?? [];
+
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f7f6f6] text-slate-900">
       <div className="flex h-full grow flex-col">
@@ -138,6 +149,7 @@ export default async function ReservarSlugPage({
               timeSlots={timeSlots ?? []}
               extras={extras ?? []}
               businessId={business.id}
+              workingDays={workingDays}
               createAppointment={createAppointment}
             />
           )}

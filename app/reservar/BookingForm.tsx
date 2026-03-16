@@ -11,12 +11,14 @@ export default function BookingForm({
   timeSlots,
   extras,
   businessId,
+  workingDays,
   createAppointment,
 }: {
   services: Service[];
   timeSlots: TimeSlot[];
   extras: Extra[];
   businessId: string;
+  workingDays: number[];
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
   const [selectedServiceId, setSelectedServiceId] = useState(
@@ -46,11 +48,16 @@ export default function BookingForm({
   }
 
   async function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const newDate = e.target.value;
-    setDate(newDate);
-    const booked = await getBookedSlots(newDate, businessId);
-    setBookedSlots(booked);
+  const newDate = e.target.value;
+  if (isDateDisabled(newDate)) {
+    alert("La manicurista no trabaja ese día. Por favor elige otra fecha.");
+    setDate("");
+    return;
   }
+  setDate(newDate);
+  const booked = await getBookedSlots(newDate, businessId);
+  setBookedSlots(booked);
+}
 
   async function handleSubmit(formData: FormData) {
     if (submitting) return;
@@ -58,6 +65,13 @@ export default function BookingForm({
     await createAppointment(formData);
     setConfirmed(true);
   }
+
+  function isDateDisabled(dateString: string): boolean {
+  if (!dateString) return false;
+  if (workingDays.length === 0) return false;
+  const day = new Date(dateString + "T12:00:00").getDay();
+  return !workingDays.includes(day);
+}
 
   if (confirmed) {
     return (

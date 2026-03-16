@@ -8,7 +8,9 @@ export default async function DashboardPage() {
 
   if (!business) return <p>No se encontró tu negocio.</p>;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Costa_Rica",
+  });
 
   const { count: todayCount } = await supabase
     .from("appointments")

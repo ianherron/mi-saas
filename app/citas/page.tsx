@@ -71,7 +71,9 @@ export default async function CitasPage() {
     .order("date", { ascending: true })
     .order("time", { ascending: true });
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Costa_Rica",
+  });
   const todayAppts = appointments?.filter(a => a.date === today) ?? [];
   const upcomingAppts = appointments?.filter(a => a.date > today) ?? [];
 

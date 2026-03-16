@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getBookedSlots } from "./actions";
 
 type Service = { id: string; name: string; price: number; duration: number };
@@ -30,6 +30,7 @@ export default function BookingForm({
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
   const extraMinutes = extras
@@ -51,6 +52,9 @@ export default function BookingForm({
   const newDate = e.target.value;
   if (isDateDisabled(newDate)) {
     alert("La manicurista no trabaja ese día. Por favor elige otra fecha.");
+    if (dateInputRef.current) {
+      dateInputRef.current.value = date;
+    }
     return;
   }
   setDate(newDate);
@@ -251,6 +255,7 @@ export default function BookingForm({
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <input
+            ref={dateInputRef}
             name="date"
             type="date"
             value={date}

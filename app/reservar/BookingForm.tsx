@@ -4,7 +4,7 @@ import { getBookedSlots } from "./actions";
 
 type Service = { id: string; name: string; price: number; duration: number };
 type TimeSlot = { id: number; time: string };
-type Extra = { id: number; name: string; duration: number };
+type Extra = { id: number; name: string; duration: number; price: number; };
 
 export default function BookingForm({
   services,
@@ -34,6 +34,10 @@ export default function BookingForm({
     .filter((e) => selectedExtras.includes(String(e.id)))
     .reduce((acc, e) => acc + e.duration, 0);
   const totalDuration = (selectedService?.duration ?? 0) + extraMinutes;
+  const extraPrice = extras
+  .filter((e) => selectedExtras.includes(String(e.id)))
+  .reduce((acc, e) => acc + (e.price ?? 0), 0);
+  const totalPrice = (selectedService?.price ?? 0) + extraPrice;
 
   function toggleExtra(id: string) {
     setSelectedExtras((prev) =>
@@ -103,7 +107,7 @@ export default function BookingForm({
             <div className="flex justify-between py-2.5">
               <span className="text-sm text-slate-400">Precio</span>
               <span className="text-sm font-semibold text-[#e9cece]">
-                ₡{selectedService?.price.toLocaleString()}
+                ₡{totalPrice.toLocaleString()}
               </span>
             </div>
           </div>
@@ -214,7 +218,8 @@ export default function BookingForm({
                   }`}
                 >
                   <span>{isActive ? "✓" : "+"}</span>
-                  {extra.name} (+{extra.duration} min)
+                  {extra.name} (+{extra.duration} min · ₡
+                  {extra.price?.toLocaleString() ?? 0})
                 </button>
               );
             })}
@@ -292,7 +297,7 @@ export default function BookingForm({
             <div>
               <p className="text-xs text-slate-400">Precio</p>
               <p className="text-sm font-semibold text-[#e9cece]">
-                ₡{selectedService?.price.toLocaleString() ?? "—"}
+                ₡{totalPrice.toLocaleString()}
               </p>
             </div>
             {date && time && (

@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     .order("time", { ascending: true })
     .limit(5);
 
-  const BOOKING_URL = `mi-saas-alpha.vercel.app/reservar/${business.slug}`;
+  const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">

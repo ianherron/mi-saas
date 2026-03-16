@@ -47,7 +47,7 @@ export default async function ReservarSlugPage({
   // Enviar correo si hay email
   if (email) {
     const result = await resend.emails.send({
-      from: "NailFlow <onboarding@resend.dev>",
+      from: "NailFlow <hola@nailflow.app>",
       to: email,
       subject: "¡Tu cita ha sido confirmada! 💅",
       html: `

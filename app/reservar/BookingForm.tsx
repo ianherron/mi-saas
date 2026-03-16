@@ -51,7 +51,6 @@ export default function BookingForm({
   const newDate = e.target.value;
   if (isDateDisabled(newDate)) {
     alert("La manicurista no trabaja ese día. Por favor elige otra fecha.");
-    setDate("");
     return;
   }
   setDate(newDate);

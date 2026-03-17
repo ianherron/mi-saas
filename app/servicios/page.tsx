@@ -17,7 +17,9 @@ export default async function ServiciosPage() {
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     if (!name || !price || !duration) return;
-    await supabase.from("services").insert({ name, price, duration, business_id: business.id });
+    await supabase
+      .from("services")
+      .insert({ name, price, duration, business_id: business.id });
     revalidatePath("/servicios");
   }
 
@@ -36,7 +38,10 @@ export default async function ServiciosPage() {
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     if (!id || !name || !price || !duration) return;
-    await supabase.from("services").update({ name, price, duration }).eq("id", id);
+    await supabase
+      .from("services")
+      .update({ name, price, duration })
+      .eq("id", id);
     revalidatePath("/servicios");
   }
 
@@ -45,15 +50,10 @@ export default async function ServiciosPage() {
   const supabase = await createClient();
   const business = await getBusiness();
   if (!business) return;
-  const time = formData.get("time") as string;
-  if (!time) return;
-  
-  // Convertir a formato 12h con AM/PM
-  const [hours, minutes] = time.slice(0, 5).split(":").map(Number);
-  const period = hours >= 12 ? "PM" : "AM";
-  const hours12 = hours % 12 || 12;
-  const formatted = `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
-  
+  const hour = formData.get("hour") as string;
+  const period = formData.get("period") as string;
+  if (!hour || !period) return;
+  const formatted = `${hour} ${period}`;
   await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
   revalidatePath("/servicios");
 }
@@ -66,17 +66,19 @@ export default async function ServiciosPage() {
   }
 
   async function addExtra(formData: FormData) {
-  "use server";
-  const supabase = await createClient();
-  const business = await getBusiness();
-  if (!business) return;
-  const name = formData.get("name") as string;
-  const duration = Number(formData.get("duration"));
-  const price = Number(formData.get("price"));
-  if (!name || !duration) return;
-  await supabase.from("extras").insert({ name, duration, price, business_id: business.id });
-  revalidatePath("/servicios");
-}
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    const name = formData.get("name") as string;
+    const duration = Number(formData.get("duration"));
+    const price = Number(formData.get("price"));
+    if (!name || !duration) return;
+    await supabase
+      .from("extras")
+      .insert({ name, duration, price, business_id: business.id });
+    revalidatePath("/servicios");
+  }
 
   async function deleteExtra(id: number) {
     "use server";
@@ -86,35 +88,44 @@ export default async function ServiciosPage() {
   }
 
   async function saveWorkingDays(formData: FormData) {
-  "use server";
-  const supabase = await createClient();
-  const business = await getBusiness();
-  if (!business) return;
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
 
-  const days = [0, 1, 2, 3, 4, 5, 6].filter(
-    (d) => formData.get(`day_${d}`) === "on"
-  );
-
-  // Borrar los días actuales y reemplazar
-  await supabase.from("working_days").delete().eq("business_id", business.id);
-  
-  if (days.length > 0) {
-    await supabase.from("working_days").insert(
-      days.map((day) => ({ day, business_id: business.id }))
+    const days = [0, 1, 2, 3, 4, 5, 6].filter(
+      (d) => formData.get(`day_${d}`) === "on",
     );
+
+    // Borrar los días actuales y reemplazar
+    await supabase.from("working_days").delete().eq("business_id", business.id);
+
+    if (days.length > 0) {
+      await supabase
+        .from("working_days")
+        .insert(days.map((day) => ({ day, business_id: business.id })));
+    }
+
+    revalidatePath("/servicios");
   }
 
-  revalidatePath("/servicios");
-}
-
   const { data: services, error } = await supabase
-    .from("services").select("*").eq("business_id", business.id).order("created_at", { ascending: true });
+    .from("services")
+    .select("*")
+    .eq("business_id", business.id)
+    .order("created_at", { ascending: true });
 
   const { data: timeSlots } = await supabase
-    .from("time_slots").select("*").eq("business_id", business.id).order("time", { ascending: true });
+    .from("time_slots")
+    .select("*")
+    .eq("business_id", business.id)
+    .order("time", { ascending: true });
 
   const { data: extras } = await supabase
-    .from("extras").select("*").eq("business_id", business.id).order("created_at", { ascending: true });
+    .from("extras")
+    .select("*")
+    .eq("business_id", business.id)
+    .order("created_at", { ascending: true });
 
   const { data: workingDays } = await supabase
     .from("working_days")
@@ -285,7 +296,7 @@ export default async function ServiciosPage() {
               <input
                 name="name"
                 type="text"
-                placeholder="Nombre del extra"
+                placeholder="Ej. Retiro de esmalte"
                 className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
               />
               <input
@@ -354,12 +365,26 @@ export default async function ServiciosPage() {
               action={addTimeSlot}
               className="flex flex-col gap-3 border-b border-slate-50 p-5 sm:flex-row"
             >
-              <input
-                name="time"
-                type="text"
-                placeholder="09:00"
-                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
-              />
+              <select
+                name="hour"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#e9cece] focus:bg-white"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].flatMap((h) => [
+                  <option key={`${h}:00`} value={`${h}:00`}>
+                    {h}:00
+                  </option>,
+                  <option key={`${h}:30`} value={`${h}:30`}>
+                    {h}:30
+                  </option>,
+                ])}
+              </select>
+              <select
+                name="period"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#e9cece] focus:bg-white"
+              >
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
               <button
                 type="submit"
                 className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"

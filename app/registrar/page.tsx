@@ -110,9 +110,6 @@ export default function RegistroPage() {
                   placeholder="••••••••"
                   className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
                 />
-                <button type="button" className="absolute top-1/2 right-4 -translate-y-1/2 text-[#846262]">
-                  👁
-                </button>
               </div>
             </div>
 
@@ -137,7 +134,7 @@ export default function RegistroPage() {
 
       <footer className="px-6 py-8 text-center">
         <p className="text-xs font-medium uppercase tracking-widest text-[#846262]">
-          © 2024 NailFlow Premium SaaS
+          © 2026 NailFlow Todos los derechos reservados.
         </p>
       </footer>
 

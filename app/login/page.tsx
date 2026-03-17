@@ -113,7 +113,7 @@ export default function LoginPage() {
 
       <footer className="w-full p-8 text-center">
         <p className="text-[10px] uppercase tracking-widest text-slate-400">
-          © 2024 NailFlow · Software para negocios de belleza
+          © 2026 NailFlow · Software para negocios de belleza
         </p>
       </footer>
     </div>

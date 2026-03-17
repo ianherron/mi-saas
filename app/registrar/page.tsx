@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "../../lib/supabase-server";
 
 async function register(formData: FormData) {
@@ -19,12 +20,17 @@ async function register(formData: FormData) {
 
   const supabase = await createClient();
 
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const origin = `${protocol}://${host}`;
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { business_name, owner_name, slug, email },
-      emailRedirectTo: "https://nailflow.app/auth/callback",
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   });
 

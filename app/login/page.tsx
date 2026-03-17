@@ -1,19 +1,20 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase-server";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; reset?: string }>;
+}) {
+  const params = await searchParams;
+
   async function login(formData: FormData) {
     "use server";
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      redirect("/login?error=Credenciales incorrectas");
-    }
-
+    if (error) redirect("/login?error=Credenciales incorrectas");
     redirect("/dashboard");
   }
 
@@ -22,11 +23,17 @@ export default function LoginPage() {
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8">
         <div className="flex items-center gap-2 text-slate-900">
           <div className="size-6 text-[#e9cece]">
-            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              fill="currentColor"
+              viewBox="0 0 48 48"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"></path>
             </svg>
           </div>
-          <h2 className="text-xl font-bold tracking-tight"><a href="">NailFlow</a></h2>
+          <h2 className="text-xl font-bold tracking-tight">
+            <a href="">NailFlow</a>
+          </h2>
         </div>
       </header>
 
@@ -43,6 +50,18 @@ export default function LoginPage() {
               Accede a tu panel para gestionar tus citas y servicios.
             </p>
           </div>
+
+          {params.error && (
+            <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+              {params.error}
+            </div>
+          )}
+
+          {params.reset && (
+            <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-600">
+              Te enviamos un correo para restablecer tu contraseña.
+            </div>
+          )}
 
           <form action={login} className="space-y-6">
             <div>
@@ -63,7 +82,6 @@ export default function LoginPage() {
                   Contraseña
                 </label>
               </div>
-
               <div className="group relative">
                 <input
                   name="password"
@@ -71,21 +89,6 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
                 />
-                <button
-                  type="button"
-                  className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#e9cece]"
-                >
-                  👁
-                </button>
-              </div>
-
-              <div className="mt-2 text-right">
-                <a
-                  href="#"
-                  className="text-xs font-medium text-slate-500 underline decoration-[#e9cece]/30 underline-offset-4 transition-all hover:text-[#e9cece]"
-                >
-                  ¿Olvidaste tu contraseña?
-                </a>
               </div>
             </div>
 
@@ -97,7 +100,19 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-10 border-t border-slate-100 pt-8 text-center">
+          {/* Sección de reset de contraseña */}
+          <div className="mt-2 text-center">
+            <a
+              href="/forgot-password"
+              className="text-xs font-medium text-slate-500 underline decoration-[#e9cece]/30 underline-offset-4 transition-all hover:text-[#e9cece]"
+            >
+              ¿Olvidaste tu contraseña?
+            </a>
+            <br />
+            <br />
+          </div>
+
+          <div className="mt-6 border-t border-slate-100 pt-6 text-center">
             <p className="text-sm text-slate-600">
               ¿No tienes cuenta?
               <a

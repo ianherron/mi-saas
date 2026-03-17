@@ -94,6 +94,66 @@ export default async function ReservarSlugPage({
     });
     console.log("resend result:", result);
   }
+
+
+  // Obtener email del negocio
+  const { data: businessData } = await supabase
+    .from("businesses")
+    .select("email")
+    .eq("id", business_id)
+    .single();
+
+  // Correo a la manicurista
+if (businessData?.email) {
+  await resend.emails.send({
+    from: "NailFlow <hola@nailflow.app>",
+    to: businessData.email,
+    subject: `Nueva cita — ${client_name}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
+        <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
+          <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Nueva reserva 💅</h1>
+          <p style="color: #846262; margin: 0 0 24px;">${client_name} ha reservado una cita.</p>
+          <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Cliente</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${client_name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${service?.name ?? "—"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${date}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Hora</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${time}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Teléfono</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${phone || "—"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Duración</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${duration} min</td>
+              </tr>
+              <tr style="border-top: 1px solid #f0eaea;">
+                <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Total</td>
+                <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${total_price?.toLocaleString() ?? "—"}</td>
+              </tr>
+            </table>
+          </div>
+          <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
+            NailFlow · El aliado perfecto para tu salón
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}
 }
 
   const { data: services } = await supabase

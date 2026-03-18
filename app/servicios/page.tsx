@@ -16,6 +16,8 @@ export default async function ServiciosPage() {
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
+    const description = formData.get("description") as string;
+
 
     // Validaciones
     if (!name?.trim() || name.trim().length < 2) return;
@@ -44,10 +46,12 @@ export default async function ServiciosPage() {
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
+    const description = formData.get("description") as string;
+
     if (!id || !name || !price || !duration) return;
     await supabase
       .from("services")
-      .update({ name, price, duration })
+      .update({ name, price, duration, description })
       .eq("id", id);
     revalidatePath("/servicios");
   }
@@ -208,34 +212,41 @@ export default async function ServiciosPage() {
                 Agregar servicio
               </h2>
             </div>
-            <form
-              action={addService}
-              className="flex flex-col gap-3 p-5 sm:flex-row"
-            >
-              <input
-                name="name"
-                type="text"
-                placeholder="Nombre del servicio"
-                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
-              />
-              <input
-                name="price"
-                type="number"
-                placeholder="Precio"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-32"
-              />
-              <input
-                name="duration"
-                type="number"
-                placeholder="Duración (min)"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-              >
-                Agregar
-              </button>
+            <form action={addService} className="flex flex-col gap-3 p-5">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="Nombre del servicio"
+                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
+                />
+                <input
+                  name="price"
+                  type="number"
+                  placeholder="Precio"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-32"
+                />
+                <input
+                  name="duration"
+                  type="number"
+                  placeholder="Duración (min)"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
+                />
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  name="description"
+                  type="text"
+                  placeholder="Descripción del servicio (opcional)"
+                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
+                />
+                <button
+                  type="submit"
+                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+                >
+                  Agregar
+                </button>
+              </div>
             </form>
           </div>
 
@@ -270,6 +281,11 @@ export default async function ServiciosPage() {
                         {service.duration} min · ₡
                         {service.price.toLocaleString()}
                       </p>
+                      {service.description && (
+                        <p className="mt-0.5 text-xs text-slate-400 italic">
+                          {service.description}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <EditServiceForm

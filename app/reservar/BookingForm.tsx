@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { getBookedSlots } from "./actions";
 
-type Service = { id: string; name: string; price: number; duration: number };
+type Service = { id: string; name: string; price: number; duration: number; description?: string; };
 type TimeSlot = { id: number; time: string };
 type Extra = { id: number; name: string; duration: number; price: number; };
 
@@ -197,12 +197,19 @@ export default function BookingForm({
                 )}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-lg font-bold">{service.name}</p>
-                    <p className="text-sm text-slate-500">
+                    <p className="font-semibold text-slate-900">
+                      {service.name}
+                    </p>
+                    {service.description && (
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        {service.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-slate-400 mt-1">
                       {service.duration} min
                     </p>
                   </div>
-                  <p className="text-xl font-bold text-[#e9cece]">
+                  <p className="text-base font-bold text-[#e9cece]">
                     ₡{service.price.toLocaleString()}
                   </p>
                 </div>

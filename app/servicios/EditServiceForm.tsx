@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-type Service = { id: string; name: string; price: number; duration: number; };
+type Service = { id: string; name: string; price: number; duration: number; description?: string; };
 
 export default function EditServiceForm({ service, updateService }: {
   service: Service;
@@ -27,6 +27,9 @@ export default function EditServiceForm({ service, updateService }: {
       <input name="price" type="number" defaultValue={service.price}
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
       <input name="duration" type="number" defaultValue={service.duration}
+        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
+      <input name="description" type="text" defaultValue={service.description ?? ""}
+        placeholder="Descripción (opcional)"
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
       <div className="flex gap-1">
         <button type="submit" className="flex-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700">

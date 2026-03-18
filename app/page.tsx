@@ -1,6 +1,6 @@
 import LegalModals from "./LegalModals";
 import AnimateOnScroll from "./AnimateOnScroll";
-
+import { Calendar, Globe, BarChart3, CheckCircle, Sparkles, Instagram, Facebook } from "lucide-react";
 
 export default function Home() {
   return (
@@ -9,7 +9,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
           <div className="group flex cursor-pointer items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9cece] text-[#2d2424]">
-              ✨
+              <Sparkles className="h-5 w-5" />
             </div>
             <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
           </div>
@@ -218,7 +218,7 @@ export default function Home() {
               <AnimateOnScroll delay={0}>
                 <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                    📆
+                    <Calendar className="h-6 w-6 text-[#2d2424]" />
                   </div>
                   <h3 className="mb-3 text-xl font-bold">
                     Gestión inteligente
@@ -233,7 +233,7 @@ export default function Home() {
               <AnimateOnScroll delay={150}>
                 <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                    🌐
+                    <Globe className="h-6 w-6 text-[#2d2424]" />
                   </div>
                   <h3 className="mb-3 text-xl font-bold">Reservas 24/7</h3>
                   <p className="text-[#846262]">
@@ -246,7 +246,7 @@ export default function Home() {
               <AnimateOnScroll delay={300}>
                 <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                    📊
+                    <BarChart3 className="h-6 w-6 text-[#2d2424]" />
                   </div>
                   <h3 className="mb-3 text-xl font-bold">Control total</h3>
                   <p className="text-[#846262]">
@@ -504,7 +504,7 @@ export default function Home() {
           <div className="relative mx-auto max-w-2xl text-center">
             <div className="mb-6 flex justify-center">
               <div className="flex size-12 items-center justify-center rounded-2xl bg-[#e9cece]/20">
-                <span className="text-2xl">💅</span>
+                <Sparkles className="h-6 w-6 text-[#e9cece]" />
               </div>
             </div>
 
@@ -582,8 +582,8 @@ export default function Home() {
           <div className="grid gap-12 lg:grid-cols-4">
             <div className="lg:col-span-1">
               <div className="mb-6 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-                  ✨
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9cece] text-[#2d2424]">
+                  <Sparkles className="h-5 w-5" />
                 </div>
                 <h2 className="text-lg font-bold">NailFlow</h2>
               </div>
@@ -645,13 +645,13 @@ export default function Home() {
                   href="https://instagram.com/nailflowapp"
                   target="_blank"
                 >
-                  📷
+                    <Instagram className="h-5 w-5 text-[#2d2424]" />
                 </a>
                 <a
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ecec] transition-all hover:bg-[#e9cece]"
                   href="#"
                 >
-                  ↗
+                    <Facebook className="h-5 w-5 text-[#2d2424]" />
                 </a>
               </div>
             </div>

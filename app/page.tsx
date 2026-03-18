@@ -11,7 +11,7 @@ export default function Home() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9cece] text-[#2d2424]">
               <Sparkles className="h-5 w-5" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
+            <h2 className="serif-heading text-xl font-bold tracking-tight">NailFlow</h2>
           </div>
 
           <nav className="hidden items-center gap-10 md:flex">
@@ -65,7 +65,7 @@ export default function Home() {
                   Nueva Experiencia Premium
                 </div>
 
-                <h1 className="text-5xl leading-[1.1] font-medium md:text-6xl lg:text-7xl">
+                <h1 className="serif-heading text-5xl leading-[1.1] font-medium md:text-6xl lg:text-7xl">
                   La forma más{" "}
                   <span className="italic text-[#cfaeae]">elegante</span> de
                   gestionar tus citas
@@ -204,7 +204,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <AnimateOnScroll>
               <div className="mb-16 text-center">
-                <h2 className="text-4xl font-medium md:text-5xl">
+                <h2 className="serif-heading text-4xl font-medium md:text-5xl">
                   Diseñado para la excelencia
                 </h2>
                 <p className="mt-4 text-[#846262]">
@@ -220,7 +220,7 @@ export default function Home() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
                     <Calendar className="h-6 w-6 text-[#2d2424]" />
                   </div>
-                  <h3 className="mb-3 text-xl font-bold">
+                  <h3 className="serif-heading mb-3 text-xl font-bold">
                     Gestión inteligente
                   </h3>
                   <p className="text-[#846262]">
@@ -235,7 +235,7 @@ export default function Home() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
                     <Globe className="h-6 w-6 text-[#2d2424]" />
                   </div>
-                  <h3 className="mb-3 text-xl font-bold">Reservas 24/7</h3>
+                  <h3 className="serif-heading mb-3 text-xl font-bold">Reservas 24/7</h3>
                   <p className="text-[#846262]">
                     Tus clientas pueden reservar en cualquier momento desde su
                     móvil. Menos WhatsApps, más citas confirmadas.
@@ -248,7 +248,7 @@ export default function Home() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
                     <BarChart3 className="h-6 w-6 text-[#2d2424]" />
                   </div>
-                  <h3 className="mb-3 text-xl font-bold">Control total</h3>
+                  <h3 className="serif-heading mb-3 text-xl font-bold">Control total</h3>
                   <p className="text-[#846262]">
                     Define precios exactos por servicio, visualiza tus ingresos
                     y analiza tu productividad con reportes elegantes.
@@ -264,7 +264,7 @@ export default function Home() {
             <div className="flex flex-col items-center gap-16 lg:flex-row">
               <div className="lg:w-1/2">
                 <AnimateOnScroll>
-                  <h2 className="mb-12 text-4xl font-medium md:text-5xl">
+                  <h2 className="serif-heading mb-12 text-4xl font-medium md:text-5xl">
                     Tu salón digital en 3 pasos
                   </h2>
                 </AnimateOnScroll>
@@ -356,7 +356,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col items-center gap-16 rounded-[2.5rem] border border-[#e9cece]/20 bg-[#fbf9f9] p-8 shadow-inner lg:flex-row lg:p-16">
               <div className="lg:w-2/5">
-                <h2 className="mb-6 text-4xl font-medium">
+                <h2 className="serif-heading mb-6 text-4xl font-medium">
                   Tu negocio, a tu ritmo
                 </h2>
                 <p className="mb-8 text-lg leading-relaxed text-[#846262]">
@@ -470,7 +470,7 @@ export default function Home() {
         <section className="px-6 py-24 lg:px-12">
           <div className="mx-auto max-w-4xl text-center">
             <AnimateOnScroll>
-              <h2 className="mb-8 text-4xl leading-tight font-medium md:text-6xl">
+              <h2 className="serif-heading mb-8 text-4xl leading-tight font-medium md:text-6xl">
                 ¿Lista para elevar tu salón al siguiente nivel?
               </h2>
               <p className="mx-auto mb-12 max-w-2xl text-xl text-[#846262]">
@@ -585,7 +585,7 @@ export default function Home() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9cece] text-[#2d2424]">
                   <Sparkles className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-bold">NailFlow</h2>
+                <h2 className="serif-heading text-lg font-bold">NailFlow</h2>
               </div>
               <p className="text-sm leading-relaxed text-[#846262]">
                 La plataforma de gestión definitiva para el sector del nail art

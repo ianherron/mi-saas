@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "../../lib/supabase-server";
+import { Sparkles } from "lucide-react";
 
 async function register(formData: FormData) {
   "use server";
@@ -79,11 +80,18 @@ export default async function RegistroPage({
     <div className="relative flex min-h-screen flex-col bg-[#fbf9f9] font-sans text-slate-900">
       <header className="flex w-full items-center justify-between bg-transparent px-6 py-6 lg:px-20">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center text-[#e9cece]">✨</div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">NailFlow</h1>
+          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            NailFlow
+          </h1>
         </div>
         <div className="hidden sm:block">
-          <a className="text-sm font-medium text-[#846262] transition-colors hover:text-slate-900" href="#">
+          <a
+            className="text-sm font-medium text-[#846262] transition-colors hover:text-slate-900"
+            href="#"
+          >
             Ayuda
           </a>
         </div>
@@ -92,7 +100,9 @@ export default async function RegistroPage({
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-[520px] rounded-xl border border-[#f0eaea] bg-white p-8 shadow-sm md:p-12">
           <div className="mb-10 text-center">
-            <h2 className="mb-3 text-3xl font-bold tracking-tight">Crear cuenta</h2>
+            <h2 className="serif-heading mb-3 text-3xl font-bold tracking-tight">
+              Crear cuenta
+            </h2>
             <p className="mx-auto max-w-sm text-sm text-[#846262]">
               Crea tu cuenta y comienza a gestionar tus citas en NailFlow.
             </p>
@@ -166,7 +176,10 @@ export default async function RegistroPage({
           <div className="mt-8 text-center">
             <p className="text-sm text-[#846262]">
               ¿Ya tienes cuenta?
-              <a className="ml-1 font-bold text-slate-900 underline-offset-4 hover:underline" href="/login">
+              <a
+                className="ml-1 font-bold text-slate-900 underline-offset-4 hover:underline"
+                href="/login"
+              >
                 Iniciar sesión
               </a>
             </p>

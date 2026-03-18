@@ -155,7 +155,7 @@ export default function BookingForm({
       <input type="hidden" name="total_price" value={totalPrice} />
 
       <div className="flex flex-col gap-2 px-4">
-        <h2 className="text-4xl font-black tracking-tight text-slate-900">
+        <h2 className="serif-heading text-4xl font-black tracking-tight text-slate-900">
           Reserva tu cita
         </h2>
         <p className="text-slate-500">
@@ -380,7 +380,7 @@ export default function BookingForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e9cece] py-5 text-lg font-bold text-slate-900 shadow-lg shadow-[#e9cece]/20 transition-all hover:bg-[#e0c2c2] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="serif-heading flex w-full items-center justify-center gap-2 rounded-xl bg-[#e9cece] py-5 text-lg font-bold text-slate-900 shadow-lg shadow-[#e9cece]/20 transition-all hover:bg-[#e0c2c2] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {submitting ? "Confirmando..." : "Confirmar cita →"}
         </button>

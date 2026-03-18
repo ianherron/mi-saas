@@ -16,6 +16,13 @@ export default async function ServiciosPage() {
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
+
+    // Validaciones
+    if (!name?.trim() || name.trim().length < 2) return;
+    if (isNaN(price) || price <= 0 || price > 10000000) return;
+    if (isNaN(duration) || duration <= 0 || duration > 480) return;
+    if (name.length > 100) return;
+
     if (!name || !price || !duration) return;
     await supabase
       .from("services")

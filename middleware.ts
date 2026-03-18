@@ -1,7 +1,29 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+});
 
 export async function middleware(request: NextRequest) {
+  // Rate limiting solo en la ruta de reservas
+  if (request.nextUrl.pathname.startsWith("/reservar/")) {
+    const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+    const { success } = await ratelimit.limit(ip);
+
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Demasiadas solicitudes. Intenta en un momento." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  }
+
+  // Auth middleware existente
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -44,5 +66,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/citas/:path*", "/servicios/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/citas/:path*", "/servicios/:path*", "/login", "/reservar/:path*"],
 };

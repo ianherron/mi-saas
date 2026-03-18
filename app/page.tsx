@@ -1,3 +1,6 @@
+import LegalModals from "./LegalModals";
+
+
 export default function Home() {
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#fbf9f9] text-[#2d2424]">
@@ -80,10 +83,6 @@ export default function Home() {
                   >
                     Comenzar ahora
                   </a>
-                </div>
-
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="flex -space-x-3"></div>
                 </div>
               </div>
 
@@ -317,7 +316,7 @@ export default function Home() {
                 </div>
 
                 <div className="relative mt-4 max-w-[240px] rounded-2xl bg-white p-6 shadow-xl lg:absolute lg:-bottom-8 lg:-left-8">
-                    <div className="mb-2 flex items-center gap-2">
+                  <div className="mb-2 flex items-center gap-2">
                     <span className="text-green-500">✔</span>
                     <p className="text-sm font-bold">¡Nueva reserva!</p>
                   </div>
@@ -368,9 +367,12 @@ export default function Home() {
                   </li>
                 </ul>
 
-                <button className="w-full rounded-xl bg-[#e9cece] px-10 py-4 text-base font-bold text-[#2d2424] shadow-xl shadow-[#e9cece]/20 transition-all hover:scale-105 sm:w-auto">
+                <a
+                  href="#beneficios"
+                  className="inline-block w-full rounded-xl bg-[#e9cece] px-10 py-4 text-center text-base font-bold text-[#2d2424] shadow-xl shadow-[#e9cece]/20 transition-all hover:scale-105 sm:w-auto"
+                >
                   Explorar funciones
-                </button>
+                </a>
               </div>
 
               <div className="w-full lg:w-3/5">
@@ -578,7 +580,7 @@ export default function Home() {
                 <li>
                   <a
                     className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
+                    href="#beneficios"
                   >
                     Características
                   </a>
@@ -586,7 +588,7 @@ export default function Home() {
                 <li>
                   <a
                     className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
+                    href="#precios"
                   >
                     Precios
                   </a>
@@ -594,17 +596,9 @@ export default function Home() {
                 <li>
                   <a
                     className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
+                    href="#como-funciona"
                   >
-                    App móvil
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
-                  >
-                    Integraciones
+                    Cómo funciona
                   </a>
                 </li>
               </ul>
@@ -613,30 +607,6 @@ export default function Home() {
             <div>
               <h4 className="mb-6 font-bold">Recursos</h4>
               <ul className="space-y-4 text-sm text-[#846262]">
-                <li>
-                  <a
-                    className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
-                  >
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
-                  >
-                    Guía para salones
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
-                  >
-                    Centro de ayuda
-                  </a>
-                </li>
                 <li>
                   <a
                     className="transition-colors hover:text-[#cfaeae]"
@@ -653,7 +623,8 @@ export default function Home() {
               <div className="flex gap-4">
                 <a
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ecec] transition-all hover:bg-[#e9cece]"
-                  href="#"
+                  href="https://instagram.com/nailflowapp"
+                  target="_blank"
                 >
                   📷
                 </a>
@@ -668,18 +639,8 @@ export default function Home() {
           </div>
 
           <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[#e9cece]/10 pt-8 text-xs text-[#846262] md:flex-row">
-            <p>© 2024 NailFlow. Todos los derechos reservados.</p>
-            <div className="flex gap-8">
-              <a className="transition-colors hover:text-[#cfaeae]" href="#">
-                Términos y condiciones
-              </a>
-              <a className="transition-colors hover:text-[#cfaeae]" href="#">
-                Privacidad
-              </a>
-              <a className="transition-colors hover:text-[#cfaeae]" href="#">
-                Cookies
-              </a>
-            </div>
+            <p>© 2026 NailFlow. Todos los derechos reservados.</p>
+            <LegalModals />
           </div>
         </div>
       </footer>

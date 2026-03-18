@@ -1,4 +1,5 @@
 import LegalModals from "./LegalModals";
+import AnimateOnScroll from "./AnimateOnScroll";
 
 
 export default function Home() {
@@ -201,49 +202,59 @@ export default function Home() {
           id="beneficios"
         >
           <div className="mx-auto max-w-7xl">
-            <div className="mb-16 text-center">
-              <h2 className="text-4xl font-medium md:text-5xl">
-                Diseñado para la excelencia
-              </h2>
-              <p className="mt-4 text-[#846262]">
-                Herramientas que transforman la gestión de tu negocio en una
-                experiencia premium.
-              </p>
-            </div>
+            <AnimateOnScroll>
+              <div className="mb-16 text-center">
+                <h2 className="text-4xl font-medium md:text-5xl">
+                  Diseñado para la excelencia
+                </h2>
+                <p className="mt-4 text-[#846262]">
+                  Herramientas que transforman la gestión de tu negocio en una
+                  experiencia premium.
+                </p>
+              </div>
+            </AnimateOnScroll>
 
             <div className="grid gap-8 md:grid-cols-3">
-              <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                  📆
+              <AnimateOnScroll delay={0}>
+                <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
+                    📆
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold">
+                    Gestión inteligente
+                  </h3>
+                  <p className="text-[#846262]">
+                    Organiza tu agenda de manera fluida, evita solapamientos y
+                    gestiona tiempos de descanso automáticamente.
+                  </p>
                 </div>
-                <h3 className="mb-3 text-xl font-bold">Gestión inteligente</h3>
-                <p className="text-[#846262]">
-                  Organiza tu agenda de manera fluida, evita solapamientos y
-                  gestiona tiempos de descanso automáticamente.
-                </p>
-              </div>
+              </AnimateOnScroll>
 
-              <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                  🌐
+              <AnimateOnScroll delay={150}>
+                <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
+                    🌐
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold">Reservas 24/7</h3>
+                  <p className="text-[#846262]">
+                    Tus clientas pueden reservar en cualquier momento desde su
+                    móvil. Menos WhatsApps, más citas confirmadas.
+                  </p>
                 </div>
-                <h3 className="mb-3 text-xl font-bold">Reservas 24/7</h3>
-                <p className="text-[#846262]">
-                  Tus clientas pueden reservar en cualquier momento desde su
-                  móvil. Menos WhatsApps, más citas confirmadas.
-                </p>
-              </div>
+              </AnimateOnScroll>
 
-              <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
-                  📊
+              <AnimateOnScroll delay={300}>
+                <div className="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
+                    📊
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold">Control total</h3>
+                  <p className="text-[#846262]">
+                    Define precios exactos por servicio, visualiza tus ingresos
+                    y analiza tu productividad con reportes elegantes.
+                  </p>
                 </div>
-                <h3 className="mb-3 text-xl font-bold">Control total</h3>
-                <p className="text-[#846262]">
-                  Define precios exactos por servicio, visualiza tus ingresos y
-                  analiza tu productividad con reportes elegantes.
-                </p>
-              </div>
+              </AnimateOnScroll>
             </div>
           </div>
         </section>
@@ -252,55 +263,64 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col items-center gap-16 lg:flex-row">
               <div className="lg:w-1/2">
-                <h2 className="mb-12 text-4xl font-medium md:text-5xl">
-                  Tu salón digital en 3 pasos
-                </h2>
+                <AnimateOnScroll>
+                  <h2 className="mb-12 text-4xl font-medium md:text-5xl">
+                    Tu salón digital en 3 pasos
+                  </h2>
+                </AnimateOnScroll>
 
                 <div className="space-y-12">
-                  <div className="flex gap-6">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
-                      1
+                  <AnimateOnScroll delay={0}>
+                    <div className="flex gap-6">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
+                        1
+                      </div>
+                      <div>
+                        <h4 className="mb-2 text-xl font-bold">
+                          Configura tus servicios
+                        </h4>
+                        <p className="text-[#846262]">
+                          Añade tus tratamientos, define su duración, precio y
+                          personaliza los días que estarás disponible.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="mb-2 text-xl font-bold">
-                        Configura tus servicios
-                      </h4>
-                      <p className="text-[#846262]">
-                        Añade tus tratamientos, define su duración, precio y
-                        personaliza los días que estarás disponible.
-                      </p>
-                    </div>
-                  </div>
+                  </AnimateOnScroll>
 
-                  <div className="flex gap-6">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
-                      2
+                  <AnimateOnScroll delay={150}>
+                    <div className="flex gap-6">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
+                        2
+                      </div>
+                      <div>
+                        <h4 className="mb-2 text-xl font-bold">
+                          Comparte tu enlace
+                        </h4>
+                        <p className="text-[#846262]">
+                          Incluye tu link personalizado en tu biografía de
+                          Instagram, TikTok o envíalo por WhatsApp a tus
+                          clientas.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="mb-2 text-xl font-bold">
-                        Comparte tu enlace
-                      </h4>
-                      <p className="text-[#846262]">
-                        Incluye tu link personalizado en tu biografía de
-                        Instagram, TikTok o envíalo por WhatsApp a tus clientas.
-                      </p>
-                    </div>
-                  </div>
+                  </AnimateOnScroll>
 
-                  <div className="flex gap-6">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
-                      3
+                  <AnimateOnScroll delay={300}>
+                    <div className="flex gap-6">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-bold text-[#2d2424]">
+                        3
+                      </div>
+                      <div>
+                        <h4 className="mb-2 text-xl font-bold">
+                          Recibe citas automáticamente
+                        </h4>
+                        <p className="text-[#846262]">
+                          Las citas aparecerán en tu calendario y ambas
+                          recibirán notificaciones de confirmación al instante.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="mb-2 text-xl font-bold">
-                        Recibe citas automáticamente
-                      </h4>
-                      <p className="text-[#846262]">
-                        Las citas aparecerán en tu calendario y ambas recibirán
-                        notificaciones de confirmación al instante.
-                      </p>
-                    </div>
-                  </div>
+                  </AnimateOnScroll>
                 </div>
               </div>
 
@@ -314,7 +334,6 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-[#e9cece]/40 to-transparent"></div>
                 </div>
-
                 <div className="relative mt-4 max-w-[240px] rounded-2xl bg-white p-6 shadow-xl lg:absolute lg:-bottom-8 lg:-left-8">
                   <div className="mb-2 flex items-center gap-2">
                     <span className="text-green-500">✔</span>
@@ -450,32 +469,32 @@ export default function Home() {
 
         <section className="px-6 py-24 lg:px-12">
           <div className="mx-auto max-w-4xl text-center">
-            <h2 className="mb-8 text-4xl leading-tight font-medium md:text-6xl">
-              ¿Lista para elevar tu salón al siguiente nivel?
-            </h2>
-            <p className="mx-auto mb-12 max-w-2xl text-xl text-[#846262]">
-              Únete a cientos de profesionales que ya han digitalizado su pasión
-              con elegancia.
-            </p>
-
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="/registrar"
-                className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
-              >
-                Empezar gratis hoy
-              </a>
-              <a
-                href="/login"
-                className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10"
-              >
-                Iniciar sesión
-              </a>
-            </div>
-
-            <p className="mt-8 text-sm text-[#846262]">
-              Prueba gratuita de 14 días. No se requiere tarjeta de crédito.
-            </p>
+            <AnimateOnScroll>
+              <h2 className="mb-8 text-4xl leading-tight font-medium md:text-6xl">
+                ¿Lista para elevar tu salón al siguiente nivel?
+              </h2>
+              <p className="mx-auto mb-12 max-w-2xl text-xl text-[#846262]">
+                Únete a cientos de profesionales que ya han digitalizado su
+                pasión con elegancia.
+              </p>
+              <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                <a
+                  href="/registrar"
+                  className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
+                >
+                  Empezar gratis hoy
+                </a>
+                <a
+                  href="/login"
+                  className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10"
+                >
+                  Iniciar sesión
+                </a>
+              </div>
+              <p className="mt-8 text-sm text-[#846262]">
+                Prueba gratuita de 14 días. No se requiere tarjeta de crédito.
+              </p>
+            </AnimateOnScroll>
           </div>
         </section>
         <section className="relative overflow-hidden bg-[#2d2424] px-6 py-24 lg:px-12">

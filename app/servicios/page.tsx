@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
+import GalleryManager from "./GalleryManager";
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -130,6 +131,19 @@ export default async function ServiciosPage() {
     revalidatePath("/servicios");
   }
 
+  async function deleteGalleryImage(id: number) {
+    "use server";
+    const supabase = await createClient();
+    await supabase.from("gallery").delete().eq("id", id);
+    revalidatePath("/servicios");
+  }
+
+  const { data: galleryImages } = await supabase
+    .from("gallery")
+    .select("*")
+    .eq("business_id", business.id)
+    .order("created_at", { ascending: false });
+
   const { data: services, error } = await supabase
     .from("services")
     .select("*")
@@ -218,7 +232,9 @@ export default async function ServiciosPage() {
           {/* Add service form */}
           <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
             <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">Agregar servicio</h2>
+              <h2 className="text-sm font-semibold text-slate-900">
+                Agregar servicio
+              </h2>
             </div>
             <AddServiceForm addService={addService} />
           </div>
@@ -457,6 +473,21 @@ export default async function ServiciosPage() {
                 Guardar días
               </button>
             </form>
+          </div>
+          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Galería de trabajos
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Muestra tus mejores trabajos a las clientas.
+              </p>
+            </div>
+            <GalleryManager
+              businessId={business.id}
+              images={galleryImages ?? []}
+              deleteImage={deleteGalleryImage}
+            />
           </div>
         </main>
       </div>

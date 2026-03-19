@@ -5,6 +5,8 @@ import { getBookedSlots } from "./actions";
 type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; };
 type TimeSlot = { id: number; time: string };
 type Extra = { id: number; name: string; duration: number; price: number; };
+type GalleryImage = { image_url: string };
+
 
 export default function BookingForm({
   services,
@@ -12,6 +14,7 @@ export default function BookingForm({
   extras,
   businessId,
   workingDays,
+  gallery,
   createAppointment,
 }: {
   services: Service[];
@@ -19,6 +22,7 @@ export default function BookingForm({
   extras: Extra[];
   businessId: string;
   workingDays: number[];
+  gallery: GalleryImage[];
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
   const [selectedServiceId, setSelectedServiceId] = useState(
@@ -405,6 +409,25 @@ export default function BookingForm({
           Al confirmar, aceptas nuestros términos y condiciones de reserva.
         </p>
       </div>
+      {gallery.length > 0 && (
+  <div className="mb-8 overflow-hidden rounded-2xl">
+    {/* Fila 1 — izquierda */}
+    <div className="flex gap-3 animate-marquee-left mb-3">
+      {[...gallery.slice(0, Math.ceil(gallery.length / 2)), ...gallery.slice(0, Math.ceil(gallery.length / 2))].map((img, i) => (
+        <img key={i} src={img.image_url} alt="Trabajo"
+          className="h-32 w-32 shrink-0 rounded-xl object-cover" />
+      ))}
+    </div>
+    {/* Fila 2 — derecha */}
+    <div className="flex gap-3 animate-marquee-right">
+      {[...gallery.slice(Math.ceil(gallery.length / 2)), ...gallery.slice(Math.ceil(gallery.length / 2))].map((img, i) => (
+        <img key={i} src={img.image_url} alt="Trabajo"
+          className="h-32 w-32 shrink-0 rounded-xl object-cover" />
+      ))}
+    </div>
+  </div>
+)}
+
     </form>
   );
 }

@@ -166,6 +166,12 @@ export default async function ReservarSlugPage({
     }
   }
 
+  const { data: galleryImages } = await supabase
+  .from("gallery")
+  .select("image_url")
+  .eq("business_id", business.id)
+  .order("created_at", { ascending: false });
+
   const { data: services } = await supabase
     .from("services")
     .select("*")
@@ -216,6 +222,7 @@ export default async function ReservarSlugPage({
               extras={extras ?? []}
               businessId={business.id}
               workingDays={workingDays}
+              gallery={galleryImages ?? []}
               createAppointment={createAppointment}
             />
           )}

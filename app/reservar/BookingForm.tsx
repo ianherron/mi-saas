@@ -201,7 +201,7 @@ export default function BookingForm({
                   <img
                     src={service.image_url}
                     alt={service.name}
-                    className="h-24 w-full rounded-lg object-cover"
+                    className="aspect-video w-full rounded-lg object-cover"
                   />
                 ) : (
                   <div className="h-32 w-full rounded-lg bg-[#e9cece]/10" />

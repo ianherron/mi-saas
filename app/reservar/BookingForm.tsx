@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { getBookedSlots } from "./actions";
 
-type Service = { id: string; name: string; price: number; duration: number; description?: string; };
+type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; };
 type TimeSlot = { id: number; time: string };
 type Extra = { id: number; name: string; duration: number; price: number; };
 
@@ -195,21 +195,31 @@ export default function BookingForm({
                 {isSelected && (
                   <div className="absolute top-4 right-4 text-[#e9cece]">✓</div>
                 )}
+
+                {/* Imagen del servicio */}
+                {service.image_url ? (
+                  <img
+                    src={service.image_url}
+                    alt={service.name}
+                    className="h-24 w-full rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="h-32 w-full rounded-lg bg-[#e9cece]/10" />
+                )}
+
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="font-semibold text-slate-900">
-                      {service.name}
-                    </p>
+                    <p className="text-lg font-bold">{service.name}</p>
                     {service.description && (
-                      <p className="mt-0.5 text-xs text-slate-400">
+                      <p className="text-xs text-slate-400">
                         {service.description}
                       </p>
                     )}
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-sm text-slate-500">
                       {service.duration} min
                     </p>
                   </div>
-                  <p className="text-base font-bold text-[#e9cece]">
+                  <p className="text-xl font-bold text-[#e9cece]">
                     ₡{service.price.toLocaleString()}
                   </p>
                 </div>

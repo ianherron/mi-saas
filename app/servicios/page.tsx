@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
+import AddServiceForm from "./AddServiceForm";
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -17,6 +18,8 @@ export default async function ServiciosPage() {
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     const description = formData.get("description") as string;
+    const image_url = formData.get("image_url") as string;
+
 
 
     // Validaciones
@@ -26,9 +29,16 @@ export default async function ServiciosPage() {
     if (name.length > 100) return;
 
     if (!name || !price || !duration) return;
-    await supabase
-      .from("services")
-      .insert({ name, price, duration, business_id: business.id });
+  await supabase
+    .from("services")
+    .insert({
+      name,
+      price,
+      duration,
+      description,
+      image_url,
+      business_id: business.id,
+    });
     revalidatePath("/servicios");
   }
 
@@ -208,48 +218,10 @@ export default async function ServiciosPage() {
           {/* Add service form */}
           <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
             <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Agregar servicio
-              </h2>
+              <h2 className="text-sm font-semibold text-slate-900">Agregar servicio</h2>
             </div>
-            <form action={addService} className="flex flex-col gap-3 p-5">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="Nombre del servicio"
-                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
-                />
-                <input
-                  name="price"
-                  type="number"
-                  placeholder="Precio"
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-32"
-                />
-                <input
-                  name="duration"
-                  type="number"
-                  placeholder="Duración (min)"
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
-                />
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <input
-                  name="description"
-                  type="text"
-                  placeholder="Descripción del servicio (opcional)"
-                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
-                />
-                <button
-                  type="submit"
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-                >
-                  Agregar
-                </button>
-              </div>
-            </form>
+            <AddServiceForm addService={addService} />
           </div>
-
           {/* Services list */}
           {error && (
             <p className="mb-4 text-sm text-red-500">

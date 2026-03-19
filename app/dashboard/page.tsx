@@ -2,6 +2,7 @@ import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
 import { Sparkles } from "lucide-react";
+import { LayoutDashboard, Clock, Images, Scissors } from "lucide-react";
 
 
 export default async function DashboardPage() {
@@ -44,7 +45,9 @@ export default async function DashboardPage() {
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">
+            NailFlow
+          </span>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-3">
@@ -52,22 +55,28 @@ export default async function DashboardPage() {
             href="/dashboard"
             className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
           >
-            <span className="text-base">▦</span>
+            <LayoutDashboard className="h-4 w-4" />
             Dashboard
           </a>
           <a
             href="/citas"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span className="text-base">◷</span>
+            <Clock className="h-4 w-4" />
             Citas
           </a>
           <a
             href="/servicios"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span className="text-base">✦</span>
+            <Scissors className="h-4 w-4" />
             Servicios
+          </a>
+          <a
+            href="/galeria"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span><Images className="h-4 w-4" /></span> Galería
           </a>
         </nav>
 

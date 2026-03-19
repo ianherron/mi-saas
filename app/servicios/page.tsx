@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
-import GalleryManager from "./GalleryManager";
+import { LayoutDashboard, Clock, Sparkles, Images, Scissors } from "lucide-react";
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -131,19 +131,6 @@ export default async function ServiciosPage() {
     revalidatePath("/servicios");
   }
 
-  async function deleteGalleryImage(id: number) {
-    "use server";
-    const supabase = await createClient();
-    await supabase.from("gallery").delete().eq("id", id);
-    revalidatePath("/servicios");
-  }
-
-  const { data: galleryImages } = await supabase
-    .from("gallery")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("created_at", { ascending: false });
-
   const { data: services, error } = await supabase
     .from("services")
     .select("*")
@@ -175,7 +162,7 @@ export default async function ServiciosPage() {
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
           <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
-            ✦
+            <Sparkles className="h-4 w-4" /> 
           </div>
           <span className="text-sm font-semibold tracking-tight">NailFlow</span>
         </div>
@@ -184,19 +171,25 @@ export default async function ServiciosPage() {
             href="/dashboard"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span>▦</span> Dashboard
+            <LayoutDashboard className="h-4 w-4" /> Dashboard
           </a>
           <a
             href="/citas"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span>◷</span> Citas
+            <Clock className="h-4 w-4" /> Citas
           </a>
           <a
             href="/servicios"
             className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
           >
-            <span>✦</span> Servicios
+            <Scissors className="h-4 w-4" /> Servicios
+          </a>
+          <a
+            href="/galeria"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span><Images className="h-4 w-4" /></span> Galería
           </a>
         </nav>
       </aside>
@@ -473,21 +466,6 @@ export default async function ServiciosPage() {
                 Guardar días
               </button>
             </form>
-          </div>
-          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Galería de trabajos
-              </h2>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Muestra tus mejores trabajos a las clientas.
-              </p>
-            </div>
-            <GalleryManager
-              businessId={business.id}
-              images={galleryImages ?? []}
-              deleteImage={deleteGalleryImage}
-            />
           </div>
         </main>
       </div>

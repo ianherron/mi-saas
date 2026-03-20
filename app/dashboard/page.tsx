@@ -1,7 +1,7 @@
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
-import { Sparkles } from "lucide-react";
+import { CreditCard, Sparkles } from "lucide-react";
 import { LayoutDashboard, Clock, Images, Scissors } from "lucide-react";
 import CurrencySelector from "./CurrencySelector";
 
@@ -91,6 +91,12 @@ export default async function DashboardPage() {
               <Images className="h-4 w-4" />
             </span>{" "}
             Galería
+          </a>
+          <a
+            href="/pagos"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <CreditCard className="h-4 w-4" /> Pagos
           </a>
         </nav>
 

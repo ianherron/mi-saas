@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors } from "lucide-react";
+import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard } from "lucide-react";
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -162,7 +162,7 @@ export default async function ServiciosPage() {
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
           <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
-            <Sparkles className="h-4 w-4" /> 
+            <Sparkles className="h-4 w-4" />
           </div>
           <span className="text-sm font-semibold tracking-tight">NailFlow</span>
         </div>
@@ -189,7 +189,16 @@ export default async function ServiciosPage() {
             href="/galeria"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span><Images className="h-4 w-4" /></span> Galería
+            <span>
+              <Images className="h-4 w-4" />
+            </span>{" "}
+            Galería
+          </a>
+          <a
+            href="/pagos"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <CreditCard className="h-4 w-4" /> Pagos
           </a>
         </nav>
       </aside>

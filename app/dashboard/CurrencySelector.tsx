@@ -45,11 +45,11 @@ export default function CurrencySelector({
       <select
         value={currency}
         onChange={handleChange}
-        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#e9cece]"
+        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 outline-none cursor-pointer hover:border-[#e9cece] focus:border-[#e9cece] transition-colors"
       >
         {currencies.map((c) => (
           <option key={c.code} value={c.code}>
-            {c.symbol} — {c.name}
+            {c.symbol} {c.code}
           </option>
         ))}
       </select>

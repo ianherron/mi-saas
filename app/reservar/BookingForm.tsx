@@ -490,7 +490,7 @@ export default function BookingForm({
           </div>
 
           {/* Right Column - Summary */}
-          <div className="lg:w-96">
+          <div className="hidden lg:block lg:w-96">
             <div className="sticky top-8 space-y-6">
               <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl shadow-[#2d2424]/5">
                 <div className="bg-[#f4ecec]/50 px-6 py-4">

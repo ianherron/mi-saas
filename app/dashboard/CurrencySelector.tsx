@@ -53,7 +53,7 @@ export default function CurrencySelector({
           </option>
         ))}
       </select>
-      {saved && <span className="text-xs text-green-500">¡Guardado!</span>}
+      {saved && <span className=" animate-fade-in text-xs text-green-500">¡Guardado!</span>}
     </div>
   );
 }

@@ -57,6 +57,7 @@ export default async function ReservarSlugPage({
       phone,
       email,
       business_id,
+      total_price
     });
 
     // Enviar correo si hay email

@@ -35,6 +35,16 @@ export default async function DashboardPage() {
     .order("time", { ascending: true })
     .limit(5);
 
+  const { data: todayAppointments } = await supabase
+  .from("appointments")
+  .select("total_price")
+  .eq("business_id", business.id)
+  .eq("date", today);
+
+  const todayRevenue = todayAppointments?.reduce(
+    (acc, a) => acc + (a.total_price ?? 0), 0
+  ) ?? 0;
+
   const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
 
   return (
@@ -76,7 +86,10 @@ export default async function DashboardPage() {
             href="/galeria"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span><Images className="h-4 w-4" /></span> Galería
+            <span>
+              <Images className="h-4 w-4" />
+            </span>{" "}
+            Galería
           </a>
         </nav>
 
@@ -140,6 +153,14 @@ export default async function DashboardPage() {
               </p>
               <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {servicesCount ?? 0}
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-100 bg-white p-5 col-span-2 lg:col-span-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                Ingresos hoy
+              </p>
+              <p className="mt-2 text-3xl font-semibold text-[#e9cece]">
+                ₡{todayRevenue.toLocaleString()}
               </p>
             </div>
           </div>

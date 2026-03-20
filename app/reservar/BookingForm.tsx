@@ -352,7 +352,7 @@ export default function BookingForm({
                 number={extras.length > 0 ? 3 : 2}
                 title="Fecha y hora"
               />
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="mt-8 grid gap-4">
                 <div>
                   <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
                     Fecha

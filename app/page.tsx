@@ -11,7 +11,9 @@ export default function Home() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9cece] text-[#2d2424]">
               <Sparkles className="h-5 w-5" />
             </div>
-            <h2 className="serif-heading text-xl font-bold tracking-tight">NailFlow</h2>
+            <h2 className="serif-heading text-xl font-bold tracking-tight">
+              NailFlow
+            </h2>
           </div>
 
           <nav className="hidden items-center gap-10 md:flex">
@@ -235,7 +237,9 @@ export default function Home() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
                     <Globe className="h-6 w-6 text-[#2d2424]" />
                   </div>
-                  <h3 className="serif-heading mb-3 text-xl font-bold">Reservas 24/7</h3>
+                  <h3 className="serif-heading mb-3 text-xl font-bold">
+                    Reservas 24/7
+                  </h3>
                   <p className="text-[#846262]">
                     Tus clientas pueden reservar en cualquier momento desde su
                     móvil. Menos WhatsApps, más citas confirmadas.
@@ -248,7 +252,9 @@ export default function Home() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9cece]/20 transition-colors group-hover:bg-[#e9cece]">
                     <BarChart3 className="h-6 w-6 text-[#2d2424]" />
                   </div>
-                  <h3 className="serif-heading mb-3 text-xl font-bold">Control total</h3>
+                  <h3 className="serif-heading mb-3 text-xl font-bold">
+                    Control total
+                  </h3>
                   <p className="text-[#846262]">
                     Define precios exactos por servicio, visualiza tus ingresos
                     y analiza tu productividad con reportes elegantes.
@@ -468,32 +474,89 @@ export default function Home() {
         </section>
 
         <section className="px-6 py-24 lg:px-12">
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto max-w-6xl">
             <AnimateOnScroll>
-              <h2 className="serif-heading mb-8 text-4xl leading-tight font-medium md:text-6xl">
-                ¿Lista para elevar tu salón al siguiente nivel?
-              </h2>
-              <p className="mx-auto mb-12 max-w-2xl text-xl text-[#846262]">
-                Únete a cientos de profesionales que ya han digitalizado su
-                pasión con elegancia.
-              </p>
-              <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                <a
-                  href="/registrar"
-                  className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
-                >
-                  Empezar gratis hoy
-                </a>
-                <a
-                  href="/login"
-                  className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10"
-                >
-                  Iniciar sesión
-                </a>
+              <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-center">
+                {/* Left — Texto */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h2 className="serif-heading mb-6 text-4xl leading-tight font-medium md:text-5xl text-[#2d2424]">
+                    ¿Lista para elevar tu salón al siguiente nivel?
+                  </h2>
+                  <p className="mb-8 max-w-lg text-xl text-[#846262]">
+                    Únete a profesionales que ya han digitalizado su pasión con
+                    elegancia.
+                  </p>
+                  <div className="flex flex-col gap-4 sm:flex-row lg:justify-start justify-center">
+                    <a
+                      href="/registrar"
+                      className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105 text-center"
+                    >
+                      Empezar gratis hoy
+                    </a>
+                    <a
+                      href="/login"
+                      className="rounded-xl border-2 border-[#e9cece]/40 px-10 py-5 text-lg font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10 text-center"
+                    >
+                      Iniciar sesión
+                    </a>
+                  </div>
+                  <p className="mt-6 text-sm text-[#846262]">
+                    Prueba gratuita de 14 días. No se requiere tarjeta de
+                    crédito.
+                  </p>
+                </div>
+
+                {/* Right — Card de precios */}
+                <div className="w-full max-w-sm">
+                  <div className="rounded-3xl border border-[#e9cece]/30 bg-white p-8 shadow-2xl shadow-[#e9cece]/20 transition-all hover:-translate-y-2 hover:shadow-[#e9cece]/30">
+                    <div className="mb-6">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-[#e9cece]/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[#846262]">
+                        ✦ Plan único
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <p className="serif-heading text-5xl font-bold text-[#2d2424]">
+                        ₡3,500
+                      </p>
+                      <p className="mt-1 text-sm text-[#846262]">por mes</p>
+                    </div>
+
+                    <ul className="mb-8 space-y-3">
+                      {[
+                        "Página de reservas personalizada",
+                        "Servicios con imagen y descripción",
+                        "Galería de trabajos",
+                        "Correos automáticos",
+                        "Horarios y días configurables",
+                        "Extras opcionales",
+                        "Dashboard con estadísticas",
+                      ].map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex items-center gap-3 text-sm text-[#2d2424]"
+                        >
+                          <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/30 text-[#846262] text-xs">
+                            ✓
+                          </span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <a
+                      href="/registrar"
+                      className="block w-full rounded-xl bg-[#e9cece] px-6 py-4 text-center text-base font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-all hover:scale-105 hover:bg-[#dfc2c2]"
+                    >
+                      Empezar 14 días gratis
+                    </a>
+
+                    <p className="mt-4 text-center text-xs text-[#846262]">
+                      Sin tarjeta de crédito requerida
+                    </p>
+                  </div>
+                </div>
               </div>
-              <p className="mt-8 text-sm text-[#846262]">
-                Prueba gratuita de 14 días. No se requiere tarjeta de crédito.
-              </p>
             </AnimateOnScroll>
           </div>
         </section>
@@ -645,13 +708,13 @@ export default function Home() {
                   href="https://instagram.com/nailflowapp"
                   target="_blank"
                 >
-                    <Instagram className="h-5 w-5 text-[#2d2424]" />
+                  <Instagram className="h-5 w-5 text-[#2d2424]" />
                 </a>
                 <a
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ecec] transition-all hover:bg-[#e9cece]"
                   href="#"
                 >
-                    <Facebook className="h-5 w-5 text-[#2d2424]" />
+                  <Facebook className="h-5 w-5 text-[#2d2424]" />
                 </a>
               </div>
             </div>

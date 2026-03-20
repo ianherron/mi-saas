@@ -112,10 +112,10 @@ export default async function DashboardPage() {
       {/* Mobile header */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
         <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
-            ✦
+          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
+            <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-sm font-semibold">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold">NailFlow</span>
         </div>
         <LogoutButton />
       </header>
@@ -243,6 +243,13 @@ export default async function DashboardPage() {
                     className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   >
                     Ver todas las citas
+                    <span className="text-slate-300">→</span>
+                  </a>
+                  <a
+                    href="/galeria"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  >
+                    Galería de trabajos
                     <span className="text-slate-300">→</span>
                   </a>
                   <div className="rounded-xl border border-slate-100 bg-white p-4 lg:hidden">

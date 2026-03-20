@@ -13,7 +13,7 @@ export default async function ReservarSlugPage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("*")
+    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number")
     .eq("slug", slug)
     .single();
 
@@ -236,6 +236,11 @@ export default async function ReservarSlugPage({
               businessId={business.id}
               workingDays={workingDays}
               gallery={galleryImages ?? []}
+              paymentsEnabled={business.payments_enabled ?? false}
+              paymentPercentage={business.payment_percentage ?? 50}
+              sinpeNumber={business.sinpe_number ?? ""}
+              sinpeBank={business.sinpe_bank ?? ""}
+              whatsappNumber={business.whatsapp_number ?? ""}
               createAppointment={createAppointment}
             />
           )}

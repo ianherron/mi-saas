@@ -22,6 +22,11 @@ export default function BookingForm({
   businessId,
   workingDays,
   gallery,
+  paymentsEnabled,
+  paymentPercentage,
+  sinpeNumber,
+  sinpeBank,
+  whatsappNumber,
   createAppointment,
 }: {
   services: Service[];
@@ -30,6 +35,11 @@ export default function BookingForm({
   businessId: string;
   workingDays: number[];
   gallery: GalleryImage[];
+  paymentsEnabled: boolean;
+  paymentPercentage: number;
+  sinpeNumber: string;
+  sinpeBank: string;
+  whatsappNumber: string;
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
   const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
@@ -43,6 +53,7 @@ export default function BookingForm({
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
   const extraMinutes = extras
@@ -199,14 +210,20 @@ export default function BookingForm({
         <div className="mb-16 text-center">
           <h1 className="serif-heading text-4xl font-medium tracking-tight text-[#2d2424] md:text-5xl lg:text-6xl">
             <span className="block">Reserva tu</span>
-            <span className="block italic text-[#cfaeae]">momento de cuidado</span>
+            <span className="block italic text-[#cfaeae]">
+              momento de cuidado
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-md text-[#846262]">
-            Disfruta una experiencia exclusiva de belleza y bienestar, diseñada especialmente para ti.
+            Disfruta una experiencia exclusiva de belleza y bienestar, diseñada
+            especialmente para ti.
           </p>
         </div>
 
-        <form action={handleSubmit} className="flex flex-col gap-16 lg:flex-row lg:gap-12">
+        <form
+          action={handleSubmit}
+          className="flex flex-col gap-16 lg:flex-row lg:gap-12"
+        >
           <div className="flex-1 space-y-16 min-w-0">
             <input type="hidden" name="duration" value={totalDuration} />
             <input type="hidden" name="business_id" value={businessId} />
@@ -220,19 +237,29 @@ export default function BookingForm({
                 {services.map((service) => {
                   const isSelected = service.id === selectedServiceId;
                   return (
-                    <label key={service.id}
+                    <label
+                      key={service.id}
                       className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-white transition-all duration-300 ${
                         isSelected
                           ? "border-[#e9cece] shadow-lg shadow-[#e9cece]/20"
                           : "border-transparent hover:border-[#e9cece]/30 hover:shadow-md"
                       }`}
                     >
-                      <input type="radio" name="service_id" value={service.id}
-                        checked={isSelected} onChange={() => setSelectedServiceId(service.id)} className="sr-only" />
+                      <input
+                        type="radio"
+                        name="service_id"
+                        value={service.id}
+                        checked={isSelected}
+                        onChange={() => setSelectedServiceId(service.id)}
+                        className="sr-only"
+                      />
                       <div className="aspect-video w-full overflow-hidden">
                         {service.image_url ? (
-                          <img src={service.image_url} alt={service.name}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img
+                            src={service.image_url}
+                            alt={service.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-[#f4ecec]">
                             <Sparkles className="h-8 w-8 text-[#e9cece]" />
@@ -242,9 +269,13 @@ export default function BookingForm({
                       <div className="p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <h3 className="serif-heading text-lg font-medium text-[#2d2424]">{service.name}</h3>
+                            <h3 className="serif-heading text-lg font-medium text-[#2d2424]">
+                              {service.name}
+                            </h3>
                             {service.description && (
-                              <p className="mt-1 line-clamp-2 text-sm text-[#846262]">{service.description}</p>
+                              <p className="mt-1 line-clamp-2 text-sm text-[#846262]">
+                                {service.description}
+                              </p>
                             )}
                             <div className="mt-3 flex items-center gap-1 text-sm text-[#846262]">
                               <Clock className="h-3.5 w-3.5" />
@@ -260,7 +291,10 @@ export default function BookingForm({
                       </div>
                       {isSelected && (
                         <div className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#e9cece] shadow-md">
-                          <Check className="h-4 w-4 text-[#2d2424]" strokeWidth={2.5} />
+                          <Check
+                            className="h-4 w-4 text-[#2d2424]"
+                            strokeWidth={2.5}
+                          />
                         </div>
                       )}
                     </label>
@@ -277,20 +311,34 @@ export default function BookingForm({
                   {extras.map((extra) => {
                     const isActive = selectedExtras.includes(String(extra.id));
                     return (
-                      <button key={extra.id} type="button" onClick={() => toggleExtra(String(extra.id))}
+                      <button
+                        key={extra.id}
+                        type="button"
+                        onClick={() => toggleExtra(String(extra.id))}
                         className={`group flex items-center gap-3 rounded-full border-2 px-5 py-3 text-sm font-medium transition-all duration-200 ${
                           isActive
                             ? "border-[#e9cece] bg-[#e9cece] text-[#2d2424] shadow-md shadow-[#e9cece]/20"
                             : "border-slate-200 bg-white text-[#2d2424] hover:border-[#e9cece]/50"
                         }`}
                       >
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
-                          isActive ? "border-[#2d2424]/30 bg-[#2d2424]/10" : "border-slate-300"
-                        }`}>
-                          {isActive ? <Check className="h-3 w-3" strokeWidth={2.5} /> : <Plus className="h-3 w-3 text-[#846262]" />}
+                        <span
+                          className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
+                            isActive
+                              ? "border-[#2d2424]/30 bg-[#2d2424]/10"
+                              : "border-slate-300"
+                          }`}
+                        >
+                          {isActive ? (
+                            <Check className="h-3 w-3" strokeWidth={2.5} />
+                          ) : (
+                            <Plus className="h-3 w-3 text-[#846262]" />
+                          )}
                         </span>
                         <span>{extra.name}</span>
-                        <span className="text-[#846262]">+{extra.duration}min · ₡{extra.price?.toLocaleString() ?? 0}</span>
+                        <span className="text-[#846262]">
+                          +{extra.duration}min · ₡
+                          {extra.price?.toLocaleString() ?? 0}
+                        </span>
                       </button>
                     );
                   })}
@@ -300,29 +348,55 @@ export default function BookingForm({
 
             {/* Step 3 - Date & Time */}
             <section>
-              <StepHeader number={extras.length > 0 ? 3 : 2} title="Fecha y hora" />
+              <StepHeader
+                number={extras.length > 0 ? 3 : 2}
+                title="Fecha y hora"
+              />
               <div className="mt-8 grid gap-4">
                 <div>
-                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">Fecha</label>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
+                    Fecha
+                  </label>
                   <div className="relative">
                     <Calendar className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                    <input ref={dateInputRef} name="date" type="date" value={date} onChange={handleDateChange}
-                      className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20" />
+                    <input
+                      ref={dateInputRef}
+                      name="date"
+                      type="date"
+                      value={date}
+                      onChange={handleDateChange}
+                      className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                    />
                   </div>
-                  {dateError && <p className="mt-1 text-xs text-red-500">{dateError}</p>}
+                  {dateError && (
+                    <p className="mt-1 text-xs text-red-500">{dateError}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">Hora</label>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
+                    Hora
+                  </label>
                   <div className="relative">
                     <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                    <select name="time" value={time} onChange={(e) => setTime(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20">
-                      {timeSlots.length === 0 && <option value="">Sin horarios disponibles</option>}
+                    <select
+                      name="time"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      className="w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                    >
+                      {timeSlots.length === 0 && (
+                        <option value="">Sin horarios disponibles</option>
+                      )}
                       {timeSlots.map((slot) => {
                         const isBooked = bookedSlots.includes(slot.time);
                         return (
-                          <option key={slot.id} value={slot.time} disabled={isBooked}>
-                            {slot.time}{isBooked ? " — ocupado" : ""}
+                          <option
+                            key={slot.id}
+                            value={slot.time}
+                            disabled={isBooked}
+                          >
+                            {slot.time}
+                            {isBooked ? " — ocupado" : ""}
                           </option>
                         );
                       })}
@@ -334,31 +408,53 @@ export default function BookingForm({
 
             {/* Step 4 - Client Info */}
             <section>
-              <StepHeader number={extras.length > 0 ? 4 : 3} title="Tus datos" />
+              <StepHeader
+                number={extras.length > 0 ? 4 : 3}
+                title="Tus datos"
+              />
               <div className="mt-8 space-y-5">
                 <div>
-                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">Nombre completo</label>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
+                    Nombre completo
+                  </label>
                   <div className="relative">
                     <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                    <input name="client_name" type="text" placeholder="Tu nombre" required
-                      className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20" />
+                    <input
+                      name="client_name"
+                      type="text"
+                      placeholder="Tu nombre"
+                      required
+                      className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                    />
                   </div>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">Teléfono</label>
+                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
+                      Teléfono
+                    </label>
                     <div className="relative">
                       <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                      <input name="phone" type="tel" placeholder="+506 0000 0000"
-                        className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20" />
+                      <input
+                        name="phone"
+                        type="tel"
+                        placeholder="+506 0000 0000"
+                        className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                      />
                     </div>
                   </div>
                   <div>
-                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">Correo electrónico</label>
+                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
+                      Correo electrónico
+                    </label>
                     <div className="relative">
                       <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                      <input name="email" type="email" placeholder="tu@email.com"
-                        className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20" />
+                      <input
+                        name="email"
+                        type="email"
+                        placeholder="tu@email.com"
+                        className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] placeholder:text-[#846262]/60 outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                      />
                     </div>
                   </div>
                 </div>
@@ -368,24 +464,118 @@ export default function BookingForm({
                   </label>
                   <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-white py-6 transition-all hover:border-[#e9cece]">
                     {imagePreview ? (
-                      <img src={imagePreview} alt="Referencia" className="h-32 w-32 rounded-lg object-cover" />
+                      <img
+                        src={imagePreview}
+                        alt="Referencia"
+                        className="h-32 w-32 rounded-lg object-cover"
+                      />
                     ) : (
                       <>
                         <span className="text-2xl">📷</span>
-                        <span className="text-xs text-[#846262]">Sube una foto del diseño que quieres</span>
+                        <span className="text-xs text-[#846262]">
+                          Sube una foto del diseño que quieres
+                        </span>
                       </>
                     )}
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
                   </label>
                 </div>
               </div>
             </section>
 
+            {/* Pago anticipado */}
+            {paymentsEnabled && sinpeNumber && (
+              <section>
+                <StepHeader
+                  number={extras.length > 0 ? 5 : 4}
+                  title="Pago anticipado"
+                />
+                <div className="mt-8 rounded-2xl border-2 border-[#e9cece]/30 bg-white p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="text-xs font-medium uppercase tracking-widest text-[#846262]">
+                      Adelanto requerido ({paymentPercentage}%)
+                    </span>
+                  </div>
+                  <div className="mb-6 rounded-xl bg-[#f4ecec] p-4">
+                    <p className="text-xs text-[#846262]">Monto a transferir</p>
+                    <p className="serif-heading text-3xl font-bold text-[#2d2424]">
+                      ₡
+                      {Math.ceil(
+                        (totalPrice * paymentPercentage) / 100,
+                      ).toLocaleString()}
+                    </p>
+                    <p className="mt-1 text-xs text-[#846262]">
+                      de ₡{totalPrice.toLocaleString()} total
+                    </p>
+                  </div>
+
+                  <div className="mb-6 rounded-xl bg-slate-50 p-4 space-y-2">
+                    <p className="text-xs font-medium text-slate-500">
+                      SINPE Móvil
+                    </p>
+                    <p className="text-xl font-bold text-[#2d2424]">
+                      {sinpeNumber}
+                    </p>
+                    {sinpeBank && (
+                      <p className="text-sm text-[#846262]">{sinpeBank}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-xs font-medium uppercase tracking-wider text-[#846262]">
+                      Sube tu comprobante de pago
+                    </p>
+                    <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-white py-6 transition-all hover:border-[#e9cece]">
+                      {paymentProof ? (
+                        <img
+                          src={URL.createObjectURL(paymentProof)}
+                          alt="Comprobante"
+                          className="h-32 w-32 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <>
+                          <span className="text-2xl">🧾</span>
+                          <span className="text-xs text-[#846262]">
+                            Sube la captura del comprobante
+                          </span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          setPaymentProof(e.target.files?.[0] ?? null)
+                        }
+                        className="hidden"
+                      />
+                    </label>
+
+                    {whatsappNumber && (
+                      <a
+                        href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=Hola,%20aquí%20mi%20comprobante%20de%20pago%20para%20mi%20cita%20del%20${date}%20a%20las%20${time}`}
+                        target="_blank"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-green-200 bg-green-50 py-3 text-sm font-medium text-green-700 transition-all hover:bg-green-100"
+                      >
+                        <span>📱</span> Enviar comprobante por WhatsApp
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* Resumen móvil */}
             <div className="lg:hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-4 w-4 text-[#846262]" />
-                <span className="text-xs font-medium uppercase tracking-widest text-[#846262]">Resumen de tu cita</span>
+                <span className="text-xs font-medium uppercase tracking-widest text-[#846262]">
+                  Resumen de tu cita
+                </span>
               </div>
               <div className="divide-y divide-slate-100">
                 <div className="pb-3">
@@ -398,7 +588,10 @@ export default function BookingForm({
                   <div className="py-3">
                     <p className="text-xs text-[#846262]">Extras</p>
                     <p className="mt-1 text-sm text-[#2d2424]">
-                      {extras.filter((e) => selectedExtras.includes(String(e.id))).map((e) => e.name).join(", ")}
+                      {extras
+                        .filter((e) => selectedExtras.includes(String(e.id)))
+                        .map((e) => e.name)
+                        .join(", ")}
                     </p>
                   </div>
                 )}
@@ -424,15 +617,23 @@ export default function BookingForm({
                   </span>
                 </div>
               </div>
-              <button type="submit" disabled={submitting || !date}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-                {submitting ? "Confirmando..." : (<>Confirmar cita <ArrowRight className="h-4 w-4" /></>)}
+              <button
+                type="submit"
+                disabled={submitting || !date || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {submitting ? (
+                  "Confirmando..."
+                ) : (
+                  <>
+                    Confirmar cita <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </button>
               <p className="mt-3 text-center text-xs text-[#846262]">
                 Al confirmar, aceptas nuestros términos y condiciones.
               </p>
             </div>
-
           </div>
 
           {/* Right Column - Summary Desktop */}
@@ -442,7 +643,9 @@ export default function BookingForm({
                 <div className="bg-[#f4ecec]/50 px-6 py-4">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-[#846262]" />
-                    <span className="text-xs font-medium uppercase tracking-widest text-[#846262]">Resumen de tu cita</span>
+                    <span className="text-xs font-medium uppercase tracking-widest text-[#846262]">
+                      Resumen de tu cita
+                    </span>
                   </div>
                 </div>
                 <div className="p-6">
@@ -457,12 +660,19 @@ export default function BookingForm({
                       <div className="py-4">
                         <p className="text-xs text-[#846262]">Extras</p>
                         <p className="mt-1 text-sm text-[#2d2424]">
-                          {extras.filter((e) => selectedExtras.includes(String(e.id))).map((e) => e.name).join(", ")}
+                          {extras
+                            .filter((e) =>
+                              selectedExtras.includes(String(e.id)),
+                            )
+                            .map((e) => e.name)
+                            .join(", ")}
                         </p>
                       </div>
                     )}
                     <div className="py-4">
-                      <p className="text-xs text-[#846262]">Duración estimada</p>
+                      <p className="text-xs text-[#846262]">
+                        Duración estimada
+                      </p>
                       <p className="mt-1 flex items-center gap-1 text-sm text-[#2d2424]">
                         <Clock className="h-3.5 w-3.5 text-[#846262]" />
                         {totalDuration} minutos
@@ -486,9 +696,18 @@ export default function BookingForm({
                       </span>
                     </div>
                   </div>
-                  <button type="submit" disabled={submitting || !date}
-                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-                    {submitting ? "Confirmando..." : (<>Confirmar cita <ArrowRight className="h-4 w-4" /></>)}
+                  <button
+                    type="submit"
+                    disabled={submitting || !date || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {submitting ? (
+                      "Confirmando..."
+                    ) : (
+                      <>
+                        Confirmar cita <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
                   </button>
                   <p className="mt-4 text-center text-xs text-[#846262]">
                     Al confirmar, aceptas nuestros términos y condiciones.
@@ -503,20 +722,38 @@ export default function BookingForm({
         {gallery.length > 0 && (
           <section className="mt-24">
             <div className="mb-8 text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#846262]">Nuestro trabajo</p>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#846262]">
+                Nuestro trabajo
+              </p>
               <h2 className="serif-heading mt-2 text-2xl font-medium text-[#2d2424]">
                 Inspiración para tu próxima visita
               </h2>
             </div>
             <div className="overflow-hidden rounded-2xl">
               <div className="mb-3 flex animate-marquee-left gap-3">
-                {[...gallery.slice(0, Math.ceil(gallery.length / 2)), ...gallery.slice(0, Math.ceil(gallery.length / 2))].map((img, i) => (
-                  <img key={i} src={img.image_url} alt="Trabajo" className="h-40 w-40 shrink-0 rounded-xl object-cover" />
+                {[
+                  ...gallery.slice(0, Math.ceil(gallery.length / 2)),
+                  ...gallery.slice(0, Math.ceil(gallery.length / 2)),
+                ].map((img, i) => (
+                  <img
+                    key={i}
+                    src={img.image_url}
+                    alt="Trabajo"
+                    className="h-40 w-40 shrink-0 rounded-xl object-cover"
+                  />
                 ))}
               </div>
               <div className="flex animate-marquee-right gap-3">
-                {[...gallery.slice(Math.ceil(gallery.length / 2)), ...gallery.slice(Math.ceil(gallery.length / 2))].map((img, i) => (
-                  <img key={i} src={img.image_url} alt="Trabajo" className="h-40 w-40 shrink-0 rounded-xl object-cover" />
+                {[
+                  ...gallery.slice(Math.ceil(gallery.length / 2)),
+                  ...gallery.slice(Math.ceil(gallery.length / 2)),
+                ].map((img, i) => (
+                  <img
+                    key={i}
+                    src={img.image_url}
+                    alt="Trabajo"
+                    className="h-40 w-40 shrink-0 rounded-xl object-cover"
+                  />
                 ))}
               </div>
             </div>

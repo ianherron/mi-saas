@@ -200,7 +200,7 @@ export default function BookingForm({
   }
 
   return (
-    <div className="min-h-screen bg-[#fbf9f9]">
+    <div className="min-h-screen bg-[#fbf9f9] overflow-hidden">
       <main className="mx-auto max-w-6xl px-4 py-12 md:py-16 overflow-hidden">
         <div className="mb-16 text-center">
           <h1 className="serif-heading text-4xl font-medium tracking-tight text-[#2d2424] md:text-5xl lg:text-6xl">

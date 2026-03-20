@@ -3,6 +3,7 @@ import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
 import { Sparkles } from "lucide-react";
 import { LayoutDashboard, Clock, Images, Scissors } from "lucide-react";
+import CurrencySelector from "./CurrencySelector";
 
 
 export default async function DashboardPage() {
@@ -123,18 +124,26 @@ export default async function DashboardPage() {
       <div className="lg:pl-60">
         <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
           {/* Page header */}
-          <div className="mb-8">
-            <h1 className=" serif-heading text-2xl font-semibold tracking-tight text-slate-900">
-              Bienvenida, {business.owner_name?.split(" ")[0]}
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              {new Date().toLocaleDateString("es-CR", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
+          <div className="mb-8 flex items-start justify-between">
+            <div>
+              <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
+                Bienvenida, {business.owner_name?.split(" ")[0]}
+              </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                {new Date().toLocaleDateString("es-CR", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <CurrencySelector
+                businessId={business.id}
+                currentCurrency={business.currency ?? "CRC"}
+              />
+            </div>
           </div>
 
           {/* Stats */}
@@ -236,6 +245,15 @@ export default async function DashboardPage() {
                     Ver todas las citas
                     <span className="text-slate-300">→</span>
                   </a>
+                  <div className="rounded-xl border border-slate-100 bg-white p-4 lg:hidden">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Moneda
+                    </p>
+                    <CurrencySelector
+                      businessId={business.id}
+                      currentCurrency={business.currency ?? "CRC"}
+                    />
+                  </div>
                 </div>
               </div>
 

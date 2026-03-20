@@ -30,6 +30,7 @@ export default async function ReservarSlugPage({
     const duration = parseInt(formData.get("duration") as string);
     const business_id = formData.get("business_id") as string;
     const total_price = parseInt(formData.get("total_price") as string);
+    const reference_image = formData.get("reference_image") as string;
 
     // Validaciones
     if (!client_name?.trim() || client_name.trim().length < 2) return;
@@ -57,7 +58,8 @@ export default async function ReservarSlugPage({
       phone,
       email,
       business_id,
-      total_price
+      total_price,
+      reference_image,
     });
 
     // Enviar correo si hay email
@@ -156,6 +158,16 @@ export default async function ReservarSlugPage({
                 <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${total_price?.toLocaleString() ?? "—"}</td>
               </tr>
             </table>
+            ${
+              reference_image
+                ? `
+  <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
+    <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Foto de referencia:</p>
+    <img src="${reference_image}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
+  </div>
+`
+                : ""
+            }
           </div>
           <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
             NailFlow · El aliado perfecto para tu salón

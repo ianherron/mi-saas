@@ -1,6 +1,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors } from "lucide-react";
+import {
+  LayoutDashboard,
+  Clock,
+  Sparkles,
+  Images,
+  Scissors,
+} from "lucide-react";
 
 export default async function CitasPage() {
   const supabase = await createClient();
@@ -75,8 +81,8 @@ export default async function CitasPage() {
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Costa_Rica",
   });
-  const todayAppts = appointments?.filter(a => a.date === today) ?? [];
-  const upcomingAppts = appointments?.filter(a => a.date > today) ?? [];
+  const todayAppts = appointments?.filter((a) => a.date === today) ?? [];
+  const upcomingAppts = appointments?.filter((a) => a.date > today) ?? [];
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
@@ -111,7 +117,10 @@ export default async function CitasPage() {
             href="/galeria"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            <span><Images className="h-4 w-4" /></span> Galería
+            <span>
+              <Images className="h-4 w-4" />
+            </span>{" "}
+            Galería
           </a>
         </nav>
       </aside>
@@ -213,7 +222,10 @@ export default async function CitasPage() {
   );
 }
 
-function AppointmentRow({ appointment, deleteAppointment }: {
+function AppointmentRow({
+  appointment,
+  deleteAppointment,
+}: {
   appointment: any;
   deleteAppointment: (id: number) => Promise<void>;
 }) {
@@ -224,14 +236,31 @@ function AppointmentRow({ appointment, deleteAppointment }: {
           {appointment.client_name?.charAt(0).toUpperCase()}
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-900">{appointment.client_name}</p>
+          <p className="text-sm font-medium text-slate-900">
+            {appointment.client_name}
+          </p>
           <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-slate-400">
-            <span>{appointment.date} · {appointment.time}</span>
+            <span>
+              {appointment.date} · {appointment.time}
+            </span>
             <span>{appointment.services?.name}</span>
             <span>{appointment.duration} min</span>
             {appointment.phone && <span>{appointment.phone}</span>}
             {appointment.email && <span>{appointment.email}</span>}
           </div>
+          {appointment.reference_image && (
+            <a
+              href={appointment.reference_image}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={appointment.reference_image}
+                alt="Referencia"
+                className="mt-2 h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity"
+              />
+            </a>
+          )}
         </div>
       </div>
 

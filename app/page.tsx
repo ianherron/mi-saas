@@ -531,6 +531,7 @@ export default function Home() {
                         "Horarios y días configurables",
                         "Extras opcionales",
                         "Dashboard con estadísticas",
+                        "Pagos anticipados con SINPE Móvil",
                       ].map((feature) => (
                         <li
                           key={feature}

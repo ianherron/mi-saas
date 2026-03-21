@@ -20,7 +20,7 @@ export default async function ReservarSlugPage({
   if (!business) notFound();
 
   async function createAppointment(formData: FormData) {
-    ("use server");
+    "use server";
     const client_name = formData.get("client_name") as string;
     const service_id = formData.get("service_id") as string;
     const date = formData.get("date") as string;

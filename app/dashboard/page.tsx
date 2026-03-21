@@ -258,6 +258,13 @@ export default async function DashboardPage() {
                     Galería de trabajos
                     <span className="text-slate-300">→</span>
                   </a>
+                  <a
+                    href="/pagos"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  >
+                    Pagos
+                    <span className="text-slate-300">→</span>
+                  </a>
                   <div className="rounded-xl border border-slate-100 bg-white p-4 lg:hidden">
                     <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
                       Moneda

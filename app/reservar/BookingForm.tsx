@@ -247,6 +247,7 @@ export default function BookingForm({
             <input type="hidden" name="business_id" value={businessId} />
             <input type="hidden" name="total_price" value={totalPrice} />
             <input type="hidden" name="reference_image" value="" />
+            <input type="hidden" name="payment_proof" value="" />
 
             {/* Step 1 - Services */}
             <section>

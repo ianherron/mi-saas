@@ -87,12 +87,13 @@ export default function BookingForm({
   if (submitting) return;
   setSubmitting(true);
 
+  const { createBrowserClient } = await import("@supabase/ssr");
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
+
   if (referenceImage) {
-    const { createBrowserClient } = await import("@supabase/ssr");
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    );
     const fileName = `${Date.now()}-${referenceImage.name}`;
     const { data, error } = await supabase.storage
       .from("reference-images")
@@ -106,20 +107,18 @@ export default function BookingForm({
   }
 
   if (paymentProof) {
-    const { createBrowserClient } = await import("@supabase/ssr");
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    );
+    console.log("Subiendo comprobante:", paymentProof.name);
     const fileName = `${Date.now()}-${paymentProof.name}`;
     const { data, error } = await supabase.storage
       .from("payment-proofs")
       .upload(fileName, paymentProof);
+    console.log("Upload result:", data, error);
     if (!error && data) {
       const { data: urlData } = supabase.storage
         .from("payment-proofs")
         .getPublicUrl(data.path);
       formData.set("payment_proof", urlData.publicUrl);
+      console.log("URL del comprobante:", urlData.publicUrl);
     }
   }
 

@@ -20,7 +20,7 @@ export default async function ReservarSlugPage({
   if (!business) notFound();
 
   async function createAppointment(formData: FormData) {
-    "use server";
+    ("use server");
     const client_name = formData.get("client_name") as string;
     const service_id = formData.get("service_id") as string;
     const date = formData.get("date") as string;
@@ -31,6 +31,7 @@ export default async function ReservarSlugPage({
     const business_id = formData.get("business_id") as string;
     const total_price = parseInt(formData.get("total_price") as string);
     const reference_image = formData.get("reference_image") as string;
+    const payment_proof = formData.get("payment_proof") as string;
 
     // Validaciones
     if (!client_name?.trim() || client_name.trim().length < 2) return;
@@ -60,6 +61,7 @@ export default async function ReservarSlugPage({
       business_id,
       total_price,
       reference_image,
+      payment_proof,
     });
 
     // Enviar correo si hay email
@@ -161,14 +163,23 @@ export default async function ReservarSlugPage({
             ${
               reference_image
                 ? `
-  <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
-    <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Foto de referencia:</p>
-    <img src="${reference_image}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
-  </div>
-`
+              <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
+                <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Foto de referencia:</p>
+                <img src="${reference_image}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
+              </div>`
                 : ""
             }
           </div>
+          ${
+            payment_proof
+              ? `
+  <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
+    <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Comprobante de pago:</p>
+    <img src="${payment_proof}" alt="Comprobante" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
+  </div>
+`
+              : ""
+          }
           <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
             NailFlow · El aliado perfecto para tu salón
           </p>

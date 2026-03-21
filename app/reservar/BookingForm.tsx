@@ -84,31 +84,49 @@ export default function BookingForm({
   }
 
   async function handleSubmit(formData: FormData) {
-    if (submitting) return;
-    setSubmitting(true);
+  if (submitting) return;
+  setSubmitting(true);
 
-    if (referenceImage) {
-      const { createBrowserClient } = await import("@supabase/ssr");
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      );
-      const fileName = `${Date.now()}-${referenceImage.name}`;
-      const { data, error } = await supabase.storage
+  if (referenceImage) {
+    const { createBrowserClient } = await import("@supabase/ssr");
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    );
+    const fileName = `${Date.now()}-${referenceImage.name}`;
+    const { data, error } = await supabase.storage
+      .from("reference-images")
+      .upload(fileName, referenceImage);
+    if (!error && data) {
+      const { data: urlData } = supabase.storage
         .from("reference-images")
-        .upload(fileName, referenceImage);
-      if (!error && data) {
-        const { data: urlData } = supabase.storage
-          .from("reference-images")
-          .getPublicUrl(data.path);
-        formData.set("reference_image", urlData.publicUrl);
-      }
+        .getPublicUrl(data.path);
+      formData.set("reference_image", urlData.publicUrl);
     }
-
-    await createAppointment(formData);
-    setConfirmed(true);
-    setSubmitting(false);
   }
+
+  if (paymentProof) {
+    const { createBrowserClient } = await import("@supabase/ssr");
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    );
+    const fileName = `${Date.now()}-${paymentProof.name}`;
+    const { data, error } = await supabase.storage
+      .from("payment-proofs")
+      .upload(fileName, paymentProof);
+    if (!error && data) {
+      const { data: urlData } = supabase.storage
+        .from("payment-proofs")
+        .getPublicUrl(data.path);
+      formData.set("payment_proof", urlData.publicUrl);
+    }
+  }
+
+  await createAppointment(formData);
+  setConfirmed(true);
+  setSubmitting(false);
+}
 
   function isDateDisabled(dateString: string): boolean {
     if (!dateString) return false;

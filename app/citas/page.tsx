@@ -268,6 +268,24 @@ function AppointmentRow({
               />
             </a>
           )}
+          {appointment.payment_proof && (
+            <div className="mt-2">
+              <p className="text-xs text-[#846262] mb-1">
+                Comprobante de pago:
+              </p>
+              <a
+                href={appointment.payment_proof}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={appointment.payment_proof}
+                  alt="Comprobante"
+                  className="h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity"
+                />
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

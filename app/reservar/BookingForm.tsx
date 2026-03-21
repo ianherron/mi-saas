@@ -94,7 +94,8 @@ export default function BookingForm({
   );
 
   if (referenceImage) {
-    const fileName = `${Date.now()}-${referenceImage.name}`;
+    const cleanName = referenceImage.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const fileName = `${Date.now()}-${cleanName}`;
     const { data, error } = await supabase.storage
       .from("reference-images")
       .upload(fileName, referenceImage);
@@ -107,8 +108,8 @@ export default function BookingForm({
   }
 
   if (paymentProof) {
-    console.log("Subiendo comprobante:", paymentProof.name);
-    const fileName = `${Date.now()}-${paymentProof.name}`;
+    const cleanName = paymentProof.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const fileName = `${Date.now()}-${cleanName}`;
     const { data, error } = await supabase.storage
       .from("payment-proofs")
       .upload(fileName, paymentProof);
@@ -118,7 +119,6 @@ export default function BookingForm({
         .from("payment-proofs")
         .getPublicUrl(data.path);
       formData.set("payment_proof", urlData.publicUrl);
-      console.log("URL del comprobante:", urlData.publicUrl);
     }
   }
 

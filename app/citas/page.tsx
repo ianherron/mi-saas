@@ -126,9 +126,10 @@ async function completeAppointment(id: number) {
     .from("appointments")
     .select(`*, services (name)`)
     .eq("business_id", business.id)
+    .eq("status", "active")
     .order("date", { ascending: true })
     .order("time", { ascending: true });
-
+    
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Costa_Rica",
   });

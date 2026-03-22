@@ -15,33 +15,29 @@ export default async function CitasPage() {
 
   if (!business) return <p>No se encontró tu negocio.</p>;
 
-  async function deleteAppointment(id: number) {
-    "use server";
-    const supabase = await createClient();
+  async function cancelAppointment(id: number) {
+  "use server";
+  const supabase = await createClient();
 
-    // Obtener datos de la cita antes de borrar
-    const { data: appointment } = await supabase
-      .from("appointments")
-      .select(`*, services (name)`)
-      .eq("id", id)
-      .single();
+  const { data: appointment } = await supabase
+    .from("appointments")
+    .select(`*, services (name)`)
+    .eq("id", id)
+    .single();
 
-    // Borrar la cita
-    await supabase.from("appointments").delete().eq("id", id);
+  await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
 
-    // Enviar correo si hay email
-    if (appointment?.email) {
-      const { resend } = await import("../../lib/resend");
-      await resend.emails.send({
-        from: "NailFlow <hola@nailflow.app>",
-        to: appointment.email,
-        subject: "Tu cita ha sido cancelada",
-        html: `
+  if (appointment?.email) {
+    const { resend } = await import("../../lib/resend");
+    await resend.emails.send({
+      from: "NailFlow <hola@nailflow.app>",
+      to: appointment.email,
+      subject: "Tu cita ha sido cancelada",
+      html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
           <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
             <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Cita cancelada</h1>
             <p style="color: #846262; margin: 0 0 24px;">Hola ${appointment.client_name}, tu cita ha sido cancelada.</p>
-            
             <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
               <table style="width: 100%; border-collapse: collapse;">
                 <tr>
@@ -58,19 +54,73 @@ export default async function CitasPage() {
                 </tr>
               </table>
             </div>
-
             <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
               Si tienes dudas contáctanos · NailFlow
             </p>
           </div>
         </div>
       `,
-      });
-    }
-
-    revalidatePath("/citas");
-    revalidatePath("/dashboard");
+    });
   }
+
+  revalidatePath("/citas");
+  revalidatePath("/dashboard");
+}
+
+async function completeAppointment(id: number) {
+  "use server";
+  const supabase = await createClient();
+  const business = await getBusiness();
+
+  const { data: appointment } = await supabase
+    .from("appointments")
+    .select(`*, services (name)`)
+    .eq("id", id)
+    .single();
+
+  await supabase.from("appointments").update({ status: "completed" }).eq("id", id);
+
+  if (appointment?.email) {
+    const { resend } = await import("../../lib/resend");
+    await resend.emails.send({
+      from: "NailFlow <hola@nailflow.app>",
+      to: appointment.email,
+      subject: "¡Gracias por tu visita! 💅",
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
+          <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0;">✦ NailFlow</h1>
+            </div>
+            <h2 style="font-size: 20px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Gracias por tu visita! 💅</h2>
+            <p style="color: #846262; margin: 0 0 24px;">Hola ${appointment.client_name}, fue un placer atenderte. Esperamos verte pronto en <strong>${business?.name ?? "nuestro salón"}</strong>.</p>
+            <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
+                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.services?.name ?? "—"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td>
+                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.date}</td>
+                </tr>
+              </table>
+            </div>
+            <a href="https://nailflow.app/reservar/${business?.slug}" style="display: block; text-align: center; background: #e9cece; color: #2d2424; font-weight: bold; padding: 14px 32px; border-radius: 12px; text-decoration: none; margin-top: 24px;">
+              Reservar otra cita
+            </a>
+            <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
+              NailFlow · El aliado perfecto para tu salón
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  }
+
+  revalidatePath("/citas");
+  revalidatePath("/dashboard");
+}
 
   const { data: appointments, error } = await supabase
     .from("appointments")
@@ -191,7 +241,8 @@ export default async function CitasPage() {
                     <AppointmentRow
                       key={appointment.id}
                       appointment={appointment}
-                      deleteAppointment={deleteAppointment}
+                      cancelAppointment={cancelAppointment}
+                      completeAppointment={completeAppointment}
                     />
                   ))}
                 </ul>
@@ -216,7 +267,8 @@ export default async function CitasPage() {
                     <AppointmentRow
                       key={appointment.id}
                       appointment={appointment}
-                      deleteAppointment={deleteAppointment}
+                      cancelAppointment={cancelAppointment}
+                      completeAppointment={completeAppointment}
                     />
                   ))}
                 </ul>
@@ -229,13 +281,22 @@ export default async function CitasPage() {
   );
 }
 
-function AppointmentRow({
-  appointment,
-  deleteAppointment,
-}: {
+function AppointmentRow({ appointment, cancelAppointment, completeAppointment }: {
   appointment: any;
-  deleteAppointment: (id: number) => Promise<void>;
+  cancelAppointment: (id: number) => Promise<void>;
+  completeAppointment: (id: number) => Promise<void>;
 }) {
+  const statusColors: Record<string, string> = {
+    active: "bg-blue-50 text-blue-600",
+    completed: "bg-green-50 text-green-600",
+    cancelled: "bg-red-50 text-red-400",
+  };
+  const statusLabels: Record<string, string> = {
+    active: "Activa",
+    completed: "Completada",
+    cancelled: "Cancelada",
+  }; {
+    
   return (
     <li className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
@@ -243,60 +304,54 @@ function AppointmentRow({
           {appointment.client_name?.charAt(0).toUpperCase()}
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-900">
-            {appointment.client_name}
-          </p>
-          <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-slate-400">
-            <span>
-              {appointment.date} · {appointment.time}
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-slate-900">{appointment.client_name}</p>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColors[appointment.status ?? "active"]}`}>
+              {statusLabels[appointment.status ?? "active"]}
             </span>
+          </div>
+          <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-slate-400">
+            <span>{appointment.date} · {appointment.time}</span>
             <span>{appointment.services?.name}</span>
             <span>{appointment.duration} min</span>
             {appointment.phone && <span>{appointment.phone}</span>}
             {appointment.email && <span>{appointment.email}</span>}
           </div>
           {appointment.reference_image && (
-            <a
-              href={appointment.reference_image}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src={appointment.reference_image}
-                alt="Referencia"
-                className="mt-2 h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity"
-              />
+            <a href={appointment.reference_image} target="_blank" rel="noopener noreferrer">
+              <img src={appointment.reference_image} alt="Referencia"
+                className="mt-2 h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity" />
             </a>
           )}
           {appointment.payment_proof && (
             <div className="mt-2">
-              <p className="text-xs text-[#846262] mb-1">
-                Comprobante de pago:
-              </p>
-              <a
-                href={appointment.payment_proof}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={appointment.payment_proof}
-                  alt="Comprobante"
-                  className="h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity"
-                />
+              <p className="text-xs text-[#846262] mb-1">Comprobante de pago:</p>
+              <a href={appointment.payment_proof} target="_blank" rel="noopener noreferrer">
+                <img src={appointment.payment_proof} alt="Comprobante"
+                  className="h-16 w-16 rounded-lg object-cover border border-slate-100 hover:opacity-80 transition-opacity" />
               </a>
             </div>
           )}
         </div>
       </div>
 
-      <form action={deleteAppointment.bind(null, appointment.id)}>
-        <button
-          type="submit"
-          className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-        >
-          Cancelar
-        </button>
-      </form>
+      {(!appointment.status || appointment.status === "active") && (
+        <div className="flex gap-2">
+          <form action={completeAppointment.bind(null, appointment.id)}>
+            <button type="submit"
+              className="rounded-md px-3 py-1.5 text-xs font-medium text-green-600 transition-colors hover:bg-green-50">
+              Completar
+            </button>
+          </form>
+          <form action={cancelAppointment.bind(null, appointment.id)}>
+            <button type="submit"
+              className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600">
+              Cancelar
+            </button>
+          </form>
+        </div>
+      )}
     </li>
   );
+}
 }

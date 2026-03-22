@@ -2,8 +2,9 @@ import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
 import { CreditCard, Sparkles } from "lucide-react";
-import { LayoutDashboard, Clock, Images, Scissors, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp } from "lucide-react";
 import CurrencySelector from "./CurrencySelector";
+import { StatCard } from "../reportes/StatCard";
 
 
 export default async function DashboardPage() {
@@ -99,7 +100,10 @@ export default async function DashboardPage() {
           >
             <CreditCard className="h-4 w-4" /> Pagos
           </a>
-          <a href="/reportes" className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900">
+          <a
+            href="/reportes"
+            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
+          >
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
@@ -157,31 +161,22 @@ export default async function DashboardPage() {
           </div>
 
           {/* Stats */}
-          <div className="mb-8 grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-slate-100 bg-white p-5">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                Citas hoy
-              </p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">
-                {todayCount ?? 0}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-100 bg-white p-5">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                Servicios activos
-              </p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">
-                {servicesCount ?? 0}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-100 bg-white p-5 col-span-2 lg:col-span-1">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                Ingresos hoy
-              </p>
-              <p className="mt-2 text-3xl font-semibold text-black">
-                ₡{todayRevenue.toLocaleString()}
-              </p>
-            </div>
+          <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
+            <StatCard
+              title="Citas hoy"
+              value={(todayCount ?? 0).toString()}
+              icon={<Clock className="h-5 w-5" />}
+            />
+            <StatCard
+              title="Servicios activos"
+              value={(servicesCount ?? 0).toString()}
+              icon={<Scissors className="h-5 w-5" />}
+            />
+            <StatCard
+              title="Ingresos hoy"
+              value={`₡${todayRevenue.toLocaleString()}`}
+              icon={<TrendingUp className="h-5 w-5" />}
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

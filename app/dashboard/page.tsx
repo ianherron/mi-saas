@@ -277,6 +277,13 @@ export default async function DashboardPage() {
                       currentCurrency={business.currency ?? "CRC"}
                     />
                   </div>
+                  <a
+                    href="/reportes"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  >
+                    Reportes
+                    <span className="text-slate-300">→</span>
+                  </a>
                 </div>
               </div>
 

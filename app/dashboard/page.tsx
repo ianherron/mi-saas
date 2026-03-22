@@ -177,7 +177,7 @@ export default async function DashboardPage() {
               <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
                 Ingresos hoy
               </p>
-              <p className="mt-2 text-3xl font-semibold text-[#e9cece]">
+              <p className="mt-2 text-3xl font-semibold text-black">
                 ₡{todayRevenue.toLocaleString()}
               </p>
             </div>

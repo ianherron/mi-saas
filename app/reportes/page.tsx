@@ -28,14 +28,12 @@ export default async function ReportesPage({
     now
       .toLocaleDateString("en-CA", { timeZone: "America/Costa_Rica" })
       .slice(0, 7);
-  const [year, month] = selectedMonth.split("-").map(Number);
+ const [year, month] = selectedMonth.split("-").map(Number);
 
-  const firstDay = new Date(year, month - 1, 1).toLocaleDateString("en-CA", {
-    timeZone: "America/Costa_Rica",
-  });
-  const lastDay = new Date(year, month, 0).toLocaleDateString("en-CA", {
-    timeZone: "America/Costa_Rica",
-  });
+ const firstDay = `${selectedMonth}-01`;
+ const lastDay = new Date(year, month, 0).toLocaleDateString("en-CA", {
+   timeZone: "America/Costa_Rica",
+ });
 
   const { data: appointments } = await supabase
     .from("appointments")

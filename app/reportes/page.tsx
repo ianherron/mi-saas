@@ -90,7 +90,7 @@ export default async function ReportesPage({
     }).format(value);
 
   return (
-    <div className="min-h-screen bg-[#fbf9f9] font-sans text-slate-900">
+    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
@@ -134,7 +134,7 @@ export default async function ReportesPage({
 
       <div className="lg:pl-60">
         {/* Page header con MonthSelector */}
-        <div className="border-b border-[#e9cece]/60 bg-white/80 backdrop-blur-sm px-4 lg:px-8">
+        <div className="px-4 lg:px-8">
           <div className="mx-auto flex max-w-4xl items-center justify-between py-4">
             <div>
               <h1 className="serif-heading text-xl text-[#2d2424]">Panel de Reportes</h1>

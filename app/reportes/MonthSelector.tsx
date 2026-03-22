@@ -1,37 +1,67 @@
-"use client";
+"use client"
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
-import { useRouter } from "next/navigation";
+interface MonthSelectorProps {
+  currentMonth: Date
+  selectedMonthStr: string
+}
 
-export default function MonthSelector({ currentMonth }: { currentMonth: string }) {
-  const router = useRouter();
+export function MonthSelector({ currentMonth, selectedMonthStr }: MonthSelectorProps) {
+  const router = useRouter()
 
-  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    router.push(`/reportes?month=${e.target.value}`);
+  const formatMonth = (date: Date) => {
+    return date.toLocaleDateString("es-CR", { month: "long", year: "numeric" })
   }
 
-  const months = [];
-  const now = new Date();
-  for (let i = -3; i < 9; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("es-CR", {
-      month: "long",
-      year: "numeric",
-    });
-    months.push({ value, label });
+  const goToPreviousMonth = () => {
+    const newDate = new Date(currentMonth)
+    newDate.setMonth(newDate.getMonth() - 1)
+    const newMonth = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, "0")}`
+    router.push(`/reportes?month=${newMonth}`)
+  }
+
+  const goToNextMonth = () => {
+    const newDate = new Date(currentMonth)
+    newDate.setMonth(newDate.getMonth() + 1)
+    const newMonth = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, "0")}`
+    router.push(`/reportes?month=${newMonth}`)
+  }
+
+  const isCurrentMonth = () => {
+    const now = new Date()
+    return (
+      currentMonth.getMonth() === now.getMonth() &&
+      currentMonth.getFullYear() === now.getFullYear()
+    )
   }
 
   return (
-    <select
-      value={currentMonth}
-      onChange={handleChange}
-      className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-medium text-slate-700 outline-none cursor-pointer hover:border-[#e9cece] focus:border-[#e9cece] transition-colors capitalize"
-    >
-      {months.map((m) => (
-        <option key={m.value} value={m.value} className="capitalize">
-          {m.label}
-        </option>
-      ))}
-    </select>
-  );
+    <div className="flex items-center gap-1 rounded-full border border-[#e9cece] bg-white px-2 py-1 shadow-sm">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-full text-[#846262] hover:bg-[#e9cece]/30 hover:text-[#2d2424]"
+        onClick={goToPreviousMonth}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <div className="flex items-center gap-2 px-3">
+        <Calendar className="h-4 w-4 text-[#846262]" />
+        <span className="min-w-[130px] text-center text-sm font-medium capitalize text-[#2d2424]">
+          {formatMonth(currentMonth)}
+        </span>
+      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-full text-[#846262] hover:bg-[#e9cece]/30 hover:text-[#2d2424] disabled:opacity-40"
+        onClick={goToNextMonth}
+        disabled={isCurrentMonth()}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+  )
 }

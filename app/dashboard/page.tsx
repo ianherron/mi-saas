@@ -6,7 +6,6 @@ import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp } from 
 import CurrencySelector from "./CurrencySelector";
 import { StatCard } from "../reportes/StatCard";
 
-
 export default async function DashboardPage() {
   const supabase = await createClient();
   const business = await getBusiness();
@@ -39,16 +38,24 @@ export default async function DashboardPage() {
     .limit(5);
 
   const { data: todayAppointments } = await supabase
-  .from("appointments")
-  .select("total_price")
-  .eq("business_id", business.id)
-  .eq("date", today);
+    .from("appointments")
+    .select("total_price")
+    .eq("business_id", business.id)
+    .eq("date", today);
 
   const todayRevenue = todayAppointments?.reduce(
     (acc, a) => acc + (a.total_price ?? 0), 0
   ) ?? 0;
 
   const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
+
+  const quickActions = [
+    { href: "/servicios", label: "Gestionar servicios" },
+    { href: "/citas", label: "Ver todas las citas" },
+    { href: "/galeria", label: "Galería de trabajos" },
+    { href: "/pagos", label: "Pagos" },
+    { href: "/reportes", label: "Reportes" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
@@ -58,52 +65,26 @@ export default async function DashboardPage() {
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">
-            NailFlow
-          </span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
+          <a href="/dashboard" className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900">
+            <LayoutDashboard className="h-4 w-4" /> Dashboard
           </a>
-          <a
-            href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Clock className="h-4 w-4" />
-            Citas
+          <a href="/citas" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <Clock className="h-4 w-4" /> Citas
           </a>
-          <a
-            href="/servicios"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Scissors className="h-4 w-4" />
-            Servicios
+          <a href="/servicios" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <Scissors className="h-4 w-4" /> Servicios
           </a>
-          <a
-            href="/galeria"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <span>
-              <Images className="h-4 w-4" />
-            </span>{" "}
-            Galería
+          <a href="/galeria" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+            <Images className="h-4 w-4" /> Galería
           </a>
-          <a
-            href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
+          <a href="/pagos" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
             <CreditCard className="h-4 w-4" /> Pagos
           </a>
-          <a
-            href="/reportes"
-            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
-          >
+          <a href="/reportes" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
@@ -172,11 +153,13 @@ export default async function DashboardPage() {
               value={(servicesCount ?? 0).toString()}
               icon={<Scissors className="h-5 w-5" />}
             />
-            <StatCard
-              title="Ingresos hoy"
-              value={`₡${todayRevenue.toLocaleString()}`}
-              icon={<TrendingUp className="h-5 w-5" />}
-            />
+            <div className="col-span-2 lg:col-span-1">
+              <StatCard
+                title="Ingresos hoy"
+                value={`₡${todayRevenue.toLocaleString()}`}
+                icon={<TrendingUp className="h-5 w-5" />}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -186,39 +169,28 @@ export default async function DashboardPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
                   Próximas citas
                 </h2>
-                <a
-                  href="/citas"
-                  className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900"
-                >
+                <a href="/citas" className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900">
                   Ver todas →
                 </a>
               </div>
 
-              <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+              <div className="overflow-hidden rounded-2xl border border-[#e9cece]/60 bg-white">
                 {!upcoming?.length ? (
                   <div className="px-5 py-10 text-center">
-                    <p className="text-sm text-slate-400">
-                      No hay citas próximas.
-                    </p>
+                    <p className="text-sm text-slate-400">No hay citas próximas.</p>
                   </div>
                 ) : (
                   <ul className="divide-y divide-slate-50">
                     {upcoming.map((appointment: any) => (
-                      <li
-                        key={appointment.id}
-                        className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50"
-                      >
+                      <li key={appointment.id} className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50">
                         <div className="flex items-center gap-3">
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/20 text-sm font-semibold text-[#2d2424]">
                             {appointment.client_name?.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-900">
-                              {appointment.client_name}
-                            </p>
+                            <p className="text-sm font-medium text-slate-900">{appointment.client_name}</p>
                             <p className="text-xs text-slate-400">
-                              {appointment.services?.name} · {appointment.date}{" "}
-                              · {appointment.time}
+                              {appointment.services?.name} · {appointment.date} · {appointment.time}
                             </p>
                           </div>
                         </div>
@@ -236,61 +208,33 @@ export default async function DashboardPage() {
                   Acciones
                 </h2>
                 <div className="flex flex-col gap-2">
-                  <a
-                    href="/servicios"
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Gestionar servicios
-                    <span className="text-slate-300">→</span>
-                  </a>
-                  <a
-                    href="/citas"
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Ver todas las citas
-                    <span className="text-slate-300">→</span>
-                  </a>
-                  <a
-                    href="/galeria"
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Galería de trabajos
-                    <span className="text-slate-300">→</span>
-                  </a>
-                  <a
-                    href="/pagos"
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Pagos
-                    <span className="text-slate-300">→</span>
-                  </a>
-                  <div className="rounded-xl border border-slate-100 bg-white p-4 lg:hidden">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Moneda
-                    </p>
+                  {quickActions.map((item) => (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        className="group flex items-center justify-between rounded-2xl border border-[#e9cece]/60 bg-white px-4 py-3 text-sm font-medium text-[#2d2424] transition-all duration-300 hover:border-[#e9cece] hover:shadow-md"
+                      >
+                      {item.label}
+                      <span className="text-[#e9cece] transition-transform duration-200 group-hover:translate-x-1">→</span>
+                    </a>
+                  ))}
+
+                  <div className="rounded-2xl border border-[#e9cece]/60 bg-white p-4 lg:hidden">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Moneda</p>
                     <CurrencySelector
                       businessId={business.id}
                       currentCurrency={business.currency ?? "CRC"}
                     />
                   </div>
-                  <a
-                    href="/reportes"
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Reportes
-                    <span className="text-slate-300">→</span>
-                  </a>
                 </div>
               </div>
 
               {/* Booking link */}
-              <div className="rounded-xl border border-slate-100 bg-white p-4">
+              <div className="rounded-2xl border border-[#e9cece]/60 bg-white p-4">
                 <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
                   Tu enlace de reservas
                 </p>
-                <p className="mb-3 truncate text-xs text-slate-500">
-                  {BOOKING_URL}
-                </p>
+                <p className="mb-3 truncate text-xs text-slate-500">{BOOKING_URL}</p>
                 <CopyButton url={`https://${BOOKING_URL}`} />
               </div>
             </div>

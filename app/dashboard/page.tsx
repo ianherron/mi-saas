@@ -31,6 +31,7 @@ export default async function DashboardPage() {
     .from("appointments")
     .select(`*, services (name)`)
     .eq("business_id", business.id)
+    .eq("status", "active")
     .gte("date", today)
     .order("date", { ascending: true })
     .order("time", { ascending: true })

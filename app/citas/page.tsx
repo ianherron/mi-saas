@@ -145,7 +145,7 @@ async function completeAppointment(id: number) {
           <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-sm font-semibold tracking-tight">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           <a
@@ -196,7 +196,7 @@ async function completeAppointment(id: number) {
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-sm font-semibold">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold">NailFlow</span>
         </div>
         <a
           href="/dashboard"

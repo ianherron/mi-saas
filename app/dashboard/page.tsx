@@ -218,14 +218,6 @@ export default async function DashboardPage() {
                       <span className="text-[#e9cece] transition-transform duration-200 group-hover:translate-x-1">→</span>
                     </a>
                   ))}
-
-                  <div className="rounded-2xl border border-[#e9cece]/60 bg-white p-4 lg:hidden">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Moneda</p>
-                    <CurrencySelector
-                      businessId={business.id}
-                      currentCurrency={business.currency ?? "CRC"}
-                    />
-                  </div>
                 </div>
               </div>
 

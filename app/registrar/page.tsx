@@ -83,7 +83,7 @@ export default async function RegistroPage({
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+          <h1 className="serif-heading text-xl font-bold tracking-tight text-slate-900">
             NailFlow
           </h1>
         </div>

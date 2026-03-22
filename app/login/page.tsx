@@ -26,7 +26,7 @@ export default async function LoginPage({
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <h2 className="text-xl font-bold tracking-tight">
+          <h2 className="serif-heading text-xl font-bold tracking-tight">
             <a href="">NailFlow</a>
           </h2>
         </div>

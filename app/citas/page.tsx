@@ -210,7 +210,7 @@ async function completeAppointment(id: number) {
         <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
           {/* Page header */}
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
               Citas
             </h1>
             <p className="mt-1 text-sm text-slate-500">

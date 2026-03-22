@@ -133,12 +133,6 @@ export default async function DashboardPage() {
                 })}
               </p>
             </div>
-            <div className="hidden lg:block">
-              <CurrencySelector
-                businessId={business.id}
-                currentCurrency={business.currency ?? "CRC"}
-              />
-            </div>
           </div>
 
           {/* Stats */}

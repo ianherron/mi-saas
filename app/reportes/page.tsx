@@ -89,8 +89,6 @@ export default async function ReportesPage({
       minimumFractionDigits: 0, maximumFractionDigits: 0,
     }).format(value);
 
-  const selectedMonthDate = new Date(year, month - 1, 1);
-
   return (
     <div className="min-h-screen bg-[#fbf9f9] font-sans text-slate-900">
       {/* Sidebar */}
@@ -141,7 +139,7 @@ export default async function ReportesPage({
             <div>
               <h1 className="serif-heading text-xl text-[#2d2424]">Panel de Reportes</h1>
             </div>
-            <MonthSelector currentMonth={selectedMonthDate} selectedMonthStr={selectedMonth} />
+            <MonthSelector selectedMonthStr={selectedMonth} />
           </div>
         </div>
 

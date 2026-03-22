@@ -4,37 +4,34 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 
 interface MonthSelectorProps {
-  currentMonth: Date
   selectedMonthStr: string
 }
 
-export function MonthSelector({ currentMonth, selectedMonthStr }: MonthSelectorProps) {
+export function MonthSelector({ selectedMonthStr }: MonthSelectorProps) {
   const router = useRouter()
+  const [year, month] = selectedMonthStr.split("-").map(Number)
 
-  const formatMonth = (date: Date) => {
-    return date.toLocaleDateString("es-CR", { month: "long", year: "numeric" })
+  const formatMonth = () => {
+    return new Date(year, month - 1, 1).toLocaleDateString("es-CR", {
+      month: "long", year: "numeric"
+    })
   }
 
   const goToPreviousMonth = () => {
-    const newDate = new Date(currentMonth)
-    newDate.setMonth(newDate.getMonth() - 1)
+    const newDate = new Date(year, month - 2, 1)
     const newMonth = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, "0")}`
     router.push(`/reportes?month=${newMonth}`)
   }
 
   const goToNextMonth = () => {
-    const newDate = new Date(currentMonth)
-    newDate.setMonth(newDate.getMonth() + 1)
+    const newDate = new Date(year, month, 1)
     const newMonth = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, "0")}`
     router.push(`/reportes?month=${newMonth}`)
   }
 
   const isCurrentMonth = () => {
     const now = new Date()
-    return (
-      currentMonth.getMonth() === now.getMonth() &&
-      currentMonth.getFullYear() === now.getFullYear()
-    )
+    return month === (now.getMonth() + 1) && year === now.getFullYear()
   }
 
   return (
@@ -47,7 +44,7 @@ export function MonthSelector({ currentMonth, selectedMonthStr }: MonthSelectorP
       <div className="flex items-center gap-2 px-3">
         <Calendar className="h-4 w-4 text-[#846262]" />
         <span className="min-w-[130px] text-center text-sm font-medium capitalize text-[#2d2424]">
-          {formatMonth(currentMonth)}
+          {formatMonth()}
         </span>
       </div>
       <Button variant="ghost" size="icon"

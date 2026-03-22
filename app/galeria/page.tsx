@@ -1,7 +1,7 @@
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import GalleryManager from "../servicios/GalleryManager";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard } from "lucide-react";
+import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3 } from "lucide-react";
 
 export default async function GaleriaPage() {
   const supabase = await createClient();
@@ -62,6 +62,12 @@ export default async function GaleriaPage() {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
             <CreditCard className="h-4 w-4" /> Pagos
+          </a>
+          <a
+            href="/reportes"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
       </aside>

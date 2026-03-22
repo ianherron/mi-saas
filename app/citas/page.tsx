@@ -7,6 +7,7 @@ import {
   Images,
   Scissors,
   CreditCard,
+  BarChart3,
 } from "lucide-react";
 
 export default async function CitasPage() {
@@ -129,7 +130,7 @@ async function completeAppointment(id: number) {
     .eq("status", "active")
     .order("date", { ascending: true })
     .order("time", { ascending: true });
-    
+
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Costa_Rica",
   });
@@ -179,6 +180,12 @@ async function completeAppointment(id: number) {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
             <CreditCard className="h-4 w-4" /> Pagos
+          </a>
+          <a
+            href="/reportes"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
       </aside>

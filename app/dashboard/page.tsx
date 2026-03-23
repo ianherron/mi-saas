@@ -20,7 +20,9 @@ export default async function DashboardPage() {
     .from("appointments")
     .select("*", { count: "exact", head: true })
     .eq("business_id", business.id)
-    .eq("date", today);
+    .eq("date", today)
+    .eq("status", "active");
+
 
   const { count: servicesCount } = await supabase
     .from("services")
@@ -41,7 +43,9 @@ export default async function DashboardPage() {
     .from("appointments")
     .select("total_price")
     .eq("business_id", business.id)
-    .eq("date", today);
+    .eq("date", today)
+    .eq("status", "completed");
+
 
   const todayRevenue = todayAppointments?.reduce(
     (acc, a) => acc + (a.total_price ?? 0), 0

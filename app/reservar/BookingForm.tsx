@@ -237,10 +237,7 @@ export default function BookingForm({
           </p>
         </div>
 
-        <form
-          action={handleSubmit}
-          className="flex flex-col gap-16 lg:flex-row lg:gap-12"
-        >
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(new FormData(e.currentTarget)); }} className="flex flex-col gap-16 lg:flex-row lg:gap-12">
           <div className="flex-1 space-y-16 min-w-0">
             <input type="hidden" name="duration" value={totalDuration} />
             <input type="hidden" name="business_id" value={businessId} />

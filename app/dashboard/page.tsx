@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     .select("total_price")
     .eq("business_id", business.id)
     .eq("date", today)
-    .eq("status", "completed");
+    .in("status", ["active", "completed"]);
 
 
   const todayRevenue = todayAppointments?.reduce(

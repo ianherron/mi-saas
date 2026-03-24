@@ -45,7 +45,7 @@ export default function Home() {
               Iniciar sesión
             </a>
             <a
-              href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
+              href="/registrar"
               className="rounded-full bg-[#e9cece] px-6 py-2.5 text-sm font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-transform hover:scale-105"
             >
               Crear cuenta

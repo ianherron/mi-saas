@@ -10,20 +10,18 @@ const ratelimit = new Ratelimit({
 });
 
 export async function middleware(request: NextRequest) {
-  // Rate limiting solo en la ruta de reservas
+  // Rate limiting en reservas
   if (request.nextUrl.pathname.startsWith("/reservar/")) {
     const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
     const { success } = await ratelimit.limit(ip);
-
     if (!success) {
       return new NextResponse(
-        JSON.stringify({ error: "Demasiadas solicitudes. Intenta en un momento." }),
+        JSON.stringify({ error: "Demasiadas solicitudes." }),
         { status: 429, headers: { "Content-Type": "application/json" } }
       );
     }
   }
 
-  // Auth middleware existente
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -31,13 +29,9 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -62,9 +56,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
+  // Verificar suscripción en rutas protegidas
+  if (isProtected && user) {
+    const { data: business } = await supabase
+      .from("businesses")
+      .select("subscription_status, trial_ends_at")
+      .eq("user_id", user.id)
+      .single();
+
+    if (business) {
+      const isTrialExpired =
+        business.subscription_status === "trial" &&
+        new Date(business.trial_ends_at) < new Date();
+
+      const isCancelled = business.subscription_status === "cancelled";
+
+      if (isTrialExpired || isCancelled) {
+        return NextResponse.redirect(new URL("/suscripcion", request.url));
+      }
+    }
+  }
+
   return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/citas/:path*", "/servicios/:path*", "/login", "/reservar/:path*", "/pagos/:path*", "/reportes/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/citas/:path*",
+    "/servicios/:path*",
+    "/galeria/:path*",
+    "/pagos/:path*",
+    "/reportes/:path*",
+    "/login",
+    "/reservar/:path*",
+  ],
 };

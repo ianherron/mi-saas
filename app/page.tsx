@@ -45,7 +45,7 @@ export default function Home() {
               Iniciar sesión
             </a>
             <a
-              href="/registrar"
+              href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
               className="rounded-full bg-[#e9cece] px-6 py-2.5 text-sm font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-transform hover:scale-105"
             >
               Crear cuenta
@@ -488,8 +488,8 @@ export default function Home() {
                   </p>
                   <div className="flex flex-col gap-4 sm:flex-row lg:justify-start justify-center">
                     <a
-                      href="/registrar"
-                      className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105 text-center"
+                      href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
+                      className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
                     >
                       Empezar gratis hoy
                     </a>
@@ -546,7 +546,7 @@ export default function Home() {
                     </ul>
 
                     <a
-                      href="/registrar"
+                      href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
                       className="block w-full rounded-xl bg-[#e9cece] px-6 py-4 text-center text-base font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-all hover:scale-105 hover:bg-[#dfc2c2]"
                     >
                       Empezar 14 días gratis

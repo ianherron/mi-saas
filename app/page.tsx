@@ -487,10 +487,7 @@ export default function Home() {
                     elegancia.
                   </p>
                   <div className="flex flex-col gap-4 sm:flex-row lg:justify-start justify-center">
-                    <a
-                      href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
-                      className="rounded-xl bg-[#2d2424] px-10 py-5 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105"
-                    >
+                    <a href="/registrar" className="...">
                       Empezar gratis hoy
                     </a>
                     <a
@@ -545,10 +542,7 @@ export default function Home() {
                       ))}
                     </ul>
 
-                    <a
-                      href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
-                      className="block w-full rounded-xl bg-[#e9cece] px-6 py-4 text-center text-base font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-all hover:scale-105 hover:bg-[#dfc2c2]"
-                    >
+                    <a href="/registrar" className="...">
                       Empezar 14 días gratis
                     </a>
 

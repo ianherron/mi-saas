@@ -66,7 +66,7 @@ async function register(formData: FormData) {
     `,
   });
 
-  redirect("/dashboard");
+  redirect(`${process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}?checkout[email]=${email}&checkout[name]=${owner_name}`);
 }
 
 export default async function RegistroPage({

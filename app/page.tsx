@@ -381,7 +381,7 @@ export default function Home() {
                   <li className="flex items-center gap-3">
                     <span className="text-[#cfaeae]">✔</span>
                     <span className="font-medium">
-                      Recordatorios por email y SMS
+                      Recordatorios por email
                     </span>
                   </li>
                   <li className="flex items-center gap-3">

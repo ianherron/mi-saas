@@ -501,8 +501,7 @@ export default function Home() {
                     </a>
                   </div>
                   <p className="mt-6 text-sm text-[#846262]">
-                    Prueba gratuita de 14 días. No se requiere tarjeta de
-                    crédito.
+                    Prueba gratuita de 30 días.
                   </p>
                 </div>
 
@@ -549,12 +548,8 @@ export default function Home() {
                       href="/registrar"
                       className="block w-full rounded-xl bg-[#e9cece] px-6 py-4 text-center text-base font-bold text-[#2d2424] shadow-lg shadow-[#e9cece]/20 transition-all hover:scale-105 hover:bg-[#dfc2c2]"
                     >
-                      Empezar 14 días gratis
+                      Empezar 30 días gratis
                     </a>
-
-                    <p className="mt-4 text-center text-xs text-[#846262]">
-                      Sin tarjeta de crédito requerida
-                    </p>
                   </div>
                 </div>
               </div>

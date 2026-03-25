@@ -89,7 +89,7 @@ export default function AddServiceForm({
             />
           )}
           <label className="cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-500 transition-colors hover:border-[#e9cece] hover:text-[#2d2424]">
-            {imageFile ? imageFile.name : "Subir imagen (opcional)"}
+            {imageFile ? imageFile.name : "Subir imagen (recomendado)"}
             <input
               type="file"
               accept="image/*"

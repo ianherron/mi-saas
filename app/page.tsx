@@ -706,12 +706,6 @@ export default function Home() {
                 >
                   <Instagram className="h-5 w-5 text-[#2d2424]" />
                 </a>
-                <a
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ecec] transition-all hover:bg-[#e9cece]"
-                  href="#"
-                >
-                  <Facebook className="h-5 w-5 text-[#2d2424]" />
-                </a>
               </div>
             </div>
           </div>

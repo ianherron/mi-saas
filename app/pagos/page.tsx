@@ -181,17 +181,47 @@ export default async function PagosPage() {
                 </label>
                 <select
                   name="sinpe_bank"
-                  defaultValue={business.sinpe_bank ?? ""}
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#e9cece]"
                 >
-                  <option value="">Selecciona tu banco</option>
-                  <option value="BCR">BCR</option>
-                  <option value="BNCR">Banco Nacional</option>
-                  <option value="BAC">BAC</option>
-                  <option value="Scotiabank">Scotiabank</option>
-                  <option value="Davivienda">Davivienda</option>
-                  <option value="Popular">Banco Popular</option>
-                  <option value="Promerica">Promerica</option>
+                  <option value="" selected={!business.sinpe_bank}>
+                    Selecciona tu banco
+                  </option>
+                  <option value="BCR" selected={business.sinpe_bank === "BCR"}>
+                    BCR
+                  </option>
+                  <option
+                    value="BNCR"
+                    selected={business.sinpe_bank === "BNCR"}
+                  >
+                    Banco Nacional
+                  </option>
+                  <option value="BAC" selected={business.sinpe_bank === "BAC"}>
+                    BAC
+                  </option>
+                  <option
+                    value="Scotiabank"
+                    selected={business.sinpe_bank === "Scotiabank"}
+                  >
+                    Scotiabank
+                  </option>
+                  <option
+                    value="Davivienda"
+                    selected={business.sinpe_bank === "Davivienda"}
+                  >
+                    Davivienda
+                  </option>
+                  <option
+                    value="Popular"
+                    selected={business.sinpe_bank === "Popular"}
+                  >
+                    Banco Popular
+                  </option>
+                  <option
+                    value="Promerica"
+                    selected={business.sinpe_bank === "Promerica"}
+                  >
+                    Promerica
+                  </option>
                 </select>
               </div>
             </div>

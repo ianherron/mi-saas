@@ -159,3 +159,20 @@
     @apply font-sans;
   }
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-medium {
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+.animate-float-fast {
+  animation: float 4s ease-in-out infinite;
+  animation-delay: 1s;
+}

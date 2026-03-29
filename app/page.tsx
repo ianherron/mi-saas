@@ -419,13 +419,14 @@ export default function Home() {
                 </div>
 
                 {/* Desktop: 3 teléfonos */}
-                <div className="relative hidden lg:flex items-center justify-center gap-4">
+                <div className="relative hidden lg:flex items-center justify-center gap-8">
+                  {/* Teléfono izquierdo — Reservas */}
                   <div
-                    className="relative"
+                    className="relative animate-float-slow"
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <div className="pt-6">
                         <img
                           src="/screenshot-reservas.png"
@@ -436,9 +437,10 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="relative z-10">
+                  {/* Teléfono central — Dashboard */}
+                  <div className="relative z-10 animate-float-medium">
                     <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-2 left-1/2 z-10 h-4 w-20 -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-[14px] w-[64px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <div className="pt-6">
                         <img
                           src="/screenshot-dashboard.png"
@@ -449,12 +451,13 @@ export default function Home() {
                     </div>
                   </div>
 
+                  {/* Teléfono derecho — Reportes */}
                   <div
-                    className="relative"
+                    className="relative animate-float-fast"
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <div className="pt-6">
                         <img
                           src="/screenshot-reportes.png"

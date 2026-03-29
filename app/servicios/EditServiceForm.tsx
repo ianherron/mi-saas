@@ -1,13 +1,16 @@
 "use client";
 import { useState } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 
-type Service = { id: string; name: string; price: number; duration: number; description?: string; };
+type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; };
 
 export default function EditServiceForm({ service, updateService }: {
   service: Service;
   updateService: (formData: FormData) => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(service.image_url ?? null);
 
   if (!editing) {
     return (
@@ -19,9 +22,30 @@ export default function EditServiceForm({ service, updateService }: {
   }
 
   return (
-    <form action={async (formData) => { await updateService(formData); setEditing(false); }}
+    <form action={async (formData) => {
+      if (image) {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+        );
+        const cleanName = image.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+        const fileName = `${Date.now()}-${cleanName}`;
+        const { data, error } = await supabase.storage
+          .from("service-images")
+          .upload(fileName, image);
+        if (!error && data) {
+          const { data: urlData } = supabase.storage
+            .from("service-images")
+            .getPublicUrl(data.path);
+          formData.set("image_url", urlData.publicUrl);
+        }
+      }
+      await updateService(formData);
+      setEditing(false);
+    }}
       className="flex flex-col gap-2">
       <input type="hidden" name="id" value={service.id} />
+      <input type="hidden" name="image_url" value={preview ?? ""} />
       <input name="name" type="text" defaultValue={service.name}
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
       <input name="price" type="number" defaultValue={service.price}
@@ -31,6 +55,27 @@ export default function EditServiceForm({ service, updateService }: {
       <input name="description" type="text" defaultValue={service.description ?? ""}
         placeholder="Descripción (opcional)"
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
+
+      {/* Imagen */}
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 py-3 transition-all hover:border-[#e9cece]">
+        {preview ? (
+          <img src={preview} alt="Imagen" className="h-20 w-full rounded-lg object-cover" />
+        ) : (
+          <>
+            <span className="text-lg">🖼️</span>
+            <span className="text-[10px] text-slate-400">Agregar imagen</span>
+          </>
+        )}
+        <input type="file" accept="image/*" className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setImage(file);
+              setPreview(URL.createObjectURL(file));
+            }
+          }} />
+      </label>
+
       <div className="flex gap-1">
         <button type="submit" className="flex-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700">
           Guardar

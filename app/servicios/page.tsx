@@ -58,11 +58,19 @@ export default async function ServiciosPage() {
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
     const description = formData.get("description") as string;
+    const image_url = formData.get("image_url") as string;
+
 
     if (!id || !name || !price || !duration) return;
     await supabase
       .from("services")
-      .update({ name, price, duration, description })
+      .update({
+        name,
+        price,
+        duration,
+        description,
+        image_url: image_url || undefined,
+      })
       .eq("id", id);
     revalidatePath("/servicios");
   }

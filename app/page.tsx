@@ -408,10 +408,12 @@ export default function Home() {
                   ].map((src, i) => (
                     <div
                       key={i}
-                      className="snap-center shrink-0 relative w-[220px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl"
+                      className="snap-center shrink-0 relative w-[220px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl"
                     >
                       <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img src={src} alt="NailFlow" className="w-full" />
+                      <div className="pt-6">
+                        <img src={src} alt="NailFlow" className="w-full" />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -422,24 +424,28 @@ export default function Home() {
                     className="relative"
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
                   >
-                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
+                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img
-                        src="/screenshot-reservas.png"
-                        alt="Reservas NailFlow"
-                        className="w-full"
-                      />
+                      <div className="pt-6">
+                        <img
+                          src="/screenshot-reservas.png"
+                          alt="Reservas NailFlow"
+                          className="w-full"
+                        />
+                      </div>
                     </div>
                   </div>
 
                   <div className="relative z-10">
-                    <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
+                    <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-2 left-1/2 z-10 h-4 w-20 -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img
-                        src="/screenshot-dashboard.png"
-                        alt="Dashboard NailFlow"
-                        className="w-full"
-                      />
+                      <div className="pt-6">
+                        <img
+                          src="/screenshot-dashboard.png"
+                          alt="Dashboard NailFlow"
+                          className="w-full"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -447,13 +453,15 @@ export default function Home() {
                     className="relative"
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
-                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
+                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img
-                        src="/screenshot-reportes.png"
-                        alt="Reportes NailFlow"
-                        className="w-full"
-                      />
+                      <div className="pt-6">
+                        <img
+                          src="/screenshot-reportes.png"
+                          alt="Reportes NailFlow"
+                          className="w-full"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

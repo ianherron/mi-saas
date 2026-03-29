@@ -425,8 +425,10 @@ export default function Home() {
                     className="relative animate-float-slow"
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
                   >
-                    <div className="absolute top-[10px] left-1/2 z-20 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
+                      <div className="relative h-7 w-full bg-white flex items-center justify-center">
+                        <div className="h-[14px] w-[56px] rounded-full bg-[#2d2424]" />
+                      </div>
                       <img
                         src="/screenshot-reservas.png"
                         alt="Reservas NailFlow"
@@ -437,8 +439,10 @@ export default function Home() {
 
                   {/* Teléfono central — Dashboard */}
                   <div className="relative z-10 animate-float-medium">
-                    <div className="absolute top-[10px] left-1/2 z-20 h-[14px] w-[64px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                     <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
+                      <div className="relative h-7 w-full bg-white flex items-center justify-center">
+                        <div className="h-[14px] w-[64px] rounded-full bg-[#2d2424]" />
+                      </div>
                       <img
                         src="/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
@@ -452,8 +456,10 @@ export default function Home() {
                     className="relative animate-float-fast"
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
-                    <div className="absolute top-[10px] left-1/2 z-20 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] bg-white shadow-2xl">
+                      <div className="relative h-7 w-full bg-white flex items-center justify-center">
+                        <div className="h-[14px] w-[56px] rounded-full bg-[#2d2424]" />
+                      </div>
                       <img
                         src="/screenshot-reportes.png"
                         alt="Reportes NailFlow"

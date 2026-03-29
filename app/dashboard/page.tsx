@@ -69,26 +69,46 @@ export default async function DashboardPage() {
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">
+            NailFlow
+          </span>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a href="/dashboard" className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900">
+          <a
+            href="/dashboard"
+            className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
+          >
             <LayoutDashboard className="h-4 w-4" /> Dashboard
           </a>
-          <a href="/citas" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/citas"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Clock className="h-4 w-4" /> Citas
           </a>
-          <a href="/servicios" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/servicios"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Scissors className="h-4 w-4" /> Servicios
           </a>
-          <a href="/galeria" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/galeria"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Images className="h-4 w-4" /> Galería
           </a>
-          <a href="/pagos" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/pagos"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <CreditCard className="h-4 w-4" /> Pagos
           </a>
-          <a href="/reportes" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/reportes"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
@@ -167,7 +187,10 @@ export default async function DashboardPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
                   Próximas citas
                 </h2>
-                <a href="/citas" className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900">
+                <a
+                  href="/citas"
+                  className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900"
+                >
                   Ver todas →
                 </a>
               </div>
@@ -175,20 +198,33 @@ export default async function DashboardPage() {
               <div className="overflow-hidden rounded-2xl border border-[#e9cece]/60 bg-white">
                 {!upcoming?.length ? (
                   <div className="px-5 py-10 text-center">
-                    <p className="text-sm text-slate-400">No hay citas próximas.</p>
+                    <p className="text-sm text-slate-400">
+                      No hay citas próximas.
+                    </p>
                   </div>
                 ) : (
                   <ul className="divide-y divide-slate-50">
                     {upcoming.map((appointment: any) => (
-                      <li key={appointment.id} className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50">
+                      <li
+                        key={appointment.id}
+                        className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/20 text-sm font-semibold text-[#2d2424]">
                             {appointment.client_name?.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-900">{appointment.client_name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-slate-900">
+                                {appointment.client_name}
+                              </p>
+                              <span className="rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-600">
+                                Confirmada
+                              </span>
+                            </div>
                             <p className="text-xs text-slate-400">
-                              {appointment.services?.name} · {appointment.date} · {appointment.time}
+                              {appointment.services?.name} · {appointment.date}{" "}
+                              · {appointment.time}
                             </p>
                           </div>
                         </div>
@@ -207,13 +243,15 @@ export default async function DashboardPage() {
                 </h2>
                 <div className="flex flex-col gap-2">
                   {quickActions.map((item) => (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        className="group flex items-center justify-between rounded-2xl border border-[#e9cece]/60 bg-white px-4 py-3 text-sm font-medium text-[#2d2424] transition-all duration-300 hover:border-[#e9cece] hover:shadow-md"
-                      >
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className="group flex items-center justify-between rounded-2xl border border-[#e9cece]/60 bg-white px-4 py-3 text-sm font-medium text-[#2d2424] transition-all duration-300 hover:border-[#e9cece] hover:shadow-md"
+                    >
                       {item.label}
-                      <span className="text-[#e9cece] transition-transform duration-200 group-hover:translate-x-1">→</span>
+                      <span className="text-[#e9cece] transition-transform duration-200 group-hover:translate-x-1">
+                        →
+                      </span>
                     </a>
                   ))}
                 </div>
@@ -224,7 +262,9 @@ export default async function DashboardPage() {
                 <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
                   Tu enlace de reservas
                 </p>
-                <p className="mb-3 truncate text-xs text-slate-500">{BOOKING_URL}</p>
+                <p className="mb-3 truncate text-xs text-slate-500">
+                  {BOOKING_URL}
+                </p>
                 <CopyButton url={`https://${BOOKING_URL}`} />
               </div>
             </div>

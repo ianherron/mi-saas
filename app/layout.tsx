@@ -18,7 +18,11 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "NailFlow - Gestión Premium para Nail Art",
-  description: "La plataforma de gestión diseñada exclusivamente para técnicos de uñas.",
+  description:
+    "La plataforma de gestión diseñada exclusivamente para técnicos de uñas.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -43,3 +47,4 @@ export default function RootLayout({
     </html>
   );
 }
+

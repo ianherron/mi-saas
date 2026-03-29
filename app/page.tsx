@@ -399,14 +399,31 @@ export default function Home() {
               </div>
 
               <div className="w-full lg:w-3/5 flex items-center justify-center">
-                <div className="relative flex items-center justify-center gap-4">
-                  {/* Teléfono izquierdo — Reservas */}
+                {/* Mobile: scroll horizontal */}
+                <div className="flex lg:hidden gap-4 overflow-x-auto px-4 pb-4 snap-x snap-mandatory">
+                  {[
+                    "/screenshot-reservas.png",
+                    "/screenshot-dashboard.png",
+                    "/screenshot-reportes.png",
+                  ].map((src, i) => (
+                    <div
+                      key={i}
+                      className="snap-center shrink-0 relative w-[220px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl"
+                    >
+                      <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <img src={src} alt="NailFlow" className="w-full" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop: 3 teléfonos */}
+                <div className="relative hidden lg:flex items-center justify-center gap-4">
                   <div
-                    className="relative hidden lg:block"
+                    className="relative"
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-0 left-1/2 z-10 h-5 w-20 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-reservas.png"
                         alt="Reservas NailFlow"
@@ -415,10 +432,9 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Teléfono central — Dashboard */}
                   <div className="relative z-10">
                     <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-0 left-1/2 z-10 h-5 w-24 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-4 w-20 -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
@@ -427,13 +443,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Teléfono derecho — Reportes */}
                   <div
-                    className="relative hidden lg:block"
+                    className="relative"
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
-                      <div className="absolute top-0 left-1/2 z-10 h-5 w-20 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-10 h-4 w-16 -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-reportes.png"
                         alt="Reportes NailFlow"

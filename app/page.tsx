@@ -408,7 +408,7 @@ export default function Home() {
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-0 left-1/2 z-10 h-5 w-20 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
                       <img
-                        src="/screenshot-reservas.png"
+                        src="/public/screenshot-reservas.png"
                         alt="Reservas NailFlow"
                         className="w-full"
                       />
@@ -420,7 +420,7 @@ export default function Home() {
                     <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-0 left-1/2 z-10 h-5 w-24 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
                       <img
-                        src="/screenshot-dashboard.png"
+                        src="/public/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
                         className="w-full"
                       />
@@ -435,7 +435,7 @@ export default function Home() {
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[8px] border-[#2d2424] bg-white shadow-2xl">
                       <div className="absolute top-0 left-1/2 z-10 h-5 w-20 -translate-x-1/2 rounded-b-2xl bg-[#2d2424]" />
                       <img
-                        src="/screenshot-reportes.png"
+                        src="/public/screenshot-reportes.png"
                         alt="Reportes NailFlow"
                         className="w-full"
                       />

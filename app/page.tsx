@@ -426,11 +426,11 @@ export default function Home() {
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl">
-                      <div className="absolute top-3 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-reservas.png"
                         alt="Reservas NailFlow"
-                        className="w-full"
+                        className="w-full mt-[-20px]"
                       />
                     </div>
                   </div>
@@ -438,11 +438,11 @@ export default function Home() {
                   {/* Teléfono central — Dashboard */}
                   <div className="relative z-10 animate-float-medium">
                     <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] shadow-2xl">
-                      <div className="absolute top-3 left-1/2 z-20 h-[12px] w-[60px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[60px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
-                        className="w-full"
+                        className="w-full mt-[-20px]"
                       />
                     </div>
                   </div>
@@ -453,11 +453,11 @@ export default function Home() {
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
                     <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl">
-                      <div className="absolute top-3 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
+                      <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-reportes.png"
                         alt="Reportes NailFlow"
-                        className="w-full"
+                        className="w-full mt-[-20px]"
                       />
                     </div>
                   </div>

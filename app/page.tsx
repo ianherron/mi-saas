@@ -411,18 +411,14 @@ export default function Home() {
                       className="snap-center shrink-0 relative w-[220px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl"
                     >
                       <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img
-                        src={src}
-                        alt="NailFlow"
-                        className="w-full"
-                      />
+                      <img src={src} alt="NailFlow" className="w-full" />
                     </div>
                   ))}
                 </div>
 
                 {/* Desktop: 3 teléfonos */}
                 <div className="relative hidden lg:flex items-center justify-center gap-8">
-                  {/* Teléfono izquierdo — Reservas */}
+                  {/* Teléfono izquierdo — Reservas (perfecto, sin cambios) */}
                   <div
                     className="relative animate-float-slow"
                     style={{ transform: "rotate(-6deg) translateY(40px)" }}
@@ -437,29 +433,29 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Teléfono central — Dashboard */}
+                  {/* Teléfono central — Dashboard (bajar contenido) */}
                   <div className="relative z-10 animate-float-medium">
-                    <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] shadow-2xl">
+                    <div className="relative w-[240px] overflow-hidden rounded-[40px] border-[4px] border-[#2d2424] shadow-2xl bg-white">
                       <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[60px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
-                        className="w-full"
+                        className="w-full pt-6"
                       />
                     </div>
                   </div>
 
-                  {/* Teléfono derecho — Reportes */}
+                  {/* Teléfono derecho — Reportes (bajar contenido) */}
                   <div
                     className="relative animate-float-fast"
                     style={{ transform: "rotate(6deg) translateY(40px)" }}
                   >
-                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl">
+                    <div className="relative w-[200px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl bg-white">
                       <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
                       <img
                         src="/screenshot-reportes.png"
                         alt="Reportes NailFlow"
-                        className="w-full"
+                        className="w-full pt-6"
                       />
                     </div>
                   </div>

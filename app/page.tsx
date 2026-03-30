@@ -411,7 +411,7 @@ export default function Home() {
                       className="snap-center shrink-0 relative w-[220px] overflow-hidden rounded-[36px] border-[4px] border-[#2d2424] shadow-2xl"
                     >
                       <div className="absolute top-2 left-1/2 z-20 h-[12px] w-[52px] -translate-x-1/2 rounded-full bg-[#2d2424]" />
-                      <img src={src} alt="NailFlow" className="w-full" />
+                      <img src={src} alt="NailFlow" className="w-full pt-6" />
                     </div>
                   ))}
                 </div>

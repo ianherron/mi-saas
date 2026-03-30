@@ -414,7 +414,7 @@ export default function Home() {
                       <img
                         src={src}
                         alt="NailFlow"
-                        className="w-full mt-[-50px]"
+                        className="w-full"
                       />
                     </div>
                   ))}
@@ -432,7 +432,7 @@ export default function Home() {
                       <img
                         src="/screenshot-reservas.png"
                         alt="Reservas NailFlow"
-                        className="w-full mt-[-50px]"
+                        className="w-full"
                       />
                     </div>
                   </div>
@@ -444,7 +444,7 @@ export default function Home() {
                       <img
                         src="/screenshot-dashboard.png"
                         alt="Dashboard NailFlow"
-                        className="w-full mt-[-50px]"
+                        className="w-full"
                       />
                     </div>
                   </div>
@@ -459,7 +459,7 @@ export default function Home() {
                       <img
                         src="/screenshot-reportes.png"
                         alt="Reportes NailFlow"
-                        className="w-full mt-[-50px]"
+                        className="w-full"
                       />
                     </div>
                   </div>

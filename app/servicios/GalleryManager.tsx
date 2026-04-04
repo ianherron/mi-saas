@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { toast } from "sonner";
 
 type GalleryImage = {
   id: number;
@@ -56,11 +57,16 @@ export default function GalleryManager({
 
     setUploading(false);
     e.target.value = "";
+    toast.success("Fotos subidas correctamente", {
+    description: `${files.length} foto${files.length > 1 ? "s" : ""} agregada${files.length > 1 ? "s" : ""} a la galería.`,
+  });
   }
 
   async function handleDelete(id: number) {
     await deleteImage(id);
     setLocalImages((prev) => prev.filter((img) => img.id !== id));
+    toast.success("Foto eliminada correctamente");
+    
   }
 
   return (

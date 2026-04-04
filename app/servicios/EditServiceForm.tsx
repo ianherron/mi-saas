@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { toast } from "sonner";
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; };
 
@@ -42,6 +43,9 @@ export default function EditServiceForm({ service, updateService }: {
       }
       await updateService(formData);
       setEditing(false);
+      toast.success("Servicio actualizado", {
+        description: "Los cambios se guardaron correctamente.",
+      });
     }}
       className="flex flex-col gap-2">
       <input type="hidden" name="id" value={service.id} />

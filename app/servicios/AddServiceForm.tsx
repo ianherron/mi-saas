@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { toast } from "sonner";
 
 export default function AddServiceForm({
   addService,
@@ -49,6 +50,9 @@ export default function AddServiceForm({
     setImageFile(null);
     setPreview(null);
     (e.target as HTMLFormElement).reset();
+    toast.success("Servicio agregado", {
+      description: "El servicio se agregó correctamente.",
+    });
   }
 
   return (

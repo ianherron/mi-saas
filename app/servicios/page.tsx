@@ -300,9 +300,7 @@ export default async function ServiciosPage() {
                         service={service}
                         updateService={updateService}
                       />
-                      <form action={deleteService.bind(null, service.id)}>
                         <DeleteButton action={deleteService.bind(null, service.id)} />
-                      </form>
                     </div>
                   </li>
                 ))}
@@ -338,9 +336,7 @@ export default async function ServiciosPage() {
                         {extra.price?.toLocaleString() ?? 0}
                       </p>
                     </div>
-                    <form action={deleteExtra.bind(null, extra.id)}>
                       <DeleteButton action={deleteExtra.bind(null, extra.id)} />
-                    </form>
                   </li>
                 ))}
               </ul>
@@ -371,9 +367,7 @@ export default async function ServiciosPage() {
                     <p className="text-sm font-medium text-slate-900">
                       {slot.time}
                     </p>
-                    <form action={deleteTimeSlot.bind(null, slot.id)}>
                       <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
-                    </form>
                   </li>
                 ))}
               </ul>

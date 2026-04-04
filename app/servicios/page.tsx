@@ -3,6 +3,10 @@ import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
 import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3 } from "lucide-react";
+import DeleteButton from "./DeleteButton";
+import { AddExtraForm, AddTimeSlotForm, WorkingDaysForm } from "./ServiciosToasts";
+
+
 
 export default async function ServiciosPage() {
   const supabase = await createClient();
@@ -297,12 +301,7 @@ export default async function ServiciosPage() {
                         updateService={updateService}
                       />
                       <form action={deleteService.bind(null, service.id)}>
-                        <button
-                          type="submit"
-                          className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                        >
-                          Eliminar
-                        </button>
+                        <DeleteButton action={deleteService.bind(null, service.id)} />
                       </form>
                     </div>
                   </li>
@@ -316,35 +315,7 @@ export default async function ServiciosPage() {
             <div className="border-b border-slate-100 px-5 py-4">
               <h2 className="text-sm font-semibold text-slate-900">Extras</h2>
             </div>
-            <form
-              action={addExtra}
-              className="flex flex-col gap-3 border-b border-slate-50 p-5 sm:flex-row"
-            >
-              <input
-                name="name"
-                type="text"
-                placeholder="Ej. Retiro de esmalte"
-                className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
-              />
-              <input
-                name="duration"
-                type="number"
-                placeholder="Minutos extra"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-36"
-              />
-              <input
-                name="price"
-                type="number"
-                placeholder="Precio"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white sm:w-32"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-              >
-                Agregar
-              </button>
-            </form>
+            <AddExtraForm addExtra={addExtra} />
             {!extras?.length ? (
               <div className="px-5 py-6 text-center">
                 <p className="text-sm text-slate-400">
@@ -368,12 +339,7 @@ export default async function ServiciosPage() {
                       </p>
                     </div>
                     <form action={deleteExtra.bind(null, extra.id)}>
-                      <button
-                        type="submit"
-                        className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                      >
-                        Eliminar
-                      </button>
+                      <DeleteButton action={deleteExtra.bind(null, extra.id)} />
                     </form>
                   </li>
                 ))}
@@ -388,37 +354,7 @@ export default async function ServiciosPage() {
                 Horarios disponibles
               </h2>
             </div>
-            <form
-              action={addTimeSlot}
-              className="flex flex-col gap-3 border-b border-slate-50 p-5 sm:flex-row"
-            >
-              <select
-                name="hour"
-                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#e9cece] focus:bg-white"
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].flatMap((h) => [
-                  <option key={`${h}:00`} value={`${h}:00`}>
-                    {h}:00
-                  </option>,
-                  <option key={`${h}:30`} value={`${h}:30`}>
-                    {h}:30
-                  </option>,
-                ])}
-              </select>
-              <select
-                name="period"
-                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#e9cece] focus:bg-white"
-              >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-              <button
-                type="submit"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-              >
-                Agregar
-              </button>
-            </form>
+            <AddTimeSlotForm addTimeSlot={addTimeSlot} />
             {!timeSlots?.length ? (
               <div className="px-5 py-6 text-center">
                 <p className="text-sm text-slate-400">
@@ -436,12 +372,7 @@ export default async function ServiciosPage() {
                       {slot.time}
                     </p>
                     <form action={deleteTimeSlot.bind(null, slot.id)}>
-                      <button
-                        type="submit"
-                        className="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                      >
-                        Eliminar
-                      </button>
+                      <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
                     </form>
                   </li>
                 ))}
@@ -457,38 +388,7 @@ export default async function ServiciosPage() {
                 Selecciona los días que atiendes clientas.
               </p>
             </div>
-            <form action={saveWorkingDays} className="p-5">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-4">
-                {[
-                  { label: "Domingo", value: 0 },
-                  { label: "Lunes", value: 1 },
-                  { label: "Martes", value: 2 },
-                  { label: "Miércoles", value: 3 },
-                  { label: "Jueves", value: 4 },
-                  { label: "Viernes", value: 5 },
-                  { label: "Sábado", value: 6 },
-                ].map((day) => (
-                  <label
-                    key={day.value}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      name={`day_${day.value}`}
-                      defaultChecked={workingDaysList.includes(day.value)}
-                      className="rounded border-slate-300 text-[#e9cece] focus:ring-[#e9cece]"
-                    />
-                    <span className="text-sm text-slate-700">{day.label}</span>
-                  </label>
-                ))}
-              </div>
-              <button
-                type="submit"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-              >
-                Guardar días
-              </button>
-            </form>
+            <WorkingDaysForm saveWorkingDays={saveWorkingDays} workingDaysList={workingDaysList} />
           </div>
         </main>
       </div>

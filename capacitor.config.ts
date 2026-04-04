@@ -17,6 +17,10 @@ const config: CapacitorConfig = {
     androidSplashResourceName: 'splash',
     showSpinner: false,
     androidScaleType: 'CENTER_INSIDE',
+  },
+  StatusBar: {
+    style: 'DARK',
+    backgroundColor: '#fbf9f9',
   }
 }
 };

@@ -25,6 +25,7 @@ export default function GalleryManager({
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    const fileCount = files.length; 
     setUploading(true);
 
     const supabase = createBrowserClient(
@@ -58,8 +59,9 @@ export default function GalleryManager({
     setUploading(false);
     e.target.value = "";
     toast.success("Fotos subidas correctamente", {
-    description: `${files.length} foto${files.length > 1 ? "s" : ""} agregada${files.length > 1 ? "s" : ""} a la galería.`,
+    description: `${fileCount} foto${fileCount > 1 ? "s" : ""} agregada${fileCount > 1 ? "s" : ""} a la galería.`,
   });
+
   }
 
   async function handleDelete(id: number) {

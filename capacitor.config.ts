@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'NailFlow',
   webDir: 'public',
   server: {
-    url: 'https://nailflow.app',
+    url: 'https://nailflow.app/bienvenida',
     cleartext: true,
     androidScheme: 'https'
   },

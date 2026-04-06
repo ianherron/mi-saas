@@ -78,7 +78,13 @@ export default async function RegistroPage({
 
   return (
     <div className="relative flex min-h-screen flex-col bg-[#fbf9f9] font-sans text-slate-900">
-      <header className="flex w-full items-center justify-between bg-transparent px-6 py-6 lg:px-20">
+      <header
+        className="flex w-full items-center justify-between bg-transparent px-6 lg:px-20"
+        style={{
+          paddingTop: "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
+          paddingBottom: "1.5rem",
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />

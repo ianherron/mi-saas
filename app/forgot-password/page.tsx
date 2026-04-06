@@ -21,10 +21,19 @@ export default async function ForgotPasswordPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8">
+      <header
+        className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8"
+        style={{
+          paddingTop: "max(2rem, calc(env(safe-area-inset-top) + 1rem))",
+        }}
+      >
         <div className="flex items-center gap-2 text-slate-900">
           <div className="size-6 text-[#e9cece]">
-            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              fill="currentColor"
+              viewBox="0 0 48 48"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"></path>
             </svg>
           </div>
@@ -40,15 +49,18 @@ export default async function ForgotPasswordPage({
           {params.sent ? (
             <div className="text-center">
               <div className="mb-6 flex justify-center">
-                <div className="flex size-16 items-center justify-center rounded-full bg-[#e9cece]/30 text-2xl">✓</div>
+                <div className="flex size-16 items-center justify-center rounded-full bg-[#e9cece]/30 text-2xl">
+                  ✓
+                </div>
               </div>
               <h1 className="mb-3 text-2xl font-bold tracking-tight text-slate-900">
                 Correo enviado
               </h1>
               <p className="mb-8 text-sm text-slate-500">
-                Te enviamos un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.
+                Te enviamos un enlace para restablecer tu contraseña. Revisa tu
+                bandeja de entrada.
               </p>
-              
+
               <a
                 href="/login"
                 className="text-sm font-medium text-[#e9cece] hover:opacity-80"
@@ -63,7 +75,8 @@ export default async function ForgotPasswordPage({
                   ¿Olvidaste tu contraseña?
                 </h1>
                 <p className="text-sm leading-relaxed text-slate-500">
-                  Ingresa tu correo y te enviaremos un enlace para restablecerla.
+                  Ingresa tu correo y te enviaremos un enlace para
+                  restablecerla.
                 </p>
               </div>
 

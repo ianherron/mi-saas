@@ -21,7 +21,12 @@ export default async function LoginPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8">
+      <header
+        className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8"
+        style={{
+          paddingTop: "max(2rem, calc(env(safe-area-inset-top) + 1rem))",
+        }}
+      >
         <div className="flex items-center gap-2 text-slate-900">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />

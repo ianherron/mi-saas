@@ -40,48 +40,86 @@ export default async function PagosPage() {
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">
+            NailFlow
+          </span>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a href="/dashboard" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/dashboard"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <LayoutDashboard className="h-4 w-4" /> Dashboard
           </a>
-          <a href="/citas" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/citas"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Clock className="h-4 w-4" /> Citas
           </a>
-          <a href="/servicios" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/servicios"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Scissors className="h-4 w-4" /> Servicios
           </a>
-          <a href="/galeria" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/galeria"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <Images className="h-4 w-4" /> Galería
           </a>
-          <a href="/pagos" className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900">
+          <a
+            href="/pagos"
+            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
+          >
             <CreditCard className="h-4 w-4" /> Pagos
           </a>
-          <a href="/reportes" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <a
+            href="/reportes"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
         </nav>
       </aside>
 
       {/* Mobile header */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+      <header
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
+        style={{
+          paddingTop: "max(env(safe-area-inset-top), 0px)",
+          height: "calc(3.5rem + env(safe-area-inset-top))",
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
           <span className="serif-heading text-sm font-semibold">NailFlow</span>
         </div>
-        <a href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900">← Volver</a>
+        <a
+          href="/dashboard"
+          className="text-sm font-medium text-slate-500 hover:text-slate-900"
+        >
+          ← Volver
+        </a>
       </header>
 
       <div className="lg:pl-60">
         <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
           <div className="mb-8">
-            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">Pagos</h1>
-            <p className="mt-1 text-sm text-slate-500">Configura los pagos anticipados para tus citas.</p>
+            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
+              Pagos
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Configura los pagos anticipados para tus citas.
+            </p>
           </div>
-          <PagosForm business={business} savePaymentSettings={savePaymentSettings} />
+          <PagosForm
+            business={business}
+            savePaymentSettings={savePaymentSettings}
+          />
         </main>
       </div>
     </div>

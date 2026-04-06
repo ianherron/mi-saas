@@ -176,7 +176,9 @@ export default async function ServiciosPage() {
           <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">NailFlow</span>
+          <span className="serif-heading text-sm font-semibold tracking-tight">
+            NailFlow
+          </span>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           <a
@@ -222,7 +224,13 @@ export default async function ServiciosPage() {
       </aside>
 
       {/* Mobile header */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+      <header
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
+        style={{
+          paddingTop: "max(env(safe-area-inset-top), 0px)",
+          height: "calc(3.5rem + env(safe-area-inset-top))",
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
@@ -300,7 +308,9 @@ export default async function ServiciosPage() {
                         service={service}
                         updateService={updateService}
                       />
-                        <DeleteButton action={deleteService.bind(null, service.id)} />
+                      <DeleteButton
+                        action={deleteService.bind(null, service.id)}
+                      />
                     </div>
                   </li>
                 ))}
@@ -336,7 +346,7 @@ export default async function ServiciosPage() {
                         {extra.price?.toLocaleString() ?? 0}
                       </p>
                     </div>
-                      <DeleteButton action={deleteExtra.bind(null, extra.id)} />
+                    <DeleteButton action={deleteExtra.bind(null, extra.id)} />
                   </li>
                 ))}
               </ul>
@@ -367,7 +377,7 @@ export default async function ServiciosPage() {
                     <p className="text-sm font-medium text-slate-900">
                       {slot.time}
                     </p>
-                      <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
+                    <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
                   </li>
                 ))}
               </ul>
@@ -382,7 +392,10 @@ export default async function ServiciosPage() {
                 Selecciona los días que atiendes clientas.
               </p>
             </div>
-            <WorkingDaysForm saveWorkingDays={saveWorkingDays} workingDaysList={workingDaysList} />
+            <WorkingDaysForm
+              saveWorkingDays={saveWorkingDays}
+              workingDaysList={workingDaysList}
+            />
           </div>
         </main>
       </div>

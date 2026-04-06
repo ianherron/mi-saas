@@ -129,7 +129,13 @@ export default async function DashboardPage() {
       </aside>
 
       {/* Mobile header */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden">
+      <header
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
+        style={{
+          paddingTop: "max(env(safe-area-inset-top), 0px)",
+          height: "calc(3.5rem + env(safe-area-inset-top))",
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />

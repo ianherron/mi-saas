@@ -7,7 +7,8 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://nailflow.app/bienvenida',
     cleartext: true,
-    androidScheme: 'https'
+    androidScheme: 'https',
+    allowNavigation: ['nailflow.app']
   },
   plugins: {
   SplashScreen: {

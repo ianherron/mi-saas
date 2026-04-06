@@ -21,8 +21,12 @@ const config: CapacitorConfig = {
   StatusBar: {
     style: 'DARK',
     backgroundColor: '#fbf9f9',
-  }
+  },
+  ios: {
+  backgroundColor: '#fbf9f9',
+},
 }
 };
 
 export default config;
+

@@ -30,8 +30,6 @@ export default async function ReportesPage({
     timeZone: "America/Costa_Rica",
   });
 
-  console.log("selectedMonth:", selectedMonth, "year:", year, "month:", month, "firstDay:", firstDay, "lastDay:", lastDay);
-
   // Mes anterior para comparación
   const prevMonth = new Date(year, month - 2, 1);
   const prevSelectedMonth = prevMonth.toLocaleDateString("en-CA", { timeZone: "America/Costa_Rica" }).slice(0, 7);

@@ -11,9 +11,6 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-@view-transition {
-  navigation: auto;
-}
 
 @custom-variant dark (&:is(.dark *));
 

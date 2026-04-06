@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createBrowserClient } from "@supabase/ssr";
 import Link from "next/link";
 import { Sparkles, Check } from "lucide-react";
 
@@ -10,6 +15,18 @@ const features = [
 ];
 
 export default function BienvenidaPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.replace("/dashboard");
+    });
+  }, [router]);
+
   return (
     <div
       className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans"

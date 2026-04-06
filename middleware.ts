@@ -70,8 +70,9 @@ export async function middleware(request: NextRequest) {
         new Date(business.trial_ends_at) < new Date();
 
       const isCancelled = business.subscription_status === "cancelled";
+      const isPending = business.subscription_status === "pending";
 
-      if (isTrialExpired || isCancelled) {
+      if (isTrialExpired || isCancelled || isPending) {
         return NextResponse.redirect(new URL("/suscripcion", request.url));
       }
     }

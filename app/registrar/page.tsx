@@ -33,6 +33,7 @@ async function register(formData: FormData) {
     owner_name,
     slug,
     email,
+    subscription_status: "pending",
   });
 
   // Correo de bienvenida

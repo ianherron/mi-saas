@@ -43,7 +43,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  if (eventName === "subscription_created" || eventName === "subscription_updated") {
+  if (eventName === "subscription_created") {
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 30);
+    await supabase.from("businesses").update({
+      subscription_status: "trial",
+      trial_ends_at: trialEndsAt.toISOString(),
+      lemonsqueezy_customer_id: customerId,
+      lemonsqueezy_subscription_id: subscriptionId,
+    }).eq("id", business.id);
+  }
+
+  if (eventName === "subscription_updated") {
     await supabase.from("businesses").update({
       subscription_status: status === "active" ? "active" : status,
       lemonsqueezy_customer_id: customerId,

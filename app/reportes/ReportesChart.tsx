@@ -25,8 +25,8 @@ export default function ReportesChart({ data }: RevenueChartProps) {
   }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.getDate().toString()
+    const [, , day] = dateStr.split("-")
+    return String(Number(day))
   }
 
   return (
@@ -68,7 +68,8 @@ export default function ReportesChart({ data }: RevenueChartProps) {
           <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
-                const date = new Date(label ?? "")
+                const [y, m, d] = String(label ?? "").split("-").map(Number)
+                const date = new Date(y, m - 1, d)
                 const formattedDate = date.toLocaleDateString("es-CR", {
                   weekday: "short",
                   day: "numeric",

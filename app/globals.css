@@ -3,8 +3,12 @@
 @import "shadcn/tailwind.css";
 
 
-* {
-  -webkit-tap-highlight-color: transparent;
+html, body {
+  background-color: #fbf9f9 !important;
+}
+
+.capacitor-ios * {
+  -webkit-overflow-scrolling: touch;
 }
 
 @custom-variant dark (&:is(.dark *));

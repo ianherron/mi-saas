@@ -166,7 +166,7 @@ export default async function ReportesPage({
         <div className="px-4 lg:px-8">
           <div className="mx-auto flex max-w-4xl items-center justify-between py-4">
             <div>
-              <h1 className="serif-heading text-xl text-[#2d2424]">
+              <h1 className="text-xl text-[#2d2424]">
                 Panel de Reportes
               </h1>
             </div>

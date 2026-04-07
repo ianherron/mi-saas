@@ -1,0 +1,4 @@
+En app/suscripcion/page.tsx el header o el contenido principal está siendo tapado por el notch de iOS. Agregá el safe area al contenedor principal o al primer elemento de la página:
+Buscá el div o header más externo de la página y agregale este style:
+tsxstyle={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 1rem))' }}
+No modificar ningún otro archivo ni ninguna otra parte de la página.

@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import LogoutButton from "./LogoutButton";
 
 export default function SuscripcionPage() {
   return (
@@ -47,12 +48,7 @@ export default function SuscripcionPage() {
           Procesado de forma segura por Lemon Squeezy
         </p>
 
-        <a
-          href="/login"
-          className="mt-3 block w-full rounded-xl border border-[#e9cece] bg-transparent px-6 py-4 text-center text-base font-bold text-[#2d2424] transition-all hover:bg-[#e9cece]/10"
-        >
-          Ya pagué → Iniciar sesión
-        </a>
+          <LogoutButton />
 
         <p className="mt-6 text-xs text-[#846262]">
           ¿Necesitas ayuda? Escríbenos a hola@nailflow.app

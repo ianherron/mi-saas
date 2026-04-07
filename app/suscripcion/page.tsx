@@ -3,7 +3,7 @@ import LogoutButton from "./LogoutButton";
 
 export default function SuscripcionPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#fbf9f9] px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#fbf9f9] px-6" style={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 1rem))' }}>
       <div className="w-full max-w-md text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e9cece] text-[#2d2424]">
           <Sparkles className="h-8 w-8" />

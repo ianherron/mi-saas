@@ -91,6 +91,5 @@ export const config = {
     "/reportes/:path*",
     "/login",
     "/reservar/:path*",
-    "/suscripcion",
   ],
 };

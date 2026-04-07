@@ -53,8 +53,26 @@ export async function middleware(request: NextRequest) {
   }
 
   if (request.nextUrl.pathname === "/login" && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("subscription_status, trial_ends_at")
+    .eq("user_id", user.id)
+    .single();
+
+  if (business) {
+    const isTrialExpired = business.subscription_status === "trial" &&
+      new Date(business.trial_ends_at) < new Date();
+    const isCancelled = business.subscription_status === "cancelled";
+    const isPending = business.subscription_status === "pending";
+
+    if (isTrialExpired || isCancelled || isPending) {
+      return NextResponse.redirect(new URL("/suscripcion", request.url));
+    }
   }
+  return NextResponse.redirect(new URL("/dashboard", request.url));
+}
+
+  
 
   // Verificar suscripción en rutas protegidas
   if (isProtected && user) {

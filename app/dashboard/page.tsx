@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
@@ -6,6 +7,8 @@ import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp, User }
 import CurrencySelector from "./CurrencySelector";
 import { StatCard } from "../reportes/StatCard";
 import { getCurrencySymbol } from "../../lib/utils";
+import OnboardingModal from "./OnboardingModal";
+import DashboardRealtime from "./DashboardRealtime";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -52,6 +55,25 @@ export default async function DashboardPage() {
     (acc, a) => acc + (a.total_price ?? 0), 0
   ) ?? 0;
 
+  const { data: newAppointments } = await supabase
+    .from("appointments")
+    .select("id")
+    .eq("business_id", business.id)
+    .eq("status", "active")
+    .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+  async function completeOnboarding() {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase
+      .from("businesses")
+      .update({ onboarding_completed: true })
+      .eq("id", business.id);
+    revalidatePath("/dashboard");
+  }
+
   const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
 
   const quickActions = [
@@ -64,6 +86,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
+      {business.onboarding_completed === false && (
+        <OnboardingModal completeOnboarding={completeOnboarding} />
+      )}
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
@@ -175,6 +200,21 @@ export default async function DashboardPage() {
               currentCurrency={business.currency ?? "CRC"}
             />
           </div>
+
+          {/* Banner nuevas citas */}
+          {(newAppointments?.length ?? 0) > 0 && (
+            <div className="mb-6 flex items-center justify-between rounded-xl border border-[#e9cece] bg-[#e9cece]/20 p-4">
+              <p className="text-sm font-medium text-[#2d2424]">
+                ✦ Tenés {newAppointments!.length} cita(s) nueva(s) en las últimas 24 horas
+              </p>
+              <a
+                href="/citas"
+                className="shrink-0 text-sm font-medium text-[#2d2424] hover:underline"
+              >
+                Ver citas →
+              </a>
+            </div>
+          )}
 
           {/* Stats */}
           <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
@@ -288,6 +328,7 @@ export default async function DashboardPage() {
           </div>
         </main>
       </div>
+      <DashboardRealtime businessId={business.id} />
     </div>
   );
 }

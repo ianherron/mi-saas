@@ -11,6 +11,7 @@ import {
   User,
 } from "lucide-react";
 import AppointmentRow from "./AppointmentRow";
+import CitasRealtime from "./CitasRealtime";
 
 export default async function CitasPage() {
   const supabase = await createClient();
@@ -301,6 +302,7 @@ async function completeAppointment(id: number) {
           )}
         </main>
       </div>
+      <CitasRealtime businessId={business.id} />
     </div>
   );
 }

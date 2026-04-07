@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight } from "lucide-react";
 import { getBookedSlots } from "./actions";
+import { getCurrencySymbol } from "../../lib/utils";
 
 type Service = {
   id: string;
@@ -27,6 +28,7 @@ export default function BookingForm({
   sinpeNumber,
   sinpeBank,
   whatsappNumber,
+  currency,
   createAppointment,
 }: {
   services: Service[];
@@ -40,8 +42,10 @@ export default function BookingForm({
   sinpeNumber: string;
   sinpeBank: string;
   whatsappNumber: string;
+  currency: string;
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
+  const sym = getCurrencySymbol(currency);
   const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
@@ -200,7 +204,7 @@ export default function BookingForm({
               </div>
               <div className="flex items-center justify-between py-4">
                 <span className="text-sm text-[#846262]">Total</span>
-                <span className="text-lg font-semibold text-[#2d2424]">₡{totalPrice.toLocaleString()}</span>
+                <span className="text-lg font-semibold text-[#2d2424]">{sym}{totalPrice.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -299,7 +303,7 @@ export default function BookingForm({
                           </div>
                           <div className="text-right">
                             <p className="serif-heading text-xl font-semibold text-[#2d2424]">
-                              ₡{service.price.toLocaleString()}
+                              {sym}{service.price.toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -351,8 +355,7 @@ export default function BookingForm({
                         </span>
                         <span>{extra.name}</span>
                         <span className="text-[#846262]">
-                          +{extra.duration}min · ₡
-                          {extra.price?.toLocaleString() ?? 0}
+                          +{extra.duration}min · {sym}{extra.price?.toLocaleString() ?? 0}
                         </span>
                       </button>
                     );
@@ -519,13 +522,12 @@ export default function BookingForm({
                   <div className="mb-6 rounded-xl bg-[#f4ecec] p-4">
                     <p className="text-xs text-[#846262]">Monto a transferir</p>
                     <p className="serif-heading text-3xl font-bold text-[#2d2424]">
-                      ₡
-                      {Math.ceil(
+                      {sym}{Math.ceil(
                         (totalPrice * paymentPercentage) / 100,
                       ).toLocaleString()}
                     </p>
                     <p className="mt-1 text-xs text-[#846262]">
-                      de ₡{totalPrice.toLocaleString()} total
+                      de {sym}{totalPrice.toLocaleString()} total
                     </p>
                   </div>
 
@@ -628,7 +630,7 @@ export default function BookingForm({
                 <div className="pt-3 flex items-center justify-between">
                   <span className="text-sm text-[#846262]">Total</span>
                   <span className="serif-heading text-xl font-semibold text-[#2d2424]">
-                    ₡{totalPrice.toLocaleString()}
+                    {sym}{totalPrice.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -707,7 +709,7 @@ export default function BookingForm({
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-[#846262]">Total</span>
                       <span className="serif-heading text-2xl font-semibold text-[#2d2424]">
-                        ₡{totalPrice.toLocaleString()}
+                        {sym}{totalPrice.toLocaleString()}
                       </span>
                     </div>
                   </div>

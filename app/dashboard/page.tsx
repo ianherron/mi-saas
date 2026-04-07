@@ -2,9 +2,10 @@ import { createClient, getBusiness } from "../../lib/supabase-server";
 import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
 import { CreditCard, Sparkles } from "lucide-react";
-import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp } from "lucide-react";
+import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp, User } from "lucide-react";
 import CurrencySelector from "./CurrencySelector";
 import { StatCard } from "../reportes/StatCard";
+import { getCurrencySymbol } from "../../lib/utils";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -111,6 +112,12 @@ export default async function DashboardPage() {
           >
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
+          <a
+            href="/perfil"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <User className="h-4 w-4" /> Perfil
+          </a>
         </nav>
 
         <div className="border-t border-slate-100 p-3">
@@ -163,6 +170,10 @@ export default async function DashboardPage() {
                 })}
               </p>
             </div>
+            <CurrencySelector
+              businessId={business.id}
+              currentCurrency={business.currency ?? "CRC"}
+            />
           </div>
 
           {/* Stats */}
@@ -180,7 +191,7 @@ export default async function DashboardPage() {
             <div className="col-span-2 lg:col-span-1">
               <StatCard
                 title="Ingresos hoy"
-                value={`₡${todayRevenue.toLocaleString()}`}
+                value={`${getCurrencySymbol(business.currency ?? "CRC")}${todayRevenue.toLocaleString()}`}
                 icon={<TrendingUp className="h-5 w-5" />}
               />
             </div>

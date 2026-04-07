@@ -7,6 +7,7 @@ import { Sparkles } from "lucide-react";
 import ReportesChart from "./ReportesChart";
 import { MonthSelector } from "./MonthSelector";
 import { StatCard } from "./StatCard";
+import { getCurrencySymbol } from "../../lib/utils";
 
 export default async function ReportesPage({
   searchParams,
@@ -81,11 +82,11 @@ export default async function ReportesPage({
     .map(([date, total]) => ({ date, total }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  const currencySymbol = getCurrencySymbol(business.currency ?? "CRC");
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("es-CR", {
-      style: "currency", currency: "CRC",
+    `${currencySymbol}${new Intl.NumberFormat("es-CR", {
       minimumFractionDigits: 0, maximumFractionDigits: 0,
-    }).format(value);
+    }).format(value)}`;
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">

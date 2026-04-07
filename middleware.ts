@@ -9,7 +9,11 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
+
+
 export async function middleware(request: NextRequest) {
+  
+
   // Rate limiting en reservas
   if (request.nextUrl.pathname.startsWith("/reservar/")) {
     const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
@@ -22,7 +26,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+
   let supabaseResponse = NextResponse.next({ request });
+
+   // No redirigir si ya está en /suscripcion
+if (request.nextUrl.pathname === "/suscripcion") {
+  return supabaseResponse;
+}
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -109,5 +119,6 @@ export const config = {
     "/reportes/:path*",
     "/login",
     "/reservar/:path*",
+    "/suscripcion",
   ],
 };

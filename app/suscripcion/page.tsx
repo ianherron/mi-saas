@@ -47,7 +47,7 @@ export default function SuscripcionPage() {
         <p className="mt-4 text-xs text-[#846262]">
           Procesado de forma segura por Lemon Squeezy
         </p>
-
+            <br />
           <LogoutButton />
 
         <p className="mt-6 text-xs text-[#846262]">

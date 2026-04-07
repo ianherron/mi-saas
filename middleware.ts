@@ -53,7 +53,7 @@ if (request.nextUrl.pathname === "/suscripcion") {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const protectedRoutes = ["/dashboard", "/citas", "/servicios", "/galeria", "/pagos", "/reportes"];
+  const protectedRoutes = ["/dashboard", "/citas", "/servicios", "/galeria", "/pagos", "/reportes", "/perfil"];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
@@ -117,6 +117,7 @@ export const config = {
     "/galeria/:path*",
     "/pagos/:path*",
     "/reportes/:path*",
+    "/perfil/:path*",
     "/login",
     "/reservar/:path*",
     "/suscripcion",

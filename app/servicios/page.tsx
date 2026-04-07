@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3, User } from "lucide-react";
 import DeleteButton from "./DeleteButton";
 import { AddExtraForm, AddTimeSlotForm, WorkingDaysForm } from "./ServiciosToasts";
 
@@ -219,6 +219,12 @@ export default async function ServiciosPage() {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
             <BarChart3 className="h-4 w-4" /> Reportes
+          </a>
+          <a
+            href="/perfil"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <User className="h-4 w-4" /> Perfil
           </a>
         </nav>
       </aside>

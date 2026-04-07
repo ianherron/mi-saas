@@ -1,6 +1,6 @@
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import { revalidatePath } from "next/cache";
-import { LayoutDashboard, Clock, Scissors, Images, CreditCard, BarChart3, Sparkles } from "lucide-react";
+import { LayoutDashboard, Clock, Scissors, Images, CreditCard, BarChart3, Sparkles, User } from "lucide-react";
 import PagosForm from "./PagosForm";
 
 export default async function PagosPage() {
@@ -80,6 +80,12 @@ export default async function PagosPage() {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
             <BarChart3 className="h-4 w-4" /> Reportes
+          </a>
+          <a
+            href="/perfil"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
+            <User className="h-4 w-4" /> Perfil
           </a>
         </nav>
       </aside>

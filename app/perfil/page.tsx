@@ -260,11 +260,11 @@ export default async function PerfilPage({
                   name="cancellation_policy"
                   defaultValue={(business as any).cancellation_policy ?? ""}
                   placeholder="Ej. Se requiere aviso de 24 horas para cancelar..."
-                  maxLength={300}
+                  maxLength={700}
                   rows={3}
                   className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
                 />
-                <p className="mt-1 text-xs text-slate-400">Máximo 300 caracteres · Se muestra antes del botón de confirmar cita</p>
+                <p className="mt-1 text-xs text-slate-400">Máximo 700 caracteres · Se muestra antes del botón de confirmar cita</p>
               </div>
               <div className="px-5 py-4">
                 <button

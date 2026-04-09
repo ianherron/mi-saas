@@ -130,7 +130,7 @@ export default async function RegistroPage({
         <div className="hidden sm:block">
           <a
             className="text-sm font-medium text-[#846262] transition-colors hover:text-slate-900"
-            href="#"
+            href="/soporte"
           >
             Ayuda
           </a>

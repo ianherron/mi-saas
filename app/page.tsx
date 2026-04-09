@@ -687,7 +687,7 @@ export default function Home() {
                 <li>
                   <a
                     className="transition-colors hover:text-[#cfaeae]"
-                    href="#"
+                    href="/soporte"
                   >
                     Soporte
                   </a>

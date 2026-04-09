@@ -141,6 +141,8 @@ export default async function ServiciosPage() {
       (d) => formData.get(`day_${d}`) === "on",
     );
 
+    if (days.length === 0) return;
+
     // Borrar los días actuales y reemplazar
     await supabase.from("working_days").delete().eq("business_id", business.id);
 

@@ -17,6 +17,7 @@ export default async function PagosPage() {
 
     const payments_enabled = formData.get("payments_enabled") === "on";
     const payment_percentage = parseInt(formData.get("payment_percentage") as string);
+    if (isNaN(payment_percentage) || payment_percentage < 1 || payment_percentage > 100) return;
     const sinpe_number = formData.get("sinpe_number") as string;
     const sinpe_bank = formData.get("sinpe_bank") as string;
     const whatsapp_number = formData.get("whatsapp_number") as string;

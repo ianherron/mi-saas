@@ -1,11 +1,17 @@
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import {
   LayoutDashboard, Clock, Scissors, Images, CreditCard, BarChart3, Sparkles, User,
 } from "lucide-react";
 import LogoutButton from "../dashboard/LogoutButton";
 
-export default async function PerfilPage() {
+export default async function PerfilPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
   const business = await getBusiness();
 
@@ -29,7 +35,9 @@ export default async function PerfilPage() {
     if (!name || !owner_name || !slug) return;
 
     const RESERVED_SLUGS = ["api", "admin", "dashboard", "login", "registrar", "servicios", "citas", "galeria", "pagos", "reportes", "perfil", "suscripcion", "bienvenida", "reservar"];
-    if (RESERVED_SLUGS.includes(slug)) return;
+    if (RESERVED_SLUGS.includes(slug)) {
+      redirect("/perfil?error=Este enlace no está disponible");
+    }
 
     const { data: existingSlug } = await supabase
       .from("businesses")
@@ -38,7 +46,9 @@ export default async function PerfilPage() {
       .neq("id", business.id)
       .single();
 
-    if (existingSlug) return;
+    if (existingSlug) {
+      redirect("/perfil?error=Este enlace ya está en uso por otro negocio");
+    }
 
     await supabase
       .from("businesses")
@@ -152,6 +162,12 @@ export default async function PerfilPage() {
               Actualiza la información de tu negocio.
             </p>
           </div>
+
+          {params.error && (
+            <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+              {params.error}
+            </div>
+          )}
 
           <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
             <div className="border-b border-slate-100 px-5 py-4">

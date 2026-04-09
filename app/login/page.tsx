@@ -32,7 +32,7 @@ export default async function LoginPage({
             <Sparkles className="h-4 w-4" />
           </div>
           <h2 className="serif-heading text-xl font-bold tracking-tight">
-            <a href="">NailFlow</a>
+            <a href="/">NailFlow</a>
           </h2>
         </div>
       </header>

@@ -52,7 +52,12 @@ export default async function ReservarSlugPage({
       .from("services")
       .select("name, price")
       .eq("id", service_id)
+      .eq("business_id", business_id)
       .single();
+
+    if (!service) return;
+
+    const safePrice = typeof total_price === "number" && !isNaN(total_price) ? total_price : 0;
 
     await supabase.from("appointments").insert({
       client_name,
@@ -100,7 +105,7 @@ export default async function ReservarSlugPage({
                 </tr>
                 <tr style="border-top: 1px solid #f0eaea;">
                   <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Precio</td>
-                  <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${total_price?.toLocaleString() ?? "—"}</td>
+                  <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${safePrice.toLocaleString()}</td>
                 </tr>
               </table>
             </div>
@@ -160,7 +165,7 @@ export default async function ReservarSlugPage({
               </tr>
               <tr style="border-top: 1px solid #f0eaea;">
                 <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Total</td>
-                <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${total_price?.toLocaleString() ?? "—"}</td>
+                <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${safePrice.toLocaleString()}</td>
               </tr>
             </table>
             ${
@@ -242,7 +247,12 @@ export default async function ReservarSlugPage({
         </header>
 
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
-          {services && (
+          {!services || services.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center py-24 text-center">
+              <p className="text-lg font-medium text-[#2d2424]">Aún no hay servicios disponibles</p>
+              <p className="mt-2 text-sm text-[#846262]">Este negocio aún no tiene servicios configurados. Intenta más tarde.</p>
+            </div>
+          ) : (
             <BookingForm
               services={services}
               timeSlots={timeSlots ?? []}

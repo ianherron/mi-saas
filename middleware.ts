@@ -81,8 +81,11 @@ if (request.nextUrl.pathname === "/suscripcion") {
     if (isTrialExpired || isCancelled || isPending) {
       return NextResponse.redirect(new URL("/suscripcion", request.url));
     }
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+
+  // Usuario autenticado sin negocio (cuenta huérfana) — quedarse en login
+  return supabaseResponse;
 }
 
   
@@ -106,6 +109,9 @@ if (request.nextUrl.pathname === "/suscripcion") {
       if (isTrialExpired || isCancelled || isPending) {
         return NextResponse.redirect(new URL("/suscripcion", request.url));
       }
+    } else {
+      // Usuario autenticado sin negocio — redirigir a login
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 

@@ -44,10 +44,13 @@ async function register(formData: FormData) {
   const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error || !data.user) {
+    if (error?.message.toLowerCase().includes("already registered") || error?.message.toLowerCase().includes("already been registered")) {
+      redirect("/registrar?error=Este correo ya tiene una cuenta registrada");
+    }
     redirect("/registrar?error=Error al crear la cuenta");
   }
 
-  await supabase.from("businesses").insert({
+  const { error: insertError } = await supabase.from("businesses").insert({
     user_id: data.user!.id,
     name: business_name,
     owner_name,
@@ -55,6 +58,16 @@ async function register(formData: FormData) {
     email,
     subscription_status: "pending",
   });
+
+  if (insertError) {
+    const { createClient: createAdminClient } = await import("@supabase/supabase-js");
+    const admin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    await admin.auth.admin.deleteUser(data.user!.id);
+    redirect("/registrar?error=Error al crear la cuenta. Por favor intenta de nuevo.");
+  }
 
   // Correo de bienvenida
   const { resend } = await import("../../lib/resend");

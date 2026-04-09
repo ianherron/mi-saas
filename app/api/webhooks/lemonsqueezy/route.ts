@@ -31,7 +31,12 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const payload = JSON.parse(body);
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
   const eventName = payload.meta?.event_name;
   const customerId = payload.data?.attributes?.customer_id?.toString();
   const subscriptionId = payload.data?.id?.toString();

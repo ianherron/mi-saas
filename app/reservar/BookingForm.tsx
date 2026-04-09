@@ -140,7 +140,7 @@ export default function BookingForm({
 
   function isDateDisabled(dateString: string): boolean {
     if (!dateString) return false;
-    if (workingDays.length === 0) return false;
+    if (workingDays.length === 0) return true;
     const day = new Date(dateString + "T12:00:00").getDay();
     return !workingDays.includes(day);
   }
@@ -158,6 +158,9 @@ export default function BookingForm({
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setReferenceImage(file);
     setImagePreview(URL.createObjectURL(file));
   }
@@ -427,6 +430,11 @@ export default function BookingForm({
                       })}
                     </select>
                   </div>
+                  {timeSlots.length === 0 && (
+                    <p className="mt-2 text-sm text-amber-600">
+                      Este negocio aún no tiene horarios configurados. Contáctanos para más información.
+                    </p>
+                  )}
                 </div>
               </div>
             </section>
@@ -643,7 +651,7 @@ export default function BookingForm({
               </div>
               <button
                 type="submit"
-                disabled={submitting || !date || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? (
@@ -722,7 +730,7 @@ export default function BookingForm({
                   </div>
                   <button
                     type="submit"
-                    disabled={submitting || !date || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                    disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
                     className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? (

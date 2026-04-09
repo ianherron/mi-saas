@@ -65,6 +65,7 @@ export default async function ReportesPage({
   const revenueChange = prevRevenue > 0
     ? Math.round(((totalRevenue - prevRevenue) / prevRevenue) * 100)
     : 0;
+  const revenueChangeLabel = prevRevenue === 0 && totalRevenue > 0 ? "Nuevo" : "vs mes anterior";
   const completedChange = prevCompleted.length > 0
     ? Math.round(((totalCompleted - prevCompleted.length) / prevCompleted.length) * 100)
     : 0;
@@ -191,6 +192,7 @@ export default async function ReportesPage({
               title="Ingresos del Mes"
               value={formatCurrency(totalRevenue)}
               change={revenueChange}
+              changeLabel={revenueChangeLabel}
               icon={<DollarSign className="h-5 w-5" />}
             />
             <StatCard
@@ -227,7 +229,7 @@ export default async function ReportesPage({
             {chartData.length === 0 ? (
               <div className="flex h-48 items-center justify-center">
                 <p className="text-sm text-slate-400">
-                  No hay ingresos registrados este mes.
+                  No hay citas registradas para este período.
                 </p>
               </div>
             ) : (

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { toast } from "sonner";
 
-type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; };
+type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; category?: string; };
 
 export default function EditServiceForm({ service, updateService }: {
   service: Service;
@@ -58,6 +58,10 @@ export default function EditServiceForm({ service, updateService }: {
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
       <input name="description" type="text" defaultValue={service.description ?? ""}
         placeholder="Descripción (opcional)"
+        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
+      <input name="category" type="text" defaultValue={service.category ?? "General"}
+        maxLength={50}
+        placeholder="Categoría (Ej. Manicure, Pedicure, Gel X)"
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
 
       {/* Imagen */}

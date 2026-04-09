@@ -5,6 +5,7 @@ import {
   LayoutDashboard, Clock, Scissors, Images, CreditCard, BarChart3, Sparkles, User,
 } from "lucide-react";
 import LogoutButton from "../dashboard/LogoutButton";
+import CoverImageUpload from "./CoverImageUpload";
 
 export default async function PerfilPage({
   searchParams,
@@ -50,11 +51,26 @@ export default async function PerfilPage({
       redirect("/perfil?error=Este enlace ya está en uso por otro negocio");
     }
 
+    const bio = (formData.get("bio") as string)?.trim().slice(0, 300) || null;
+    const cancellation_policy = (formData.get("cancellation_policy") as string)?.trim().slice(0, 300) || null;
+
     await supabase
       .from("businesses")
-      .update({ name, owner_name, slug })
+      .update({ name, owner_name, slug, bio, cancellation_policy })
       .eq("id", business.id);
 
+    revalidatePath("/perfil");
+  }
+
+  async function updateCoverImage(url: string) {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase
+      .from("businesses")
+      .update({ cover_image_url: url })
+      .eq("id", business.id);
     revalidatePath("/perfil");
   }
 
@@ -223,6 +239,34 @@ export default async function PerfilPage({
                 </p>
               </div>
               <div className="px-5 py-4">
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                  Bio del negocio
+                </label>
+                <textarea
+                  name="bio"
+                  defaultValue={(business as any).bio ?? ""}
+                  placeholder="Cuéntales a tus clientas sobre tu trabajo..."
+                  maxLength={300}
+                  rows={3}
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
+                />
+                <p className="mt-1 text-xs text-slate-400">Máximo 300 caracteres · Se muestra en tu página de reservas</p>
+              </div>
+              <div className="px-5 py-4">
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                  Política de cancelación
+                </label>
+                <textarea
+                  name="cancellation_policy"
+                  defaultValue={(business as any).cancellation_policy ?? ""}
+                  placeholder="Ej. Se requiere aviso de 24 horas para cancelar..."
+                  maxLength={300}
+                  rows={3}
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
+                />
+                <p className="mt-1 text-xs text-slate-400">Máximo 300 caracteres · Se muestra antes del botón de confirmar cita</p>
+              </div>
+              <div className="px-5 py-4">
                 <button
                   type="submit"
                   className="rounded-lg bg-[#e9cece] px-4 py-2 text-sm font-medium text-[#2d2424] transition-colors hover:bg-[#dbbcbc]"
@@ -231,6 +275,22 @@ export default async function PerfilPage({
                 </button>
               </div>
             </form>
+          </div>
+
+          {/* Foto de portada */}
+          <div className="mt-6 overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">Foto de portada</h2>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Se muestra como banner arriba de tu página de reservas.
+              </p>
+            </div>
+            <div className="px-5 py-4">
+              <CoverImageUpload
+                currentUrl={(business as any).cover_image_url}
+                updateCoverImage={updateCoverImage}
+              />
+            </div>
           </div>
         </main>
       </div>

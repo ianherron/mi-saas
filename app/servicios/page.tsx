@@ -24,8 +24,7 @@ export default async function ServiciosPage() {
     const duration = Number(formData.get("duration"));
     const description = formData.get("description") as string;
     const image_url = formData.get("image_url") as string;
-
-
+    const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
 
     // Validaciones
     if (!name?.trim() || name.trim().length < 2) return;
@@ -42,6 +41,7 @@ export default async function ServiciosPage() {
       duration,
       description,
       image_url,
+      category,
       business_id: business.id,
     });
     revalidatePath("/servicios");
@@ -67,6 +67,7 @@ export default async function ServiciosPage() {
     const duration = Number(formData.get("duration"));
     const description = formData.get("description") as string;
     const image_url = formData.get("image_url") as string;
+    const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
 
     if (!id || !name?.trim()) return;
     if (isNaN(price) || price <= 0 || price > 10000000) return;
@@ -79,6 +80,7 @@ export default async function ServiciosPage() {
         duration,
         description,
         image_url: image_url || undefined,
+        category,
       })
       .eq("id", id)
       .eq("business_id", business.id);

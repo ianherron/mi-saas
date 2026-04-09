@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight } from "lucide-react";
+import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight, Info } from "lucide-react";
 import { getBookedSlots } from "./actions";
 import { getCurrencySymbol } from "../../lib/utils";
 
@@ -11,6 +11,7 @@ type Service = {
   duration: number;
   description?: string;
   image_url?: string;
+  category?: string;
 };
 type TimeSlot = { id: number; time: string };
 type Extra = { id: number; name: string; duration: number; price: number };
@@ -18,6 +19,7 @@ type GalleryImage = { image_url: string };
 
 export default function BookingForm({
   services,
+  groupedServices,
   timeSlots,
   extras,
   businessId,
@@ -29,9 +31,11 @@ export default function BookingForm({
   sinpeBank,
   whatsappNumber,
   currency,
+  cancellationPolicy,
   createAppointment,
 }: {
   services: Service[];
+  groupedServices: Record<string, Service[]>;
   timeSlots: TimeSlot[];
   extras: Extra[];
   businessId: string;
@@ -43,6 +47,7 @@ export default function BookingForm({
   sinpeBank: string;
   whatsappNumber: string;
   currency: string;
+  cancellationPolicy?: string;
   createAppointment: (formData: FormData) => Promise<void>;
 }) {
   const sym = getCurrencySymbol(currency);
@@ -262,74 +267,88 @@ export default function BookingForm({
             {/* Step 1 - Services */}
             <section>
               <StepHeader number={1} title="Elige tu servicio" />
-              <div className="mt-8 grid gap-6 sm:grid-cols-2">
-                {services.map((service) => {
-                  const isSelected = service.id === selectedServiceId;
-                  return (
-                    <label
-                      key={service.id}
-                      className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-white transition-all duration-300 ${
-                        isSelected
-                          ? "border-[#e9cece] shadow-lg shadow-[#e9cece]/20"
-                          : "border-transparent hover:border-[#e9cece]/30 hover:shadow-md"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="service_id"
-                        value={service.id}
-                        checked={isSelected}
-                        onChange={() => setSelectedServiceId(service.id)}
-                        className="sr-only"
-                      />
-                      <div className="aspect-video w-full overflow-hidden">
-                        {service.image_url ? (
-                          <img
-                            src={service.image_url}
-                            alt={service.name}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-[#f4ecec]">
-                            <Sparkles className="h-8 w-8 text-[#e9cece]" />
-                          </div>
+              {(() => {
+                const categoryKeys = Object.keys(groupedServices);
+                const showHeaders = !(categoryKeys.length === 1 && categoryKeys[0] === "General");
+                return (
+                  <div className="mt-8 space-y-8">
+                    {categoryKeys.map((cat) => (
+                      <div key={cat}>
+                        {showHeaders && (
+                          <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#846262]">
+                            {cat}
+                          </p>
                         )}
-                      </div>
-                      <div className="p-5">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <h3 className="serif-heading text-lg font-medium text-[#2d2424]">
-                              {service.name}
-                            </h3>
-                            {service.description && (
-                              <p className="mt-1 line-clamp-2 text-sm text-[#846262]">
-                                {service.description}
-                              </p>
-                            )}
-                            <div className="mt-3 flex items-center gap-1 text-sm text-[#846262]">
-                              <Clock className="h-3.5 w-3.5" />
-                              <span>{service.duration} min</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="serif-heading text-xl font-semibold text-[#2d2424]">
-                              {sym}{service.price.toLocaleString()}
-                            </p>
-                          </div>
+                        <div className="grid gap-6 sm:grid-cols-2">
+                          {groupedServices[cat].map((service) => {
+                            const isSelected = service.id === selectedServiceId;
+                            return (
+                              <label
+                                key={service.id}
+                                className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-white transition-all duration-300 ${
+                                  isSelected
+                                    ? "border-[#e9cece] shadow-lg shadow-[#e9cece]/20"
+                                    : "border-transparent hover:border-[#e9cece]/30 hover:shadow-md"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="service_id"
+                                  value={service.id}
+                                  checked={isSelected}
+                                  onChange={() => setSelectedServiceId(service.id)}
+                                  className="sr-only"
+                                />
+                                <div className="aspect-video w-full overflow-hidden">
+                                  {service.image_url ? (
+                                    <img
+                                      src={service.image_url}
+                                      alt={service.name}
+                                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-[#f4ecec]">
+                                      <Sparkles className="h-8 w-8 text-[#e9cece]" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="p-5">
+                                  <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                      <h3 className="serif-heading text-lg font-medium text-[#2d2424]">
+                                        {service.name}
+                                      </h3>
+                                      {service.description && (
+                                        <p className="mt-1 line-clamp-2 text-sm text-[#846262]">
+                                          {service.description}
+                                        </p>
+                                      )}
+                                      <div className="mt-3 flex items-center gap-1 text-sm text-[#846262]">
+                                        <Clock className="h-3.5 w-3.5" />
+                                        <span>{service.duration} min</span>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="serif-heading text-xl font-semibold text-[#2d2424]">
+                                        {sym}{service.price.toLocaleString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                {isSelected && (
+                                  <div className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#e9cece] shadow-md">
+                                    <Check className="h-4 w-4 text-[#2d2424]" strokeWidth={2.5} />
+                                  </div>
+                                )}
+                              </label>
+                            );
+                          })}
                         </div>
                       </div>
-                      {isSelected && (
-                        <div className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#e9cece] shadow-md">
-                          <Check
-                            className="h-4 w-4 text-[#2d2424]"
-                            strokeWidth={2.5}
-                          />
-                        </div>
-                      )}
-                    </label>
-                  );
-                })}
-              </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </section>
 
             {/* Step 2 - Extras */}
@@ -601,6 +620,21 @@ export default function BookingForm({
               </section>
             )}
 
+            {/* Política de cancelación */}
+            {cancellationPolicy && (
+              <div className="rounded-2xl border border-[#e9cece]/30 bg-[#e9cece]/10 p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#846262]" />
+                  <div>
+                    <p className="mb-1 text-xs font-medium uppercase tracking-widest text-[#846262]">
+                      Política de cancelación
+                    </p>
+                    <p className="text-sm text-[#846262]">{cancellationPolicy}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Resumen móvil */}
             <div className="lg:hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
@@ -728,6 +762,19 @@ export default function BookingForm({
                       </span>
                     </div>
                   </div>
+                  {cancellationPolicy && (
+                    <div className="mt-4 rounded-xl border border-[#e9cece]/30 bg-[#e9cece]/10 p-4">
+                      <div className="flex items-start gap-2">
+                        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#846262]" />
+                        <div>
+                          <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-[#846262]">
+                            Política de cancelación
+                          </p>
+                          <p className="text-xs text-[#846262]">{cancellationPolicy}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <button
                     type="submit"
                     disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}

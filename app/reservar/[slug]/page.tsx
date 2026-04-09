@@ -14,7 +14,7 @@ export default async function ReservarSlugPage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency")
+    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy")
     .eq("slug", slug)
     .single();
 
@@ -210,6 +210,13 @@ export default async function ReservarSlugPage({
     .eq("business_id", business.id)
     .order("created_at", { ascending: true });
 
+  const groupedServices = (services ?? []).reduce((acc: Record<string, any[]>, service) => {
+    const cat = service.category || "General";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(service);
+    return acc;
+  }, {});
+
   const { data: timeSlots } = await supabase
     .from("time_slots")
     .select("*")
@@ -246,6 +253,22 @@ export default async function ReservarSlugPage({
           </div>
         </header>
 
+        {business.cover_image_url && (
+          <div className="relative h-[200px] w-full md:h-[280px]">
+            <img
+              src={business.cover_image_url}
+              alt={`${business.name} portada`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
+        {business.bio && (
+          <div className="bg-white px-6 py-4 text-center md:px-20 lg:px-40">
+            <p className="mx-auto max-w-xl text-sm text-[#846262]">{business.bio}</p>
+          </div>
+        )}
+
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
           {!services || services.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center py-24 text-center">
@@ -255,6 +278,7 @@ export default async function ReservarSlugPage({
           ) : (
             <BookingForm
               services={services}
+              groupedServices={groupedServices}
               timeSlots={timeSlots ?? []}
               extras={extras ?? []}
               businessId={business.id}
@@ -266,6 +290,7 @@ export default async function ReservarSlugPage({
               sinpeBank={business.sinpe_bank ?? ""}
               whatsappNumber={business.whatsapp_number ?? ""}
               currency={business.currency ?? "CRC"}
+              cancellationPolicy={business.cancellation_policy ?? undefined}
               createAppointment={createAppointment}
             />
           )}

@@ -96,6 +96,13 @@ export default function AddServiceForm({
         maxLength={500}
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
       />
+      <input
+        name="category"
+        type="text"
+        placeholder="Categoría (Ej. Manicure, Pedicure, Gel X)"
+        maxLength={50}
+        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
+      />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           {preview && (

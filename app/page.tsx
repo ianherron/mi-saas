@@ -1,4 +1,5 @@
 import LegalModals from "./LegalModals";
+import FAQSection from "./components/FAQSection";
 import AnimateOnScroll from "./AnimateOnScroll";
 import { Calendar, Globe, BarChart3, CheckCircle, Sparkles, Instagram, Facebook } from "lucide-react";
 
@@ -631,6 +632,8 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      <FAQSection />
 
       <footer className="border-t border-[#e9cece]/20 bg-[#fbf9f9] px-6 py-16 lg:px-12">
         <div className="mx-auto max-w-7xl">

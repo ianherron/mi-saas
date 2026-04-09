@@ -254,15 +254,19 @@ export default async function ReservarSlugPage({
         </header>
 
         {/* Hero: banner + foto de perfil estilo Instagram */}
+        {/* Hero: banner + foto de perfil estilo Instagram */}
         {business.cover_image_url ? (
-          <div className="relative w-full overflow-hidden aspect-[4/3] md:aspect-[16/5]">
-            <img
-              src={business.cover_image_url}
-              alt={business.name}
-              className="w-full h-full object-cover object-center"
-            />
-            {/* Foto de perfil superpuesta: mitad dentro, mitad fuera del banner */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-10">
+          <>
+            {/* Banner sin overflow-hidden para que la foto no quede recortada */}
+            <div className="relative w-full aspect-[4/3] md:aspect-[16/5]">
+              <img
+                src={business.cover_image_url}
+                alt={business.name}
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+            {/* Foto de perfil centrada, con margin-top negativo para superponerse al banner */}
+            <div className="relative z-10 flex justify-center -mt-10">
               {business.profile_image_url ? (
                 <img
                   src={business.profile_image_url}
@@ -275,7 +279,7 @@ export default async function ReservarSlugPage({
                 </div>
               )}
             </div>
-          </div>
+          </>
         ) : (business.profile_image_url || business.owner_name) ? (
           /* Sin banner: foto centrada con margen normal */
           <div className="flex justify-center pt-10">
@@ -294,10 +298,7 @@ export default async function ReservarSlugPage({
         ) : null}
 
         {/* Nombre + bio debajo del hero */}
-        <div
-          className="bg-white px-6 pb-6 text-center"
-          style={{ paddingTop: business.cover_image_url ? "3rem" : "1.25rem" }}
-        >
+        <div className="bg-white px-6 pb-6 pt-4 text-center">
           <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
             {business.name}
           </h2>

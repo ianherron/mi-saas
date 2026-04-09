@@ -319,7 +319,7 @@ export default function BookingForm({
                                         {service.name}
                                       </h3>
                                       {service.description && (
-                                        <p className="mt-1 line-clamp-2 text-sm text-[#846262]">
+                                        <p className="mt-1 text-sm text-[#846262]">
                                           {service.description}
                                         </p>
                                       )}

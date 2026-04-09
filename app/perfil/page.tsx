@@ -13,7 +13,6 @@ export default async function PerfilPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const params = await searchParams;
-  const supabase = await createClient();
   const business = await getBusiness();
 
   if (!business) return <p>No se encontró tu negocio.</p>;
@@ -52,7 +51,7 @@ export default async function PerfilPage({
     }
 
     const bio = (formData.get("bio") as string)?.trim().slice(0, 300) || null;
-    const cancellation_policy = (formData.get("cancellation_policy") as string)?.trim().slice(0, 300) || null;
+    const cancellation_policy = (formData.get("cancellation_policy") as string)?.trim().slice(0, 700) || null;
 
     await supabase
       .from("businesses")

@@ -254,11 +254,11 @@ export default async function ReservarSlugPage({
         </header>
 
         {business.cover_image_url && (
-          <div className="relative h-[200px] w-full md:h-[280px]">
+          <div className="w-full overflow-hidden aspect-[4/3] md:aspect-[16/5]">
             <img
               src={business.cover_image_url}
-              alt={`${business.name} portada`}
-              className="h-full w-full object-cover"
+              alt={business.name}
+              className="w-full h-full object-cover object-center"
             />
           </div>
         )}

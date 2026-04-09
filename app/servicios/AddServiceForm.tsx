@@ -27,12 +27,24 @@ export default function AddServiceForm({
     const formData = new FormData(e.currentTarget);
 
     if (imageFile) {
+      if (!imageFile.type.startsWith("image/")) {
+        toast.error("Solo se permiten imágenes");
+        setUploading(false);
+        return;
+      }
+      if (imageFile.size > 5 * 1024 * 1024) {
+        toast.error("La imagen no puede superar 5MB");
+        setUploading(false);
+        return;
+      }
+
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
       );
 
-      const fileName = `${Date.now()}-${imageFile.name}`;
+      const ext = imageFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const fileName = `${Date.now()}.${ext}`;
       const { data, error } = await supabase.storage
         .from("service-images")
         .upload(fileName, imageFile);
@@ -81,6 +93,7 @@ export default function AddServiceForm({
         name="description"
         type="text"
         placeholder="Descripción del servicio (opcional)"
+        maxLength={500}
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-colors focus:border-[#e9cece] focus:bg-white"
       />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

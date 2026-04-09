@@ -12,7 +12,9 @@ export default async function GaleriaPage() {
   async function deleteGalleryImage(id: number) {
     "use server";
     const supabase = await createClient();
-    await supabase.from("gallery").delete().eq("id", id);
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase.from("gallery").delete().eq("id", id).eq("business_id", business.id);
     revalidatePath("/galeria");
   }
 

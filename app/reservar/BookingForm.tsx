@@ -98,8 +98,12 @@ export default function BookingForm({
   );
 
   if (referenceImage) {
-    const cleanName = referenceImage.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const fileName = `${Date.now()}-${cleanName}`;
+    if (!referenceImage.type.startsWith("image/") || referenceImage.size > 5 * 1024 * 1024) {
+      setSubmitting(false);
+      return;
+    }
+    const ext = referenceImage.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const fileName = `${Date.now()}.${ext}`;
     const { data, error } = await supabase.storage
       .from("reference-images")
       .upload(fileName, referenceImage);
@@ -112,12 +116,15 @@ export default function BookingForm({
   }
 
   if (paymentProof) {
-    const cleanName = paymentProof.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const fileName = `${Date.now()}-${cleanName}`;
+    if (!paymentProof.type.startsWith("image/") || paymentProof.size > 5 * 1024 * 1024) {
+      setSubmitting(false);
+      return;
+    }
+    const ext = paymentProof.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const fileName = `${Date.now()}.${ext}`;
     const { data, error } = await supabase.storage
       .from("payment-proofs")
       .upload(fileName, paymentProof);
-    console.log("Upload result:", data, error);
     if (!error && data) {
       const { data: urlData } = supabase.storage
         .from("payment-proofs")

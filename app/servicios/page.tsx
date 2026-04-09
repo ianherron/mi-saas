@@ -50,13 +50,17 @@ export default async function ServiciosPage() {
   async function deleteService(id: string) {
     "use server";
     const supabase = await createClient();
-    await supabase.from("services").delete().eq("id", id);
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase.from("services").delete().eq("id", id).eq("business_id", business.id);
     revalidatePath("/servicios");
   }
 
   async function updateService(formData: FormData) {
     "use server";
     const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
@@ -64,8 +68,9 @@ export default async function ServiciosPage() {
     const description = formData.get("description") as string;
     const image_url = formData.get("image_url") as string;
 
-
-    if (!id || !name || !price || !duration) return;
+    if (!id || !name?.trim()) return;
+    if (isNaN(price) || price <= 0 || price > 10000000) return;
+    if (isNaN(duration) || duration <= 0 || duration > 480) return;
     await supabase
       .from("services")
       .update({
@@ -75,7 +80,8 @@ export default async function ServiciosPage() {
         description,
         image_url: image_url || undefined,
       })
-      .eq("id", id);
+      .eq("id", id)
+      .eq("business_id", business.id);
     revalidatePath("/servicios");
   }
 
@@ -95,7 +101,9 @@ export default async function ServiciosPage() {
   async function deleteTimeSlot(id: number) {
     "use server";
     const supabase = await createClient();
-    await supabase.from("time_slots").delete().eq("id", id);
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase.from("time_slots").delete().eq("id", id).eq("business_id", business.id);
     revalidatePath("/servicios");
   }
 
@@ -117,7 +125,9 @@ export default async function ServiciosPage() {
   async function deleteExtra(id: number) {
     "use server";
     const supabase = await createClient();
-    await supabase.from("extras").delete().eq("id", id);
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase.from("extras").delete().eq("id", id).eq("business_id", business.id);
     revalidatePath("/servicios");
   }
 

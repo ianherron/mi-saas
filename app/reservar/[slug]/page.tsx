@@ -2,6 +2,7 @@ import { supabase } from "../../../lib/supabase";
 import { notFound } from "next/navigation";
 import BookingForm from "../BookingForm";
 import { resend } from "../../../lib/resend";
+import { escapeHtml } from "../../../lib/utils";
 import { Sparkles } from "lucide-react";
 
 export default async function ReservarSlugPage({
@@ -35,12 +36,15 @@ export default async function ReservarSlugPage({
 
     // Validaciones
     if (!client_name?.trim() || client_name.trim().length < 2) return;
+    if (client_name.length > 100) return;
     if (!service_id || !business_id) return;
     if (!date || isNaN(new Date(date).getTime())) return;
+    const today = new Date().toISOString().split("T")[0];
+    if (date < today) return;
     if (!time) return;
     if (isNaN(duration) || duration <= 0) return;
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    if (client_name.length > 100) return;
+    if (email && !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return;
+    if (phone && !/^[\d\s\-+]{7,15}$/.test(phone)) return;
 
     if (!client_name || !service_id || !date || !time) return;
 
@@ -74,7 +78,7 @@ export default async function ReservarSlugPage({
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
           <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
             <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Cita confirmada! ✓</h1>
-            <p style="color: #846262; margin: 0 0 24px;">Hola ${client_name}, tu reserva fue registrada exitosamente.</p>
+            <p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(client_name)}, tu reserva fue registrada exitosamente.</p>
             
             <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
               <table style="width: 100%; border-collapse: collapse;">
@@ -108,7 +112,6 @@ export default async function ReservarSlugPage({
         </div>
       `,
       });
-      console.log("resend result:", result);
     }
 
     // Obtener email del negocio
@@ -128,12 +131,12 @@ export default async function ReservarSlugPage({
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
         <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
           <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Nueva reserva 💅</h1>
-          <p style="color: #846262; margin: 0 0 24px;">${client_name} ha reservado una cita.</p>
+          <p style="color: #846262; margin: 0 0 24px;">${escapeHtml(client_name)} ha reservado una cita.</p>
           <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 8px 0; color: #846262; font-size: 14px;">Cliente</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${client_name}</td>
+                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${escapeHtml(client_name)}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
@@ -165,7 +168,7 @@ export default async function ReservarSlugPage({
                 ? `
               <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
                 <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Foto de referencia:</p>
-                <img src="${reference_image}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
+                <img src="${escapeHtml(reference_image)}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
               </div>`
                 : ""
             }
@@ -175,7 +178,7 @@ export default async function ReservarSlugPage({
               ? `
   <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
     <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Comprobante de pago:</p>
-    <img src="${payment_proof}" alt="Comprobante" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
+    <img src="${escapeHtml(payment_proof)}" alt="Comprobante" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
   </div>
 `
               : ""

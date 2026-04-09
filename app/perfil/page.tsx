@@ -28,6 +28,18 @@ export default async function PerfilPage() {
 
     if (!name || !owner_name || !slug) return;
 
+    const RESERVED_SLUGS = ["api", "admin", "dashboard", "login", "registrar", "servicios", "citas", "galeria", "pagos", "reportes", "perfil", "suscripcion", "bienvenida", "reservar"];
+    if (RESERVED_SLUGS.includes(slug)) return;
+
+    const { data: existingSlug } = await supabase
+      .from("businesses")
+      .select("id")
+      .eq("slug", slug)
+      .neq("id", business.id)
+      .single();
+
+    if (existingSlug) return;
+
     await supabase
       .from("businesses")
       .update({ name, owner_name, slug })

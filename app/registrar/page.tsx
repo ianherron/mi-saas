@@ -12,6 +12,12 @@ async function register(formData: FormData) {
 
   if (!email || !password || !business_name || !owner_name) return;
 
+  if (password.length < 8) {
+    redirect("/registrar?error=La contraseña debe tener al menos 8 caracteres");
+  }
+
+  const RESERVED_SLUGS = ["api", "admin", "dashboard", "login", "registrar", "servicios", "citas", "galeria", "pagos", "reportes", "perfil", "suscripcion", "bienvenida", "reservar"];
+
   const slug = business_name
     .toLowerCase()
     .normalize("NFD")
@@ -19,7 +25,21 @@ async function register(formData: FormData) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+  if (RESERVED_SLUGS.includes(slug)) {
+    redirect("/registrar?error=Ese nombre de negocio no está disponible. Por favor elige otro nombre.");
+  }
+
   const supabase = await createClient();
+
+  const { data: existingSlug } = await supabase
+    .from("businesses")
+    .select("id")
+    .eq("slug", slug)
+    .single();
+
+  if (existingSlug) {
+    redirect("/registrar?error=Ya existe un negocio con ese nombre. Por favor elige otro nombre.");
+  }
 
   const { data, error } = await supabase.auth.signUp({ email, password });
 
@@ -130,6 +150,8 @@ export default async function RegistroPage({
                 name="business_name"
                 type="text"
                 placeholder="Ej. Studio Belleza"
+                required
+                maxLength={100}
                 className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
               />
             </div>
@@ -142,6 +164,8 @@ export default async function RegistroPage({
                 name="owner_name"
                 type="text"
                 placeholder="Tu nombre completo"
+                required
+                maxLength={100}
                 className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
               />
             </div>
@@ -167,6 +191,8 @@ export default async function RegistroPage({
                   name="password"
                   type="password"
                   placeholder="••••••••"
+                  required
+                  minLength={8}
                   className="h-14 w-full rounded-xl border border-[#f0eaea] bg-[#fbf9f9] px-4 text-slate-900 transition-all placeholder:text-[#846262]/50 focus:border-transparent focus:ring-2 focus:ring-[#e9cece] outline-none"
                 />
               </div>

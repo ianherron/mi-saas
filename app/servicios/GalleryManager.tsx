@@ -34,7 +34,16 @@ export default function GalleryManager({
     );
 
     for (const file of Array.from(files)) {
-      const fileName = `${businessId}/${Date.now()}-${file.name}`;
+      if (!file.type.startsWith("image/")) {
+        toast.error("Solo se permiten imágenes");
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("La imagen no puede superar 5MB");
+        continue;
+      }
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const fileName = `${businessId}/${Date.now()}.${ext}`;
       const { data, error } = await supabase.storage
         .from("gallery-images")
         .upload(fileName, file);

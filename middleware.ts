@@ -14,8 +14,11 @@ const ratelimit = new Ratelimit({
 export async function middleware(request: NextRequest) {
   
 
-  // Rate limiting en reservas
-  if (request.nextUrl.pathname.startsWith("/reservar/")) {
+  // Rate limiting en reservas y registro
+  if (
+    request.nextUrl.pathname.startsWith("/reservar/") ||
+    request.nextUrl.pathname === "/registrar"
+  ) {
     const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
     const { success } = await ratelimit.limit(ip);
     if (!success) {
@@ -119,6 +122,7 @@ export const config = {
     "/reportes/:path*",
     "/perfil/:path*",
     "/login",
+    "/registrar",
     "/reservar/:path*",
     "/suscripcion",
   ],

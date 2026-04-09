@@ -21,6 +21,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
+  // Validar timestamp para prevenir replay attacks
+  const timestamp = request.headers.get("x-signature-timestamp");
+  if (timestamp) {
+    const ts = parseInt(timestamp, 10);
+    const now = Math.floor(Date.now() / 1000);
+    if (isNaN(ts) || Math.abs(now - ts) > 300) {
+      return NextResponse.json({ error: "Request expired" }, { status: 401 });
+    }
+  }
+
   const payload = JSON.parse(body);
   const eventName = payload.meta?.event_name;
   const customerId = payload.data?.attributes?.customer_id?.toString();

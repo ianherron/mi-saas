@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
+import { escapeHtml } from "../../lib/utils";
 import {
   LayoutDashboard,
   Clock,
@@ -22,14 +23,19 @@ export default async function CitasPage() {
   async function cancelAppointment(id: number) {
   "use server";
   const supabase = await createClient();
+  const business = await getBusiness();
+  if (!business) return;
 
   const { data: appointment } = await supabase
     .from("appointments")
     .select(`*, services (name)`)
     .eq("id", id)
+    .eq("business_id", business.id)
     .single();
 
-  await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
+  if (!appointment) return;
+
+  await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id).eq("business_id", business.id);
 
   if (appointment?.email) {
     const { resend } = await import("../../lib/resend");
@@ -41,7 +47,7 @@ export default async function CitasPage() {
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
           <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
             <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Cita cancelada</h1>
-            <p style="color: #846262; margin: 0 0 24px;">Hola ${appointment.client_name}, tu cita ha sido cancelada.</p>
+            <p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(appointment.client_name)}, tu cita ha sido cancelada.</p>
             <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
               <table style="width: 100%; border-collapse: collapse;">
                 <tr>
@@ -75,14 +81,18 @@ async function completeAppointment(id: number) {
   "use server";
   const supabase = await createClient();
   const business = await getBusiness();
+  if (!business) return;
 
   const { data: appointment } = await supabase
     .from("appointments")
     .select(`*, services (name)`)
     .eq("id", id)
+    .eq("business_id", business.id)
     .single();
 
-  await supabase.from("appointments").update({ status: "completed" }).eq("id", id);
+  if (!appointment) return;
+
+  await supabase.from("appointments").update({ status: "completed" }).eq("id", id).eq("business_id", business.id);
 
   if (appointment?.email) {
     const { resend } = await import("../../lib/resend");
@@ -97,7 +107,7 @@ async function completeAppointment(id: number) {
               <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0;">✦ NailFlow</h1>
             </div>
             <h2 style="font-size: 20px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Gracias por tu visita! 💅</h2>
-            <p style="color: #846262; margin: 0 0 24px;">Hola ${appointment.client_name}, fue un placer atenderte. Esperamos verte pronto en <strong>${business?.name ?? "nuestro salón"}</strong>.</p>
+            <p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(appointment.client_name)}, fue un placer atenderte. Esperamos verte pronto en <strong>${escapeHtml(business?.name ?? "nuestro salón")}</strong>.</p>
             <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
               <table style="width: 100%; border-collapse: collapse;">
                 <tr>

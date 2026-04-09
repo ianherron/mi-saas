@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import LogoutButton from "../dashboard/LogoutButton";
 import CoverImageUpload from "./CoverImageUpload";
+import ProfileImageUpload from "./ProfileImageUpload";
 
 export default async function PerfilPage({
   searchParams,
@@ -69,6 +70,18 @@ export default async function PerfilPage({
     await supabase
       .from("businesses")
       .update({ cover_image_url: url })
+      .eq("id", business.id);
+    revalidatePath("/perfil");
+  }
+
+  async function updateProfileImage(url: string) {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    await supabase
+      .from("businesses")
+      .update({ profile_image_url: url })
       .eq("id", business.id);
     revalidatePath("/perfil");
   }
@@ -274,6 +287,23 @@ export default async function PerfilPage({
                 </button>
               </div>
             </form>
+          </div>
+
+          {/* Foto de perfil */}
+          <div className="mt-6 overflow-hidden rounded-xl border border-slate-100 bg-white">
+            <div className="border-b border-slate-100 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900">Foto de perfil</h2>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Se muestra como avatar circular en tu página de reservas.
+              </p>
+            </div>
+            <div className="px-5 py-4">
+              <ProfileImageUpload
+                currentUrl={(business as any).profile_image_url}
+                ownerInitial={business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+                updateProfileImage={updateProfileImage}
+              />
+            </div>
           </div>
 
           {/* Foto de portada */}

@@ -14,7 +14,7 @@ export default async function ReservarSlugPage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy")
+    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy, profile_image_url")
     .eq("slug", slug)
     .single();
 
@@ -253,21 +253,65 @@ export default async function ReservarSlugPage({
           </div>
         </header>
 
-        {business.cover_image_url && (
-          <div className="w-full overflow-hidden aspect-[4/3] md:aspect-[16/5]">
+        {/* Hero: banner + foto de perfil estilo Instagram */}
+        {business.cover_image_url ? (
+          <div className="relative w-full overflow-hidden aspect-[4/3] md:aspect-[16/5]">
             <img
               src={business.cover_image_url}
               alt={business.name}
               className="w-full h-full object-cover object-center"
             />
+            {/* Foto de perfil superpuesta: mitad dentro, mitad fuera del banner */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-10">
+              {business.profile_image_url ? (
+                <img
+                  src={business.profile_image_url}
+                  alt={business.owner_name ?? business.name}
+                  className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
+                  {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        ) : (business.profile_image_url || business.owner_name) ? (
+          /* Sin banner: foto centrada con margen normal */
+          <div className="flex justify-center pt-10">
+            {business.profile_image_url ? (
+              <img
+                src={business.profile_image_url}
+                alt={business.owner_name ?? business.name}
+                className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+              />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
+                {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+              </div>
+            )}
+          </div>
+        ) : null}
 
-        {business.bio && (
-          <div className="bg-white px-6 py-4 text-center md:px-20 lg:px-40">
-            <p className="mx-auto max-w-xl text-sm text-[#846262]">{business.bio}</p>
-          </div>
-        )}
+        {/* Nombre + bio debajo del hero */}
+        <div
+          className="bg-white px-6 pb-6 text-center"
+          style={{ paddingTop: business.cover_image_url ? "3rem" : "1.25rem" }}
+        >
+          <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
+            {business.name}
+          </h2>
+          {business.owner_name && (
+            <p className="mt-1 text-sm text-[#846262]">
+              by {business.owner_name}
+            </p>
+          )}
+          {business.bio && (
+            <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
+              {business.bio}
+            </p>
+          )}
+        </div>
 
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
           {!services || services.length === 0 ? (

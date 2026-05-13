@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Design handoff reference files — not production code
     "design_handoff_dashboard_redesign/**",
+    "design_handoff_full_redesign/**",
     // Android build artifacts
     "android/**",
   ]),

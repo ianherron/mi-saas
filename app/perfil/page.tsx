@@ -1,12 +1,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, getBusiness } from "../../lib/supabase-server";
-import {
-  LayoutDashboard, Clock, Scissors, Images, CreditCard, BarChart3, Sparkles, User,
-} from "lucide-react";
-import LogoutButton from "../dashboard/LogoutButton";
 import CoverImageUpload from "./CoverImageUpload";
 import ProfileImageUpload from "./ProfileImageUpload";
+import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
+
+const RESERVED_SLUGS = [
+  "api","admin","dashboard","login","registrar","servicios","citas","galeria",
+  "pagos","reportes","perfil","suscripcion","bienvenida","reservar",
+];
 
 export default async function PerfilPage({
   searchParams,
@@ -15,9 +17,9 @@ export default async function PerfilPage({
 }) {
   const params = await searchParams;
   const business = await getBusiness();
-
   if (!business) return <p>No se encontró tu negocio.</p>;
 
+  // ---------- Actions (unchanged) ----------
   async function updateProfile(formData: FormData) {
     "use server";
     const supabase = await createClient();
@@ -35,7 +37,6 @@ export default async function PerfilPage({
 
     if (!name || !owner_name || !slug) return;
 
-    const RESERVED_SLUGS = ["api", "admin", "dashboard", "login", "registrar", "servicios", "citas", "galeria", "pagos", "reportes", "perfil", "suscripcion", "bienvenida", "reservar"];
     if (RESERVED_SLUGS.includes(slug)) {
       redirect("/perfil?error=Este enlace no está disponible");
     }
@@ -52,7 +53,8 @@ export default async function PerfilPage({
     }
 
     const bio = (formData.get("bio") as string)?.trim().slice(0, 300) || null;
-    const cancellation_policy = (formData.get("cancellation_policy") as string)?.trim().slice(0, 700) || null;
+    const cancellation_policy =
+      (formData.get("cancellation_policy") as string)?.trim().slice(0, 700) || null;
 
     await supabase
       .from("businesses")
@@ -86,242 +88,239 @@ export default async function PerfilPage({
     revalidatePath("/perfil");
   }
 
+  const ownerInitial = business.owner_name?.charAt(0).toUpperCase() ?? "?";
+
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
-        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">
-            NailFlow
-          </span>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <LayoutDashboard className="h-4 w-4" /> Dashboard
-          </a>
-          <a
-            href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Clock className="h-4 w-4" /> Citas
-          </a>
-          <a
-            href="/servicios"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Scissors className="h-4 w-4" /> Servicios
-          </a>
-          <a
-            href="/galeria"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Images className="h-4 w-4" /> Galería
-          </a>
-          <a
-            href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <CreditCard className="h-4 w-4" /> Pagos
-          </a>
-          <a
-            href="/reportes"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <BarChart3 className="h-4 w-4" /> Reportes
-          </a>
-          <a
-            href="/perfil"
-            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
-          >
-            <User className="h-4 w-4" /> Perfil
-          </a>
-        </nav>
-        <div className="border-t border-slate-100 p-3">
-          <div className="flex items-center justify-between rounded-md px-3 py-2">
-            <div className="flex items-center gap-2">
-              <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                {business.owner_name?.charAt(0).toUpperCase()}
-              </div>
-              <span className="text-sm font-medium text-slate-700 truncate max-w-[100px]">
-                {business.owner_name}
-              </span>
-            </div>
-            <LogoutButton />
-          </div>
-        </div>
-      </aside>
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AppSidebar active="perfil" />
+      <AppMobileHeader />
 
-      {/* Mobile header */}
-      <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
-        style={{
-          paddingTop: "max(env(safe-area-inset-top), 0px)",
-          height: "calc(3.5rem + env(safe-area-inset-top))",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold">NailFlow</span>
-        </div>
-        <a
-          href="/dashboard"
-          className="text-sm font-medium text-slate-500 hover:text-slate-900"
-        >
-          ← Volver
-        </a>
-      </header>
-
-      {/* Main content */}
-      <div className="lg:pl-60">
-        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
-          <div className="mb-8">
-            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
-              Perfil
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Actualiza la información de tu negocio.
+      <div className="lg:pl-[220px]">
+        <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
+          {/* Editorial header */}
+          <header className="mb-6">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              Cómo te ven tus clientas
             </p>
-          </div>
+            <h1 className="serif-heading mt-2 text-3xl font-medium leading-tight tracking-tight lg:text-4xl">
+              Tu perfil,{" "}
+              <em className="font-normal italic text-[#846262]">tu carta de presentación</em>.
+            </h1>
+          </header>
 
           {params.error && (
-            <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="mb-5 rounded-2xl bg-[#b86060]/10 px-4 py-3 text-sm text-[#b86060]">
               {params.error}
             </div>
           )}
 
-          <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Información del negocio
-              </h2>
-            </div>
-            <form action={updateProfile} className="divide-y divide-slate-50">
-              <div className="px-5 py-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">
-                  Nombre del negocio
-                </label>
-                <input
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
+            {/* Left column: form */}
+            <form action={updateProfile} className="flex flex-col gap-4">
+              {/* Identidad */}
+              <section className="flex flex-col gap-3.5 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Identidad
+                </p>
+                <Field
+                  label="Nombre del negocio"
                   name="name"
-                  type="text"
                   defaultValue={business.name ?? ""}
                   required
                   maxLength={100}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
                 />
-              </div>
-              <div className="px-5 py-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">
-                  Nombre de la manicurista
-                </label>
-                <input
+                <Field
+                  label="Nombre de la manicurista"
                   name="owner_name"
-                  type="text"
                   defaultValue={business.owner_name ?? ""}
                   required
                   maxLength={100}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
                 />
-              </div>
-              <div className="px-5 py-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">
-                  Slug (URL de reservas)
-                </label>
-                <input
+                <Field
+                  label="Enlace de reservas"
                   name="slug"
-                  type="text"
                   defaultValue={business.slug ?? ""}
                   required
                   maxLength={60}
                   pattern="[a-z0-9-]+"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
+                  prefix="nailflow.app/reservar/"
+                  hint="Cambialo solo si es necesario — las clientas pueden tenerlo guardado."
                 />
-                <p className="mt-2 text-xs text-slate-400">
-                  Preview:{" "}
-                  <span className="font-medium text-[#2d2424]">
-                    nailflow.app/reservar/{business.slug}
-                  </span>
+              </section>
+
+              {/* Voz */}
+              <section className="flex flex-col gap-3.5 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Voz
                 </p>
-              </div>
-              <div className="px-5 py-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">
-                  Bio del negocio
-                </label>
-                <textarea
+                <Field
+                  label="Bio"
                   name="bio"
                   defaultValue={(business as any).bio ?? ""}
-                  placeholder="Cuéntales a tus clientas sobre tu trabajo..."
+                  placeholder="Una línea con personalidad funciona mejor que un párrafo."
+                  multiline
                   maxLength={300}
-                  rows={3}
-                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
+                  hint="Aparece debajo de tu nombre en la página de reservas. Máximo 300 caracteres."
                 />
-                <p className="mt-1 text-xs text-slate-400">Máximo 300 caracteres · Se muestra en tu página de reservas</p>
-              </div>
-              <div className="px-5 py-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">
-                  Política de cancelación
-                </label>
-                <textarea
+                <Field
+                  label="Política de cancelación"
                   name="cancellation_policy"
                   defaultValue={(business as any).cancellation_policy ?? ""}
-                  placeholder="Ej. Se requiere aviso de 24 horas para cancelar..."
+                  placeholder="Ej. Se requiere aviso de 24 horas para cancelar sin penalidad."
+                  multiline
                   maxLength={700}
-                  rows={3}
-                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#e9cece] transition-colors"
+                  hint="Se muestra antes del botón de confirmar cita."
                 />
-                <p className="mt-1 text-xs text-slate-400">Máximo 700 caracteres · Se muestra antes del botón de confirmar cita</p>
-              </div>
-              <div className="px-5 py-4">
+              </section>
+
+              {/* Visuales */}
+              <section className="rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Visuales
+                </p>
+                <div className="mt-3 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-[#2d2424]">Foto de perfil</p>
+                    <ProfileImageUpload
+                      currentUrl={(business as any).profile_image_url}
+                      ownerInitial={ownerInitial}
+                      updateProfileImage={updateProfileImage}
+                    />
+                  </div>
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-[#2d2424]">Foto de portada</p>
+                    <CoverImageUpload
+                      currentUrl={(business as any).cover_image_url}
+                      updateCoverImage={updateCoverImage}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* Actions */}
+              <div className="flex gap-2.5">
                 <button
                   type="submit"
-                  className="rounded-lg bg-[#e9cece] px-4 py-2 text-sm font-medium text-[#2d2424] transition-colors hover:bg-[#dbbcbc]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d2424] px-5 py-2.5 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
                 >
                   Guardar cambios
                 </button>
               </div>
             </form>
-          </div>
 
-          {/* Foto de perfil */}
-          <div className="mt-6 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">Foto de perfil</h2>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Se muestra como avatar circular en tu página de reservas.
-              </p>
-            </div>
-            <div className="px-5 py-4">
-              <ProfileImageUpload
-                currentUrl={(business as any).profile_image_url}
-                ownerInitial={business.owner_name?.charAt(0).toUpperCase() ?? "?"}
-                updateProfileImage={updateProfileImage}
-              />
-            </div>
-          </div>
-
-          {/* Foto de portada */}
-          <div className="mt-6 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">Foto de portada</h2>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Se muestra como banner arriba de tu página de reservas.
-              </p>
-            </div>
-            <div className="px-5 py-4">
-              <CoverImageUpload
-                currentUrl={(business as any).cover_image_url}
-                updateCoverImage={updateCoverImage}
-              />
-            </div>
+            {/* Right column: preview */}
+            <aside className="lg:sticky lg:top-6 lg:self-start">
+              <PreviewCard business={business} ownerInitial={ownerInitial} />
+              <div className="mt-3.5 rounded-2xl bg-[#f4ecec] p-4">
+                <p className="text-xs leading-relaxed text-[#846262]">
+                  <span className="font-medium text-[#2d2424]">Vista previa</span> de cómo te ven las clientas al abrir tu enlace de reservas.
+                </p>
+              </div>
+            </aside>
           </div>
         </main>
+      </div>
+    </div>
+  );
+}
+
+// ---- subcomponents ----
+function Field({
+  label, name, defaultValue, prefix, hint, multiline,
+  placeholder, required, maxLength, pattern,
+}: {
+  label: string;
+  name: string;
+  defaultValue?: string;
+  prefix?: string;
+  hint?: string;
+  multiline?: boolean;
+  placeholder?: string;
+  required?: boolean;
+  maxLength?: number;
+  pattern?: string;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+        {label}
+      </p>
+      <div
+        className={[
+          "flex gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5",
+          multiline ? "items-start" : "items-center",
+        ].join(" ")}
+      >
+        {prefix && (
+          <span className="shrink-0 text-sm text-[#846262]">{prefix}</span>
+        )}
+        {multiline ? (
+          <textarea
+            name={name}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            maxLength={maxLength}
+            rows={3}
+            className="w-full resize-none bg-transparent text-sm leading-relaxed text-[#2d2424] outline-none placeholder:text-[#b89090]"
+          />
+        ) : (
+          <input
+            name={name}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            required={required}
+            maxLength={maxLength}
+            pattern={pattern}
+            className="w-full bg-transparent text-sm text-[#2d2424] outline-none placeholder:text-[#b89090]"
+          />
+        )}
+      </div>
+      {hint && (
+        <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">{hint}</p>
+      )}
+    </div>
+  );
+}
+
+function PreviewCard({ business, ownerInitial }: { business: any; ownerInitial: string }) {
+  return (
+    <div className="overflow-hidden rounded-3xl border border-[#2d2424]/[0.08] bg-[#fbf9f9]">
+      <div
+        className="relative aspect-[16/7] w-full"
+        style={{
+          background: business.cover_image_url
+            ? `url('${business.cover_image_url}') center/cover`
+            : "linear-gradient(135deg, #e9cece, #b89090)",
+        }}
+      />
+      <div className="relative px-5 pb-6 pt-0 text-center">
+        <div className="-mt-9 inline-flex">
+          {business.profile_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={business.profile_image_url}
+              alt={business.owner_name ?? business.name}
+              className="h-[68px] w-[68px] rounded-full border-4 border-[#fbf9f9] object-cover"
+            />
+          ) : (
+            <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full border-4 border-[#fbf9f9] bg-[#e9cece]">
+              <span className="serif-heading text-2xl font-medium text-[#2d2424]">
+                {ownerInitial}
+              </span>
+            </div>
+          )}
+        </div>
+        <p className="serif-heading mt-2 text-xl font-semibold tracking-tight text-[#2d2424]">
+          {business.name || "Tu negocio"}
+        </p>
+        {business.owner_name && (
+          <p className="mt-0.5 text-xs text-[#846262]">by {business.owner_name}</p>
+        )}
+        {business.bio && (
+          <p className="mx-auto mt-3 max-w-[260px] text-xs leading-relaxed text-[#846262]">
+            {business.bio}
+          </p>
+        )}
       </div>
     </div>
   );

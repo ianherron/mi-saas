@@ -1,19 +1,31 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
+import { Plus } from "lucide-react";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3, User } from "lucide-react";
 import DeleteButton from "./DeleteButton";
 import { AddExtraForm, AddTimeSlotForm, WorkingDaysForm } from "./ServiciosToasts";
+import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
+import ServiciosTabs from "./ServiciosTabs";
 
+type Tab = "servicios" | "extras" | "horarios";
 
+export default async function ServiciosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const params = await searchParams;
+  const tab: Tab =
+    params.tab === "extras" || params.tab === "horarios"
+      ? params.tab
+      : "servicios";
 
-export default async function ServiciosPage() {
   const supabase = await createClient();
   const business = await getBusiness();
-
   if (!business) return <p>No se encontró tu negocio.</p>;
 
+  // ---------- Server actions (unchanged) ----------
   async function addService(formData: FormData) {
     "use server";
     const supabase = await createClient();
@@ -26,23 +38,13 @@ export default async function ServiciosPage() {
     const image_url = formData.get("image_url") as string;
     const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
 
-    // Validaciones
     if (!name?.trim() || name.trim().length < 2) return;
     if (isNaN(price) || price <= 0 || price > 10000000) return;
     if (isNaN(duration) || duration <= 0 || duration > 480) return;
     if (name.length > 100) return;
 
-    if (!name || !price || !duration) return;
-  await supabase
-    .from("services")
-    .insert({
-      name,
-      price,
-      duration,
-      description,
-      image_url,
-      category,
-      business_id: business.id,
+    await supabase.from("services").insert({
+      name, price, duration, description, image_url, category, business_id: business.id,
     });
     revalidatePath("/servicios");
   }
@@ -72,15 +74,12 @@ export default async function ServiciosPage() {
     if (!id || !name?.trim()) return;
     if (isNaN(price) || price <= 0 || price > 10000000) return;
     if (isNaN(duration) || duration <= 0 || duration > 480) return;
+
     await supabase
       .from("services")
       .update({
-        name,
-        price,
-        duration,
-        description,
-        image_url: image_url || undefined,
-        category,
+        name, price, duration, description,
+        image_url: image_url || undefined, category,
       })
       .eq("id", id)
       .eq("business_id", business.id);
@@ -88,17 +87,17 @@ export default async function ServiciosPage() {
   }
 
   async function addTimeSlot(formData: FormData) {
-  "use server";
-  const supabase = await createClient();
-  const business = await getBusiness();
-  if (!business) return;
-  const hour = formData.get("hour") as string;
-  const period = formData.get("period") as string;
-  if (!hour || !period) return;
-  const formatted = `${hour} ${period}`;
-  await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
-  revalidatePath("/servicios");
-}
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    const hour = formData.get("hour") as string;
+    const period = formData.get("period") as string;
+    if (!hour || !period) return;
+    const formatted = `${hour} ${period}`;
+    await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
+    revalidatePath("/servicios");
+  }
 
   async function deleteTimeSlot(id: number) {
     "use server";
@@ -142,281 +141,222 @@ export default async function ServiciosPage() {
     const days = [0, 1, 2, 3, 4, 5, 6].filter(
       (d) => formData.get(`day_${d}`) === "on",
     );
-
     if (days.length === 0) return;
 
-    // Borrar los días actuales y reemplazar
     await supabase.from("working_days").delete().eq("business_id", business.id);
-
     if (days.length > 0) {
       await supabase
         .from("working_days")
         .insert(days.map((day) => ({ day, business_id: business.id })));
     }
-
     revalidatePath("/servicios");
   }
 
-  const { data: services, error } = await supabase
-    .from("services")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("created_at", { ascending: true });
+  // ---------- Data ----------
+  const [{ data: services }, { data: timeSlots }, { data: extras }, { data: workingDaysData }] =
+    await Promise.all([
+      supabase.from("services").select("*").eq("business_id", business.id).order("created_at", { ascending: true }),
+      supabase.from("time_slots").select("*").eq("business_id", business.id).order("time", { ascending: true }),
+      supabase.from("extras").select("*").eq("business_id", business.id).order("created_at", { ascending: true }),
+      supabase.from("working_days").select("day").eq("business_id", business.id),
+    ]);
 
-  const { data: timeSlots } = await supabase
-    .from("time_slots")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("time", { ascending: true });
-
-  const { data: extras } = await supabase
-    .from("extras")
-    .select("*")
-    .eq("business_id", business.id)
-    .order("created_at", { ascending: true });
-
-  const { data: workingDays } = await supabase
-    .from("working_days")
-    .select("day")
-    .eq("business_id", business.id);
-
-  const workingDaysList = workingDays?.map((d) => d.day) ?? [];
+  const workingDaysList = workingDaysData?.map((d) => d.day) ?? [];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
-        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
-          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">
-            NailFlow
-          </span>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <LayoutDashboard className="h-4 w-4" /> Dashboard
-          </a>
-          <a
-            href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Clock className="h-4 w-4" /> Citas
-          </a>
-          <a
-            href="/servicios"
-            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
-          >
-            <Scissors className="h-4 w-4" /> Servicios
-          </a>
-          <a
-            href="/galeria"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <span>
-              <Images className="h-4 w-4" />
-            </span>{" "}
-            Galería
-          </a>
-          <a
-            href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <CreditCard className="h-4 w-4" /> Pagos
-          </a>
-          <a
-            href="/reportes"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <BarChart3 className="h-4 w-4" /> Reportes
-          </a>
-          <a
-            href="/perfil"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <User className="h-4 w-4" /> Perfil
-          </a>
-        </nav>
-      </aside>
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AppSidebar active="servicios" />
+      <AppMobileHeader />
 
-      {/* Mobile header */}
-      <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
-        style={{
-          paddingTop: "max(env(safe-area-inset-top), 0px)",
-          height: "calc(3.5rem + env(safe-area-inset-top))",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold">NailFlow</span>
-        </div>
-        <a
-          href="/dashboard"
-          className="text-sm font-medium text-slate-500 hover:text-slate-900"
-        >
-          ← Volver
-        </a>
-      </header>
-
-      <div className="lg:pl-60">
-        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
-          {/* Page header */}
-          <div className="mb-8">
-            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
-              Servicios
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Gestiona los servicios que ofreces a tus clientas.
-            </p>
-          </div>
-
-          {/* Add service form */}
-          <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Agregar servicio
-              </h2>
-            </div>
-            <AddServiceForm addService={addService} />
-          </div>
-          {/* Services list */}
-          {error && (
-            <p className="mb-4 text-sm text-red-500">
-              Error cargando servicios: {error.message}
-            </p>
-          )}
-
-          {!services?.length && !error && (
-            <div className="mb-8 rounded-xl border border-dashed border-slate-200 bg-white p-10 text-center">
-              <p className="text-sm text-slate-400">
-                No hay servicios todavía. Agrega uno arriba.
+      <div className="lg:pl-[220px]">
+        <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
+          {/* Editorial header */}
+          <header className="mb-5 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                {services?.length ?? 0} servicios · {extras?.length ?? 0} extras · {timeSlots?.length ?? 0} horarios
               </p>
+              <h1 className="serif-heading mt-2 text-3xl font-medium leading-tight tracking-tight lg:text-4xl">
+                Tu catálogo,{" "}
+                <em className="font-normal italic text-[#846262]">tu marca</em>.
+              </h1>
             </div>
-          )}
+          </header>
 
-          {services && services.length > 0 && (
-            <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
-              <ul className="divide-y divide-slate-50">
-                {services.map((service: any) => (
-                  <li
-                    key={service.id}
-                    className="flex items-center justify-between px-5 py-4"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">
-                        {service.name}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {service.duration} min · ₡
-                        {service.price.toLocaleString()}
-                      </p>
-                      {service.description && (
-                        <p className="mt-0.5 text-xs text-slate-400 italic">
-                          {service.description}
+          {/* Tabs */}
+          <ServiciosTabs
+            tab={tab}
+            counts={{
+              servicios: services?.length ?? 0,
+              extras: extras?.length ?? 0,
+              horarios: timeSlots?.length ?? 0,
+            }}
+          />
+
+          {/* ----- Servicios tab ----- */}
+          {tab === "servicios" && (
+            <>
+              {/* Add form */}
+              <section className="mb-5 overflow-hidden rounded-2xl border border-dashed border-[#e9cece] bg-white">
+                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
+                  <p className="text-sm font-medium text-[#2d2424]">Agregar servicio</p>
+                </div>
+                <AddServiceForm addService={addService} />
+              </section>
+
+              {/* Service grid */}
+              {!services?.length ? (
+                <div className="rounded-3xl border border-dashed border-[#e9cece] bg-white p-10 text-center">
+                  <p className="text-sm text-[#b89090]">
+                    No hay servicios todavía. Agregá uno arriba.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                  {services.map((service: any) => (
+                    <article
+                      key={service.id}
+                      className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white"
+                    >
+                      {/* Image / placeholder */}
+                      <div
+                        className="relative flex aspect-video w-full items-center justify-center"
+                        style={{
+                          background: service.image_url
+                            ? `linear-gradient(135deg, #e9cece, #b89090)`
+                            : "#f4ecec",
+                        }}
+                      >
+                        {service.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={service.image_url}
+                            alt={service.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="serif-heading text-3xl text-[#b89090]/50">✦</span>
+                        )}
+                        {service.category && service.category !== "General" && (
+                          <span className="absolute left-2.5 top-2.5 rounded-full bg-[#2d2424] px-2.5 py-1 text-[10px] font-medium text-[#fbf9f9]">
+                            {service.category}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <h3 className="serif-heading text-lg font-medium tracking-tight text-[#2d2424]">
+                            {service.name}
+                          </h3>
+                          <p className="serif-heading shrink-0 text-lg font-medium text-[#2d2424]">
+                            ₡{service.price.toLocaleString()}
+                          </p>
+                        </div>
+                        <p className="text-xs text-[#846262]">
+                          {service.duration} min
+                          {service.description ? ` · ${service.description}` : ""}
                         </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <EditServiceForm
-                        service={service}
-                        updateService={updateService}
-                      />
-                      <DeleteButton
-                        action={deleteService.bind(null, service.id)}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                        <div className="mt-1.5 flex gap-1.5">
+                          <div className="flex-1">
+                            <EditServiceForm service={service} updateService={updateService} />
+                          </div>
+                          <DeleteButton action={deleteService.bind(null, service.id)} />
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+
+              {/* Tip */}
+              <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[#f4ecec] p-4">
+                <span className="text-base text-[#b89090]">✦</span>
+                <p className="text-[13px] leading-relaxed text-[#846262]">
+                  <span className="font-medium text-[#2d2424]">Tip:</span>{" "}
+                  servicios con foto convierten 3× más. Subí al menos una imagen por servicio.
+                </p>
+              </div>
+            </>
           )}
 
-          {/* Extras */}
-          <div className="mb-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">Extras</h2>
-            </div>
-            <AddExtraForm addExtra={addExtra} />
-            {!extras?.length ? (
-              <div className="px-5 py-6 text-center">
-                <p className="text-sm text-slate-400">
-                  No hay extras configurados.
-                </p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-slate-50">
-                {extras.map((extra: any) => (
-                  <li
-                    key={extra.id}
-                    className="flex items-center justify-between px-5 py-3"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">
-                        {extra.name}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        +{extra.duration} min · ₡
-                        {extra.price?.toLocaleString() ?? 0}
-                      </p>
-                    </div>
-                    <DeleteButton action={deleteExtra.bind(null, extra.id)} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {/* ----- Extras tab ----- */}
+          {tab === "extras" && (
+            <>
+              <section className="mb-5 overflow-hidden rounded-2xl border border-dashed border-[#e9cece] bg-white">
+                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
+                  <p className="text-sm font-medium text-[#2d2424]">Agregar extra</p>
+                </div>
+                <AddExtraForm addExtra={addExtra} />
+              </section>
 
-          {/* Horarios */}
-          <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Horarios disponibles
-              </h2>
-            </div>
-            <AddTimeSlotForm addTimeSlot={addTimeSlot} />
-            {!timeSlots?.length ? (
-              <div className="px-5 py-6 text-center">
-                <p className="text-sm text-slate-400">
-                  No hay horarios configurados.
-                </p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-slate-50">
-                {timeSlots.map((slot: any) => (
-                  <li
-                    key={slot.id}
-                    className="flex items-center justify-between px-5 py-3"
-                  >
-                    <p className="text-sm font-medium text-slate-900">
-                      {slot.time}
-                    </p>
-                    <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Días de trabajo
-              </h2>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Selecciona los días que atiendes clientas.
-              </p>
-            </div>
-            <WorkingDaysForm
-              saveWorkingDays={saveWorkingDays}
-              workingDaysList={workingDaysList}
-            />
-          </div>
+              {!extras?.length ? (
+                <div className="rounded-3xl border border-dashed border-[#e9cece] bg-white p-10 text-center">
+                  <p className="text-sm text-[#b89090]">No hay extras configurados.</p>
+                </div>
+              ) : (
+                <ul className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white divide-y divide-[#2d2424]/[0.06]">
+                  {extras.map((extra: any) => (
+                    <li key={extra.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[#2d2424] truncate">{extra.name}</p>
+                        <p className="text-xs text-[#846262]">
+                          +{extra.duration} min · ₡{(extra.price ?? 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <DeleteButton action={deleteExtra.bind(null, extra.id)} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+
+          {/* ----- Horarios y días tab ----- */}
+          {tab === "horarios" && (
+            <>
+              <section className="mb-5 overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white">
+                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
+                  <p className="text-sm font-medium text-[#2d2424]">Horarios disponibles</p>
+                  <p className="mt-0.5 text-xs text-[#846262]">
+                    Las horas que tus clientas pueden elegir al reservar.
+                  </p>
+                </div>
+                <AddTimeSlotForm addTimeSlot={addTimeSlot} />
+
+                {!timeSlots?.length ? (
+                  <div className="px-5 py-6 text-center">
+                    <p className="text-sm text-[#b89090]">No hay horarios configurados.</p>
+                  </div>
+                ) : (
+                  <ul className="grid grid-cols-2 gap-2 px-5 py-4 sm:grid-cols-3 lg:grid-cols-4">
+                    {timeSlots.map((slot: any) => (
+                      <li
+                        key={slot.id}
+                        className="flex items-center justify-between gap-2 rounded-xl border border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3 py-2"
+                      >
+                        <span className="text-sm font-medium text-[#2d2424]">{slot.time}</span>
+                        <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <section className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white">
+                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
+                  <p className="text-sm font-medium text-[#2d2424]">Días de trabajo</p>
+                  <p className="mt-0.5 text-xs text-[#846262]">
+                    Elegí los días que atendés clientas.
+                  </p>
+                </div>
+                <WorkingDaysForm
+                  saveWorkingDays={saveWorkingDays}
+                  workingDaysList={workingDaysList}
+                />
+              </section>
+            </>
+          )}
         </main>
       </div>
     </div>

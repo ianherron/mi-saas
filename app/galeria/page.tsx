@@ -1,7 +1,10 @@
 import { createClient, getBusiness } from "../../lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { Upload } from "lucide-react";
 import GalleryManager from "../servicios/GalleryManager";
-import { LayoutDashboard, Clock, Sparkles, Images, Scissors, CreditCard, BarChart3, User } from "lucide-react";
+import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
+
+const TARGET = 12;
 
 export default async function GaleriaPage() {
   const supabase = await createClient();
@@ -14,7 +17,11 @@ export default async function GaleriaPage() {
     const supabase = await createClient();
     const business = await getBusiness();
     if (!business) return;
-    await supabase.from("gallery").delete().eq("id", id).eq("business_id", business.id);
+    await supabase
+      .from("gallery")
+      .delete()
+      .eq("id", id)
+      .eq("business_id", business.id);
     revalidatePath("/galeria");
   }
 
@@ -24,107 +31,83 @@ export default async function GaleriaPage() {
     .eq("business_id", business.id)
     .order("created_at", { ascending: false });
 
+  const count = galleryImages?.length ?? 0;
+  const progress = Math.min(100, (count / TARGET) * 100);
+  const remaining = Math.max(0, TARGET - count);
+
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
-        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
-          <div className="flex size-7 items-center justify-center rounded-md bg-[#e9cece] text-[#2d2424] text-xs">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">
-            NailFlow
-          </span>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <LayoutDashboard className="h-4 w-4" /> Dashboard
-          </a>
-          <a
-            href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Clock className="h-4 w-4" /> Citas
-          </a>
-          <a
-            href="/servicios"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Scissors className="h-4 w-4" /> Servicios
-          </a>
-          <a
-            href="/galeria"
-            className="flex items-center gap-3 rounded-md bg-[#e9cece]/20 px-3 py-2 text-sm font-medium text-slate-900"
-          >
-            <Images className="h-4 w-4" /> Galería
-          </a>
-          <a
-            href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <CreditCard className="h-4 w-4" /> Pagos
-          </a>
-          <a
-            href="/reportes"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <BarChart3 className="h-4 w-4" /> Reportes
-          </a>
-          <a
-            href="/perfil"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            <User className="h-4 w-4" /> Perfil
-          </a>
-        </nav>
-      </aside>
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AppSidebar active="galeria" />
+      <AppMobileHeader />
 
-      {/* Mobile header */}
-      <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
-        style={{
-          paddingTop: "max(env(safe-area-inset-top), 0px)",
-          height: "calc(3.5rem + env(safe-area-inset-top))",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold">NailFlow</span>
-        </div>
-        <a
-          href="/dashboard"
-          className="text-sm font-medium text-slate-500 hover:text-slate-900"
-        >
-          ← Volver
-        </a>
-      </header>
+      <div className="lg:pl-[220px]">
+        <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
+          {/* Editorial header */}
+          <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                {count} fotos {remaining > 0 ? `· faltan ${remaining} para completar` : "· completa"}
+              </p>
+              <h1 className="serif-heading mt-2 text-3xl font-medium leading-tight tracking-tight lg:text-4xl">
+                Tu galería,{" "}
+                <em className="font-normal italic text-[#846262]">tu escaparate</em>.
+              </h1>
+            </div>
+          </header>
 
-      <div className="lg:pl-60">
-        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
-          <div className="mb-8">
-            <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
-              Galería de trabajos
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Muestra tus mejores trabajos a las clientas. Recomendamos subir al
-              menos 12 fotos.
-            </p>
-          </div>
-
-          <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
-            <div className="border-b border-slate-100 px-5 py-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">
-                  Mis trabajos
-                </h2>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  {galleryImages?.length ?? 0} / 12 fotos subidas
+          {/* Progress + tip card */}
+          <div className="mb-5 grid grid-cols-1 gap-3.5 lg:grid-cols-[1.4fr_1fr]">
+            {/* Progress card */}
+            <section className="rounded-2xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+              <div className="mb-2 flex items-end justify-between">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Progreso
                 </p>
+                <span className="serif-heading text-xl tracking-tight text-[#2d2424]">
+                  {count}
+                  <span className="text-sm text-[#b89090]"> / {TARGET}</span>
+                </span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-[#f4ecec]">
+                <div className="h-full bg-[#2d2424]" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="mt-3 text-[13px] leading-relaxed text-[#846262]">
+                Recomendamos al menos{" "}
+                <span className="font-medium text-[#2d2424]">12 fotos</span> para que tu página de reservas se sienta completa.
+              </p>
+            </section>
+
+            {/* Tip card (dark) */}
+            <section className="relative overflow-hidden rounded-2xl bg-[#2d2424] p-5 text-[#fbf9f9] sm:p-6">
+              <span
+                aria-hidden
+                className="serif-heading pointer-events-none absolute -right-4 -top-6 text-[110px] leading-none text-[#e9cece]/10"
+              >
+                ✦
+              </span>
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#e9cece]">
+                Tip
+              </p>
+              <p className="serif-heading mt-2 text-lg font-medium leading-tight tracking-tight sm:text-xl">
+                Las páginas con{" "}
+                <em className="font-normal italic text-[#e9cece]">12+ fotos</em>{" "}
+                reciben 3× más reservas.
+              </p>
+            </section>
+          </div>
+
+          {/* Dropzone + grid (handled by existing GalleryManager) */}
+          <section className="overflow-hidden rounded-3xl border border-[#2d2424]/[0.08] bg-white">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#2d2424]/[0.06] px-5 py-4 sm:px-6">
+              <div>
+                <p className="text-sm font-medium text-[#2d2424]">Mis trabajos</p>
+                <p className="mt-0.5 text-xs text-[#846262]">
+                  Arrastrá fotos o usá el botón para subir
+                </p>
+              </div>
+              <div className="hidden items-center gap-2 text-[#b89090] sm:flex">
+                <Upload className="h-4 w-4" />
+                <span className="text-xs">JPG, PNG · hasta 5MB</span>
               </div>
             </div>
             <GalleryManager
@@ -132,7 +115,7 @@ export default async function GaleriaPage() {
               images={galleryImages ?? []}
               deleteImage={deleteGalleryImage}
             />
-          </div>
+          </section>
         </main>
       </div>
     </div>

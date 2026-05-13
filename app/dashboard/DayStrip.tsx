@@ -23,19 +23,46 @@ interface Props {
   slotTimes: string[];
 }
 
-function toMinutes(time: string): number {
-  if (!time) return 0;
-  const ampm = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if (ampm) {
-    let h = parseInt(ampm[1], 10);
-    const m = parseInt(ampm[2], 10);
-    const period = ampm[3].toUpperCase();
+// Returns null if unparseable — callers must filter nulls out.
+// Accepts: "9:00 AM", "09:00", "09:00:00", "9am", "9 AM", any case.
+function toMinutes(time: string): number | null {
+  const t = time?.trim();
+  if (!t) return null;
+
+  // "9:00 AM" / "10:00PM" / "9:00 am"
+  const withColon = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/i);
+  if (withColon) {
+    let h = parseInt(withColon[1], 10);
+    const m = parseInt(withColon[2], 10);
+    const period = withColon[3].toUpperCase();
+    if (isNaN(h) || isNaN(m)) return null;
     if (period === "PM" && h !== 12) h += 12;
     if (period === "AM" && h === 12) h = 0;
     return h * 60 + m;
   }
-  const [hStr, mStr] = time.split(":");
-  return parseInt(hStr, 10) * 60 + (parseInt(mStr ?? "0", 10) || 0);
+
+  // "9am" / "10PM" (no colon, no minutes)
+  const bare = t.match(/^(\d{1,2})\s*(AM|PM)$/i);
+  if (bare) {
+    let h = parseInt(bare[1], 10);
+    const period = bare[2].toUpperCase();
+    if (isNaN(h)) return null;
+    if (period === "PM" && h !== 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+    return h * 60;
+  }
+
+  // "09:00:00" / "09:00" / "9:00" (24-hour)
+  const parts = t.split(":");
+  if (parts.length >= 2) {
+    const h = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    if (!isNaN(h) && !isNaN(m) && h >= 0 && h < 24 && m >= 0 && m < 60) {
+      return h * 60 + m;
+    }
+  }
+
+  return null;
 }
 
 function formatTime12h(mins: number): string {
@@ -83,27 +110,56 @@ export default function DayStrip({
     .toLocaleDateString("es-CR", { weekday: "long", day: "numeric", month: "short" })
     .replace(".", "");
 
-  const slotMinutes = slotTimes.map(toMinutes).filter((n) => !isNaN(n));
+  // ---- Parse slot times (filter out unparseable) ----
+  const slotMinutes = slotTimes
+    .map(toMinutes)
+    .filter((n): n is number => n !== null);
+
+  // ---- Parse appointment times, keeping alignment with original array ----
+  const parsedAppts = appointments
+    .map((a) => ({ ...a, startMin: toMinutes(a.time) }))
+    .filter((a): a is typeof a & { startMin: number } => a.startMin !== null);
+
   const slotsConfigured = slotMinutes.length > 0;
-  const dayStart = slotsConfigured ? Math.min(...slotMinutes) : 9 * 60;
-  const longestDuration = Math.max(60, ...appointments.map((a) => a.duration ?? 60));
-  const lastSlot = slotsConfigured ? Math.max(...slotMinutes) : 18 * 60;
-  const dayEnd = lastSlot + longestDuration;
-  const dayTotal = Math.max(dayEnd - dayStart, 60);
+  const hasAppts = parsedAppts.length > 0;
 
-  const firstTickHour = Math.floor(dayStart / 60);
-  const lastTickHour = Math.ceil(dayEnd / 60);
+  // ---- Build day range from BOTH slots and real appointment start/end times ----
+  const longestDuration = hasAppts
+    ? Math.max(60, ...parsedAppts.map((a) => a.duration ?? 60))
+    : 60;
+
+  const allStarts: number[] = [...slotMinutes, ...parsedAppts.map((a) => a.startMin)];
+  const allEnds: number[] = [
+    ...(slotsConfigured ? [Math.max(...slotMinutes) + longestDuration] : []),
+    ...parsedAppts.map((a) => a.startMin + (a.duration ?? 60)),
+  ];
+
+  const dayStart = allStarts.length > 0 ? Math.min(...allStarts) : null;
+  const dayEnd = allEnds.length > 0 ? Math.max(...allEnds) : null;
+  const dayTotal = dayStart !== null && dayEnd !== null
+    ? Math.max(dayEnd - dayStart, 60)
+    : 60;
+
+  // Show the strip if we have either slots or appointments
+  const hasRange = dayStart !== null && dayEnd !== null;
+
+  // ---- Hour tick marks ----
   const ticks: number[] = [];
-  for (let h = firstTickHour; h <= lastTickHour; h++) ticks.push(h * 60);
+  if (hasRange) {
+    const firstHour = Math.floor(dayStart! / 60);
+    const lastHour = Math.ceil(dayEnd! / 60);
+    for (let h = firstHour; h <= lastHour; h++) ticks.push(h * 60);
+  }
 
-  const dayMid = dayStart + dayTotal / 2;
+  // ---- Copy variant ----
+  const dayMid = hasRange ? dayStart! + dayTotal / 2 : 0;
   const isEmpty = todayCount === 0;
 
   function copyVariant(): "rest" | "empty" | "morning" | "afternoon" | "spread" | "full" {
     if (!isWorkingDay) return "rest";
     if (isEmpty) return "empty";
     if (todayCount >= 6) return "full";
-    const before = appointments.filter((a) => toMinutes(a.time) < dayMid).length;
+    const before = parsedAppts.filter((a) => a.startMin < dayMid).length;
     const after = todayCount - before;
     if (before >= 3 && after === 0) return "morning";
     if (after >= 3 && before === 0) return "afternoon";
@@ -113,48 +169,31 @@ export default function DayStrip({
 
   const heading =
     variant === "rest" ? (
-      <>
-        Hoy es <em className="font-normal italic text-[#846262]">día libre</em>.
-      </>
+      <>Hoy es <em className="font-normal italic text-[#846262]">día libre</em>.</>
     ) : variant === "empty" ? (
-      <>
-        El día está{" "}
-        <em className="font-normal italic text-[#846262]">despejado</em>.
-      </>
+      <>El día está <em className="font-normal italic text-[#846262]">despejado</em>.</>
     ) : variant === "morning" ? (
-      <>
-        {todayCount} citas hoy —{" "}
-        <em className="font-normal italic text-[#846262]">mañana llena</em>.
-      </>
+      <>{todayCount} citas hoy — <em className="font-normal italic text-[#846262]">mañana llena</em>.</>
     ) : variant === "afternoon" ? (
-      <>
-        {todayCount} citas hoy —{" "}
-        <em className="font-normal italic text-[#846262]">tarde llena</em>.
-      </>
+      <>{todayCount} citas hoy — <em className="font-normal italic text-[#846262]">tarde llena</em>.</>
     ) : variant === "full" ? (
-      <>
-        {todayCount} citas —{" "}
-        <em className="font-normal italic text-[#846262]">día completo</em>.
-      </>
+      <>{todayCount} citas — <em className="font-normal italic text-[#846262]">día completo</em>.</>
     ) : (
       <>
         {todayCount} cita{todayCount === 1 ? "" : "s"} hoy —{" "}
         <em className="font-normal italic text-[#846262]">
           {todayCount === 1 ? "una sola" : "tu día"}
-        </em>
-        .
+        </em>.
       </>
     );
 
-  const firstAppt = appointments[0];
+  const firstAppt = parsedAppts[0];
   const subline =
     variant === "rest"
       ? "Tu agenda está cerrada para hoy."
       : isEmpty
         ? "Sin citas para hoy. Disfrutá la mañana."
-        : `Próxima: ${firstAppt?.client_name ?? "tu clienta"} a las ${formatTime12h(
-            toMinutes(firstAppt!.time)
-          )}.`;
+        : `Próxima: ${firstAppt?.client_name ?? "tu clienta"} a las ${formatTime12h(firstAppt!.startMin)}.`;
 
   return (
     <section className="rounded-2xl border border-[#e9cece]/60 bg-white p-5 sm:rounded-3xl sm:p-6 lg:p-7">
@@ -168,11 +207,13 @@ export default function DayStrip({
         {subline}
       </p>
 
-      {slotsConfigured || todayCount > 0 ? (
+      {hasRange ? (
         <div className="mt-4">
+          {/* Gantt bar */}
           <div className="relative h-11 overflow-hidden rounded-md bg-[#f4ecec] sm:h-14">
+            {/* Hour gridlines */}
             {ticks.slice(1, -1).map((t) => {
-              const pct = ((t - dayStart) / dayTotal) * 100;
+              const pct = ((t - dayStart!) / dayTotal) * 100;
               return (
                 <span
                   key={`grid-${t}`}
@@ -183,10 +224,10 @@ export default function DayStrip({
               );
             })}
 
-            {appointments.map((a, i) => {
-              const start = toMinutes(a.time);
+            {/* Appointment blocks */}
+            {parsedAppts.map((a, i) => {
               const dur = Math.max(15, a.duration ?? 60);
-              const left = Math.max(0, ((start - dayStart) / dayTotal) * 100);
+              const left = Math.max(0, ((a.startMin - dayStart!) / dayTotal) * 100);
               const widthRaw = (dur / dayTotal) * 100;
               const width = Math.min(widthRaw, 100 - left);
               if (width <= 0) return null;
@@ -199,7 +240,7 @@ export default function DayStrip({
                     left: `calc(${left}% + 2px)`,
                     width: `calc(${width}% - 4px)`,
                   }}
-                  title={`${a.client_name ?? ""} · ${formatTime12h(start)} · ${dur}min`}
+                  title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${dur}min`}
                 >
                   {width < 8 ? (
                     <span className="serif-heading text-xs leading-none">
@@ -215,9 +256,10 @@ export default function DayStrip({
             })}
           </div>
 
+          {/* Hour-tick labels */}
           <div className="relative mt-1.5 h-3">
             {ticks.map((t) => {
-              const pct = ((t - dayStart) / dayTotal) * 100;
+              const pct = ((t - dayStart!) / dayTotal) * 100;
               return (
                 <span
                   key={`tick-${t}`}
@@ -229,8 +271,16 @@ export default function DayStrip({
               );
             })}
           </div>
+
+          {/* Microlabel: detected schedule range */}
+          {slotsConfigured && (
+            <p className="mt-2 text-[10px] text-[#b89090]">
+              Tu horario: {hourLabel(Math.min(...slotMinutes))} – {hourLabel(Math.max(...slotMinutes))}
+            </p>
+          )}
         </div>
       ) : (
+        // No slots AND no appointments — onboarding nudge
         <div className="mt-4 rounded-md border border-dashed border-[#e9cece] bg-[#f4ecec]/50 px-4 py-5">
           <p className="text-[13px] text-[#846262] sm:text-sm">
             Todavía no tenés horarios configurados.{" "}
@@ -241,6 +291,7 @@ export default function DayStrip({
         </div>
       )}
 
+      {/* Stats — 3 cols always */}
       <div className="mt-5 grid grid-cols-3 gap-4 border-t border-[#e9cece]/40 pt-4 sm:mt-6 sm:gap-6 sm:pt-5">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
@@ -256,8 +307,7 @@ export default function DayStrip({
             <span className="sm:hidden">Ingresos</span>
           </p>
           <p className="serif-heading mt-1 text-xl font-medium leading-none tracking-tight text-[#2d2424] sm:text-2xl">
-            {currencySymbol}
-            {todayRevenue.toLocaleString()}
+            {currencySymbol}{todayRevenue.toLocaleString()}
           </p>
         </div>
         <div>
@@ -269,7 +319,7 @@ export default function DayStrip({
               ? nextUpcoming
                 ? formatDateShort(nextUpcoming.date)
                 : "—"
-              : formatTime12h(toMinutes(firstAppt!.time))}
+              : formatTime12h(firstAppt!.startMin)}
           </p>
         </div>
       </div>

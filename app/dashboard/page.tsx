@@ -1,16 +1,5 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
-import LogoutButton from "./LogoutButton";
-import {
-  CreditCard,
-  Sparkles,
-  LayoutDashboard,
-  Clock,
-  Images,
-  Scissors,
-  BarChart3,
-  User,
-} from "lucide-react";
 import CurrencySelector from "./CurrencySelector";
 import { getCurrencySymbol } from "../../lib/utils";
 import OnboardingModal from "./OnboardingModal";
@@ -19,6 +8,7 @@ import DayStrip from "./DayStrip";
 import WeekStrip from "./WeekStrip";
 import LinkCard from "./LinkCard";
 import UpcomingList from "./UpcomingList";
+import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
 
 function isoDate(d: Date) {
   return d.toLocaleDateString("en-CA", { timeZone: "America/Costa_Rica" });
@@ -135,103 +125,11 @@ export default async function DashboardPage() {
         <OnboardingModal completeOnboarding={completeOnboarding} />
       )}
 
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-[#e9cece]/40 bg-[#fbf9f9] lg:flex">
-        <div className="flex h-14 items-center gap-2 px-5">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-base font-medium tracking-tight">
-            NailFlow
-          </span>
-        </div>
-
-        <nav className="flex flex-1 flex-col gap-1 p-3">
-          <p className="px-3 pb-1 pt-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
-            Inicio
-          </p>
-          <a
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md bg-[#2d2424] px-3 py-2 text-sm font-medium text-[#fbf9f9]"
-          >
-            <LayoutDashboard className="h-4 w-4" /> Dashboard
-          </a>
-          <a
-            href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <Clock className="h-4 w-4" /> Citas
-          </a>
-
-          <p className="px-3 pb-1 pt-4 text-[10px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
-            Tu negocio
-          </p>
-          <a
-            href="/servicios"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <Scissors className="h-4 w-4" /> Servicios
-          </a>
-          <a
-            href="/galeria"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <Images className="h-4 w-4" /> Galería
-          </a>
-          <a
-            href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <CreditCard className="h-4 w-4" /> Pagos
-          </a>
-          <a
-            href="/reportes"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <BarChart3 className="h-4 w-4" /> Reportes
-          </a>
-          <a
-            href="/perfil"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
-          >
-            <User className="h-4 w-4" /> Perfil
-          </a>
-        </nav>
-
-        <div className="border-t border-[#e9cece]/40 p-3">
-          <div className="flex items-center justify-between rounded-md px-3 py-2">
-            <div className="flex items-center gap-2">
-              <div className="flex size-7 items-center justify-center rounded-full bg-[#e9cece] text-xs font-semibold text-[#2d2424]">
-                {business.owner_name?.charAt(0).toUpperCase()}
-              </div>
-              <span className="max-w-[100px] truncate text-sm font-medium text-[#2d2424]">
-                {business.owner_name}
-              </span>
-            </div>
-            <LogoutButton />
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile header */}
-      <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-[#e9cece]/40 bg-[#fbf9f9] px-4 lg:hidden"
-        style={{
-          paddingTop: "max(env(safe-area-inset-top), 0px)",
-          height: "calc(3.5rem + env(safe-area-inset-top))",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="serif-heading text-sm font-semibold">NailFlow</span>
-        </div>
-        <LogoutButton />
-      </header>
+      <AppSidebar active="dashboard" />
+      <AppMobileHeader />
 
       {/* Main content */}
-      <div className="lg:pl-60">
+      <div className="lg:pl-[220px]">
         <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
           {/* Editorial header */}
           <div className="mb-6 flex items-end justify-between gap-4">

@@ -1,86 +1,229 @@
 "use client";
+
+import { useState } from "react";
+import { Phone, Building2, MessageCircleMore } from "lucide-react";
 import { toast } from "sonner";
+import { getCurrencySymbol } from "../../lib/utils";
+
+type Business = {
+  id: string;
+  name?: string | null;
+  currency?: string | null;
+  payments_enabled?: boolean | null;
+  payment_percentage?: number | null;
+  sinpe_number?: string | null;
+  sinpe_bank?: string | null;
+  whatsapp_number?: string | null;
+};
 
 export default function PagosForm({
   business,
   savePaymentSettings,
 }: {
-  business: any;
+  business: Business;
   savePaymentSettings: (formData: FormData) => Promise<void>;
 }) {
+  const [enabled, setEnabled] = useState(Boolean(business.payments_enabled));
+  const [pct, setPct] = useState<number>(business.payment_percentage ?? 50);
+  const [sinpe, setSinpe] = useState(business.sinpe_number ?? "");
+  const [bank, setBank] = useState(business.sinpe_bank ?? "");
+  const [submitting, setSubmitting] = useState(false);
+
+  const symbol = getCurrencySymbol(business.currency ?? "CRC");
+  const samplePrice = 22000;
+  const sampleAdelanto = Math.ceil((samplePrice * pct) / 100);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    const fd = new FormData(e.currentTarget);
+    await savePaymentSettings(fd);
+    setSubmitting(false);
+    toast.success("Cambios guardados", {
+      description: "Tus clientas ya ven la nueva configuración.",
+    });
+  }
+
   return (
     <form
-      action={async (formData) => {
-        await savePaymentSettings(formData);
-        toast.success("Configuración guardada", {
-          description: "Los cambios se aplicaron correctamente.",
-        });
-      }}
-      className="space-y-6"
+      onSubmit={onSubmit}
+      className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5"
     >
-      {/* Toggle pagos */}
-      <div className="overflow-hidden rounded-xl border border-slate-100 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">Pagos anticipados</h2>
-            <p className="mt-0.5 text-xs text-slate-400">Solicita un adelanto antes de confirmar la cita.</p>
+      {/* Hidden mirror of toggle for the FormData */}
+      <input type="hidden" name="payments_enabled" value={enabled ? "on" : ""} />
+
+      {/* ---------- Left column ---------- */}
+      <div className="flex flex-col gap-4">
+        {/* Big toggle card */}
+        <section className="flex items-start justify-between gap-4 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+          <div className="min-w-0">
+            <p className="serif-heading text-xl font-medium leading-tight tracking-tight text-[#2d2424]">
+              Cobrar adelanto
+            </p>
+            <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#846262]">
+              Cuando una clienta reserva, le pedís un porcentaje por SINPE Móvil. Reduce los no-show.
+            </p>
           </div>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input type="checkbox" name="payments_enabled" defaultChecked={business.payments_enabled} className="peer sr-only" />
-            <div className="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#e9cece] peer-checked:after:translate-x-full"></div>
-          </label>
-        </div>
-      </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={enabled}
+            onClick={() => setEnabled((v) => !v)}
+            className={[
+              "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+              enabled ? "bg-[#2d2424]" : "bg-[#e9cece]",
+            ].join(" ")}
+          >
+            <span
+              className={[
+                "absolute top-1 h-5 w-5 rounded-full bg-[#fbf9f9] shadow-sm transition-transform",
+                enabled ? "translate-x-6" : "translate-x-1",
+              ].join(" ")}
+            />
+          </button>
+        </section>
 
-      {/* Porcentaje */}
-      <div className="overflow-hidden rounded-xl border border-slate-100 bg-white p-6">
-        <h2 className="mb-4 text-sm font-semibold text-slate-900">Porcentaje de adelanto</h2>
-        <div className="flex flex-wrap gap-3">
-          {[25, 30, 50, 75, 100].map((pct) => (
-            <label key={pct} className="cursor-pointer">
-              <input type="radio" name="payment_percentage" value={pct} defaultChecked={business.payment_percentage === pct} className="sr-only peer" />
-              <div className="rounded-full border-2 border-slate-200 px-5 py-2 text-sm font-medium text-slate-600 transition-all peer-checked:border-[#e9cece] peer-checked:bg-[#e9cece]/10 peer-checked:text-[#2d2424]">
-                {pct}%
+        {/* Settings card */}
+        <section
+          className={[
+            "flex flex-col gap-4 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6 transition-opacity",
+            enabled ? "" : "opacity-50 pointer-events-none",
+          ].join(" ")}
+          aria-disabled={!enabled}
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+            Configuración
+          </p>
+
+          {/* Percentage */}
+          <div>
+            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              Porcentaje de adelanto
+            </p>
+            <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+              <input
+                name="payment_percentage"
+                type="number"
+                min={1}
+                max={100}
+                value={pct}
+                onChange={(e) => setPct(parseInt(e.target.value || "0", 10))}
+                className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+              />
+              <span className="text-sm text-[#846262]">%</span>
+            </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
+              Lo que la clienta paga por adelantado del total de la cita.
+            </p>
+          </div>
+
+          {/* SINPE number + bank */}
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-[1.4fr_1fr]">
+            <div>
+              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                Número SINPE
+              </p>
+              <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+                <Phone className="h-4 w-4 shrink-0 text-[#846262]" />
+                <input
+                  name="sinpe_number"
+                  type="tel"
+                  value={sinpe}
+                  onChange={(e) => setSinpe(e.target.value)}
+                  placeholder="8888-1234"
+                  className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+                />
               </div>
-            </label>
-          ))}
-        </div>
+            </div>
+            <div>
+              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                Banco
+              </p>
+              <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+                <Building2 className="h-4 w-4 shrink-0 text-[#846262]" />
+                <input
+                  name="sinpe_bank"
+                  type="text"
+                  value={bank}
+                  onChange={(e) => setBank(e.target.value)}
+                  placeholder="BCR"
+                  className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* WhatsApp */}
+          <div>
+            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              WhatsApp para comprobantes
+            </p>
+            <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+              <MessageCircleMore className="h-4 w-4 shrink-0 text-[#846262]" />
+              <input
+                name="whatsapp_number"
+                type="tel"
+                defaultValue={business.whatsapp_number ?? ""}
+                placeholder="+506 8888-1234"
+                className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+              />
+            </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
+              Donde las clientas te envían el comprobante de la transferencia.
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-1 flex gap-2.5">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d2424] px-5 py-2.5 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] disabled:opacity-50"
+            >
+              {submitting ? "Guardando…" : "Guardar cambios"}
+            </button>
+          </div>
+        </section>
       </div>
 
-      {/* SINPE */}
-      <div className="overflow-hidden rounded-xl border border-slate-100 bg-white p-6 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-900">Datos de SINPE Móvil</h2>
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-500">Número de teléfono</label>
-          <input name="sinpe_number" type="tel" placeholder="8888-8888" defaultValue={business.sinpe_number ?? ""}
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#e9cece]" />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-500">Banco</label>
-          <select name="sinpe_bank" className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#e9cece]">
-            <option value="" selected={!business.sinpe_bank}>Selecciona tu banco</option>
-            <option value="BCR" selected={business.sinpe_bank === "BCR"}>BCR</option>
-            <option value="BNCR" selected={business.sinpe_bank === "BNCR"}>Banco Nacional</option>
-            <option value="BAC" selected={business.sinpe_bank === "BAC"}>BAC</option>
-            <option value="Scotiabank" selected={business.sinpe_bank === "Scotiabank"}>Scotiabank</option>
-            <option value="Davivienda" selected={business.sinpe_bank === "Davivienda"}>Davivienda</option>
-            <option value="Popular" selected={business.sinpe_bank === "Popular"}>Banco Popular</option>
-            <option value="Promerica" selected={business.sinpe_bank === "Promerica"}>Promerica</option>
-          </select>
-        </div>
-      </div>
+      {/* ---------- Right column: preview ---------- */}
+      <aside className="lg:sticky lg:top-6 lg:self-start">
+        <div className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-[#fbf9f9] p-5 sm:p-6">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+            Vista previa · cliente
+          </p>
+          <p className="serif-heading mt-2 text-sm font-medium text-[#2d2424]">
+            Adelanto requerido ({pct}%)
+          </p>
 
-      {/* WhatsApp */}
-      <div className="overflow-hidden rounded-xl border border-slate-100 bg-white p-6">
-        <h2 className="mb-1 text-sm font-semibold text-slate-900">WhatsApp (opcional)</h2>
-        <p className="mb-4 text-xs text-slate-400">Las clientas podrán enviarte el comprobante por WhatsApp.</p>
-        <input name="whatsapp_number" type="tel" placeholder="+506 8888-8888" defaultValue={business.whatsapp_number ?? ""}
-          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#e9cece]" />
-      </div>
+          <div className="mt-3 rounded-2xl bg-[#f4ecec] p-4">
+            <p className="text-[11px] text-[#846262]">Monto a transferir</p>
+            <p className="serif-heading mt-1 text-3xl font-medium leading-none tracking-tight text-[#2d2424]">
+              {symbol}
+              {sampleAdelanto.toLocaleString()}
+            </p>
+            <p className="mt-1 text-[11px] text-[#846262]">
+              de {symbol}
+              {samplePrice.toLocaleString()} total
+            </p>
+          </div>
 
-      <button type="submit" className="w-full rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-700">
-        Guardar configuración
-      </button>
+          <div className="mt-3 rounded-xl border border-[#2d2424]/[0.08] bg-white p-3.5">
+            <p className="text-[11px] text-[#846262]">SINPE Móvil</p>
+            <p className="mt-0.5 text-base font-semibold text-[#2d2424]">
+              {sinpe || "—"}
+            </p>
+            {bank && <p className="mt-0.5 text-xs text-[#846262]">{bank}</p>}
+          </div>
+        </div>
+
+        <div className="mt-3.5 rounded-2xl bg-[#f4ecec] p-4">
+          <p className="text-xs leading-relaxed text-[#846262]">
+            <span className="font-medium text-[#2d2424]">Así lo ven tus clientas</span> al reservar — el adelanto aparece después de elegir servicio y hora.
+          </p>
+        </div>
+      </aside>
     </form>
   );
 }

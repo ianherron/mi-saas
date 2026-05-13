@@ -1,14 +1,40 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
-import CopyButton from "./CopyButton";
 import LogoutButton from "./LogoutButton";
-import { CreditCard, Sparkles } from "lucide-react";
-import { LayoutDashboard, Clock, Images, Scissors, BarChart3, TrendingUp, User } from "lucide-react";
+import {
+  CreditCard,
+  Sparkles,
+  LayoutDashboard,
+  Clock,
+  Images,
+  Scissors,
+  BarChart3,
+  User,
+} from "lucide-react";
 import CurrencySelector from "./CurrencySelector";
-import { StatCard } from "../reportes/StatCard";
 import { getCurrencySymbol } from "../../lib/utils";
 import OnboardingModal from "./OnboardingModal";
 import DashboardRealtime from "./DashboardRealtime";
+import DayStrip from "./DayStrip";
+import WeekStrip from "./WeekStrip";
+import LinkCard from "./LinkCard";
+import UpcomingList from "./UpcomingList";
+
+function isoDate(d: Date) {
+  return d.toLocaleDateString("en-CA", { timeZone: "America/Costa_Rica" });
+}
+
+function lastSevenDays(today: string) {
+  const [y, m, d] = today.split("-").map(Number);
+  const base = new Date(Date.UTC(y, m - 1, d));
+  const out: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const dt = new Date(base);
+    dt.setUTCDate(base.getUTCDate() - i);
+    out.push(dt.toISOString().slice(0, 10));
+  }
+  return out;
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -16,22 +42,9 @@ export default async function DashboardPage() {
 
   if (!business) return <p>No se encontró tu negocio.</p>;
 
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/Costa_Rica",
-  });
-
-  const { count: todayCount } = await supabase
-    .from("appointments")
-    .select("*", { count: "exact", head: true })
-    .eq("business_id", business.id)
-    .eq("date", today)
-    .eq("status", "active");
-
-
-  const { count: servicesCount } = await supabase
-    .from("services")
-    .select("*", { count: "exact", head: true })
-    .eq("business_id", business.id);
+  const today = isoDate(new Date());
+  const weekDays = lastSevenDays(today);
+  const weekStart = weekDays[0];
 
   const { data: upcoming } = await supabase
     .from("appointments")
@@ -43,24 +56,61 @@ export default async function DashboardPage() {
     .order("time", { ascending: true })
     .limit(5);
 
-  const { data: todayAppointments } = await supabase
-    .from("appointments")
-    .select("total_price")
-    .eq("business_id", business.id)
-    .eq("date", today)
-    .in("status", ["active", "completed"]);
-
-
-  const todayRevenue = todayAppointments?.reduce(
-    (acc, a) => acc + (a.total_price ?? 0), 0
-  ) ?? 0;
-
   const { data: newAppointments } = await supabase
     .from("appointments")
     .select("id")
     .eq("business_id", business.id)
     .eq("status", "active")
+    // eslint-disable-next-line react-hooks/purity
     .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+  const { data: todayAppointments } = await supabase
+    .from("appointments")
+    .select("time, client_name, total_price, duration")
+    .eq("business_id", business.id)
+    .eq("date", today)
+    .in("status", ["active", "completed"])
+    .order("time", { ascending: true });
+
+  const todayCount = todayAppointments?.length ?? 0;
+  const todayRevenue =
+    todayAppointments?.reduce((acc, a) => acc + (a.total_price ?? 0), 0) ?? 0;
+
+  const { data: weekAppts } = await supabase
+    .from("appointments")
+    .select("date, total_price")
+    .eq("business_id", business.id)
+    .gte("date", weekStart)
+    .lte("date", today)
+    .in("status", ["active", "completed"]);
+
+  const weekData = weekDays.map((iso) => {
+    const matches = weekAppts?.filter((a) => a.date === iso) ?? [];
+    return {
+      date: iso,
+      count: matches.length,
+      total: matches.reduce((acc, a) => acc + (a.total_price ?? 0), 0),
+    };
+  });
+  const weekCount = weekData.reduce((acc, d) => acc + d.count, 0);
+  const weekTotal = weekData.reduce((acc, d) => acc + d.total, 0);
+
+  const { data: slotRows } = await supabase
+    .from("time_slots")
+    .select("time")
+    .eq("business_id", business.id)
+    .order("time", { ascending: true });
+  const slotTimes: string[] = (slotRows ?? []).map((s) => s.time);
+
+  const { data: workingDaysData } = await supabase
+    .from("working_days")
+    .select("day")
+    .eq("business_id", business.id);
+  const workingDays: number[] = (workingDaysData ?? []).map((d) => d.day);
+  const todayDOW = new Date(`${today}T12:00:00`).getDay();
+  const isWorkingDay = workingDays.length === 0 || workingDays.includes(todayDOW);
+
+  const nextUpcoming = upcoming?.[0];
 
   async function completeOnboarding() {
     "use server";
@@ -74,84 +124,87 @@ export default async function DashboardPage() {
     revalidatePath("/dashboard");
   }
 
+  const currency = business.currency ?? "CRC";
+  const symbol = getCurrencySymbol(currency);
   const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
-
-  const quickActions = [
-    { href: "/servicios", label: "Gestionar servicios" },
-    { href: "/citas", label: "Ver todas las citas" },
-    { href: "/galeria", label: "Galería de trabajos" },
-    { href: "/pagos", label: "Pagos" },
-    { href: "/reportes", label: "Reportes" },
-  ];
+  const firstName = business.owner_name?.split(" ")[0] ?? "";
 
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900">
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
       {business.onboarding_completed === false && (
         <OnboardingModal completeOnboarding={completeOnboarding} />
       )}
+
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-slate-100 bg-white lg:flex">
-        <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-5">
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-[#e9cece]/40 bg-[#fbf9f9] lg:flex">
+        <div className="flex h-14 items-center gap-2 px-5">
           <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="serif-heading text-sm font-semibold tracking-tight">
+          <span className="serif-heading text-base font-medium tracking-tight">
             NailFlow
           </span>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-3">
+          <p className="px-3 pb-1 pt-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+            Inicio
+          </p>
           <a
             href="/dashboard"
-            className="flex items-center gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
+            className="flex items-center gap-3 rounded-md bg-[#2d2424] px-3 py-2 text-sm font-medium text-[#fbf9f9]"
           >
             <LayoutDashboard className="h-4 w-4" /> Dashboard
           </a>
           <a
             href="/citas"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <Clock className="h-4 w-4" /> Citas
           </a>
+
+          <p className="px-3 pb-1 pt-4 text-[10px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+            Tu negocio
+          </p>
           <a
             href="/servicios"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <Scissors className="h-4 w-4" /> Servicios
           </a>
           <a
             href="/galeria"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <Images className="h-4 w-4" /> Galería
           </a>
           <a
             href="/pagos"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <CreditCard className="h-4 w-4" /> Pagos
           </a>
           <a
             href="/reportes"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <BarChart3 className="h-4 w-4" /> Reportes
           </a>
           <a
             href="/perfil"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#846262] transition-colors hover:bg-[#f4ecec] hover:text-[#2d2424]"
           >
             <User className="h-4 w-4" /> Perfil
           </a>
         </nav>
 
-        <div className="border-t border-slate-100 p-3">
+        <div className="border-t border-[#e9cece]/40 p-3">
           <div className="flex items-center justify-between rounded-md px-3 py-2">
             <div className="flex items-center gap-2">
-              <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+              <div className="flex size-7 items-center justify-center rounded-full bg-[#e9cece] text-xs font-semibold text-[#2d2424]">
                 {business.owner_name?.charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium text-slate-700 truncate max-w-[100px]">
+              <span className="max-w-[100px] truncate text-sm font-medium text-[#2d2424]">
                 {business.owner_name}
               </span>
             </div>
@@ -162,7 +215,7 @@ export default async function DashboardPage() {
 
       {/* Mobile header */}
       <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white px-4 lg:hidden"
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-[#e9cece]/40 bg-[#fbf9f9] px-4 lg:hidden"
         style={{
           paddingTop: "max(env(safe-area-inset-top), 0px)",
           height: "calc(3.5rem + env(safe-area-inset-top))",
@@ -179,33 +232,40 @@ export default async function DashboardPage() {
 
       {/* Main content */}
       <div className="lg:pl-60">
-        <main className="mx-auto max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
-          {/* Page header */}
-          <div className="mb-8 flex items-start justify-between">
+        <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
+          {/* Editorial header */}
+          <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <h1 className="serif-heading text-2xl font-semibold tracking-tight text-slate-900">
-                Bienvenida, {business.owner_name?.split(" ")[0]}
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
                 {new Date().toLocaleDateString("es-CR", {
                   weekday: "long",
-                  year: "numeric",
-                  month: "long",
                   day: "numeric",
+                  month: "long",
+                  year: "numeric",
                 })}
               </p>
+              <h1 className="serif-heading mt-2 text-3xl font-medium leading-tight tracking-tight text-[#2d2424] lg:text-4xl">
+                Buenas, {firstName}.{" "}
+                <em className="font-normal italic text-[#846262]">
+                  Bienvenida de vuelta.
+                </em>
+              </h1>
             </div>
             <CurrencySelector
               businessId={business.id}
-              currentCurrency={business.currency ?? "CRC"}
+              currentCurrency={currency}
             />
           </div>
 
-          {/* Banner nuevas citas */}
+          {/* New-appointments banner */}
           {(newAppointments?.length ?? 0) > 0 && (
-            <div className="mb-6 flex items-center justify-between rounded-xl border border-[#e9cece] bg-[#e9cece]/20 p-4">
+            <div className="mb-5 flex items-center justify-between rounded-2xl border border-[#e9cece] bg-[#f4ecec] px-5 py-3">
               <p className="text-sm font-medium text-[#2d2424]">
-                ✦ Tenés {newAppointments!.length} cita(s) nueva(s) en las últimas 24 horas
+                <span className="text-[#b89090]">✦</span>&nbsp;&nbsp;Tenés{" "}
+                {newAppointments!.length} cita
+                {newAppointments!.length === 1 ? "" : "s"} nueva
+                {newAppointments!.length === 1 ? "" : "s"} en las últimas 24
+                horas
               </p>
               <a
                 href="/citas"
@@ -216,118 +276,37 @@ export default async function DashboardPage() {
             </div>
           )}
 
-          {/* Stats */}
-          <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
-            <StatCard
-              title="Citas hoy"
-              value={(todayCount ?? 0).toString()}
-              icon={<Clock className="h-5 w-5" />}
+          {/* Tu día */}
+          <DayStrip
+            today={today}
+            appointments={todayAppointments ?? []}
+            todayCount={todayCount}
+            todayRevenue={todayRevenue}
+            currencySymbol={symbol}
+            nextUpcoming={nextUpcoming ?? undefined}
+            isWorkingDay={isWorkingDay}
+            slotTimes={slotTimes}
+          />
+
+          {/* Esta semana + Tu enlace */}
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+            <WeekStrip
+              days={weekData}
+              today={today}
+              weekCount={weekCount}
+              weekTotal={weekTotal}
+              currencySymbol={symbol}
             />
-            <StatCard
-              title="Servicios activos"
-              value={(servicesCount ?? 0).toString()}
-              icon={<Scissors className="h-5 w-5" />}
-            />
-            <div className="col-span-2 lg:col-span-1">
-              <StatCard
-                title="Ingresos hoy"
-                value={`${getCurrencySymbol(business.currency ?? "CRC")}${todayRevenue.toLocaleString()}`}
-                icon={<TrendingUp className="h-5 w-5" />}
-              />
-            </div>
+            <LinkCard bookingUrl={BOOKING_URL} firstName={firstName} />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Upcoming appointments */}
-            <div className="lg:col-span-2">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-                  Próximas citas
-                </h2>
-                <a
-                  href="/citas"
-                  className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-900"
-                >
-                  Ver todas →
-                </a>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-[#e9cece]/60 bg-white">
-                {!upcoming?.length ? (
-                  <div className="px-5 py-10 text-center">
-                    <p className="text-sm text-slate-400">
-                      No hay citas próximas.
-                    </p>
-                  </div>
-                ) : (
-                  <ul className="divide-y divide-slate-50">
-                    {upcoming.map((appointment: any) => (
-                      <li
-                        key={appointment.id}
-                        className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/20 text-sm font-semibold text-[#2d2424]">
-                            {appointment.client_name?.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-medium text-slate-900">
-                                {appointment.client_name}
-                              </p>
-                              <span className="rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-600">
-                                Confirmada
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-400">
-                              {appointment.services?.name} · {appointment.date}{" "}
-                              · {appointment.time}
-                            </p>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-
-            {/* Quick actions */}
-            <div className="flex flex-col gap-4">
-              <div>
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
-                  Acciones
-                </h2>
-                <div className="flex flex-col gap-2">
-                  {quickActions.map((item) => (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      className="group flex items-center justify-between rounded-2xl border border-[#e9cece]/60 bg-white px-4 py-3 text-sm font-medium text-[#2d2424] transition-all duration-300 hover:border-[#e9cece] hover:shadow-md"
-                    >
-                      {item.label}
-                      <span className="text-[#e9cece] transition-transform duration-200 group-hover:translate-x-1">
-                        →
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* Booking link */}
-              <div className="rounded-2xl border border-[#e9cece]/60 bg-white p-4">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Tu enlace de reservas
-                </p>
-                <p className="mb-3 truncate text-xs text-slate-500">
-                  {BOOKING_URL}
-                </p>
-                <CopyButton url={`https://${BOOKING_URL}`} />
-              </div>
-            </div>
+          {/* Próximas citas */}
+          <div className="mt-5">
+            <UpcomingList appointments={upcoming ?? []} currencySymbol={symbol} />
           </div>
         </main>
       </div>
+
       <DashboardRealtime businessId={business.id} />
     </div>
   );

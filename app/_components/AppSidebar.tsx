@@ -65,7 +65,7 @@ export default async function AppSidebar({ active }: { active: ActiveKey }) {
   const initial = business?.owner_name?.charAt(0).toUpperCase() ?? "?";
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[220px] flex-col border-r border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3.5 py-5 lg:flex">
+    <aside className="sticky top-0 hidden h-screen w-[220px] shrink-0 flex-col border-r border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3.5 py-5 lg:flex">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-2 pb-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base text-[#e9cece]">

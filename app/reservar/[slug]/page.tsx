@@ -262,6 +262,7 @@ export default async function ReservarSlugPage({
                 alt={business.name}
                 className="w-full h-full object-cover object-center"
               />
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-pink-50 pointer-events-none" />
             </div>
             {/* Gradiente unificado: avatar + nombre/bio en el mismo fondo */}
             <div className="bg-gradient-to-b from-pink-50 to-white">

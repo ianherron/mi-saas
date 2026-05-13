@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase-server";
-import { Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import AuthSidePanel from "../_components/AuthSidePanel";
 
 export default async function LoginPage({
   searchParams,
@@ -14,123 +15,131 @@ export default async function LoginPage({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const supabase = await createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) redirect("/login?error=Credenciales incorrectas");
     redirect("/dashboard");
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
-      <header
-        className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8"
-        style={{
-          paddingTop: "max(2rem, calc(env(safe-area-inset-top) + 1rem))",
-        }}
-      >
-        <div className="flex items-center gap-2 text-slate-900">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <h2 className="serif-heading text-xl font-bold tracking-tight">
-            <a href="/">NailFlow</a>
-          </h2>
+    <div className="flex min-h-screen w-full bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AuthSidePanel kind="login" />
+
+      <main className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
+        {/* Mobile-only logo */}
+        <div className="mb-8 flex items-center justify-between lg:hidden">
+          <a href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
+            </div>
+            <span className="serif-heading text-lg font-medium tracking-tight">
+              NailFlow
+            </span>
+          </a>
+          <a
+            href="/registrar"
+            className="text-[13px] text-[#846262] underline decoration-[#e9cece] underline-offset-4 hover:text-[#2d2424]"
+          >
+            Crear cuenta
+          </a>
         </div>
-      </header>
 
-      <main className="flex flex-1 items-center justify-center p-6">
-        <div
-          className="w-full max-w-[480px] rounded-xl border border-[#e9cece]/10 bg-white p-8 shadow-lg md:p-12"
-          style={{ boxShadow: "0 10px 40px -10px rgba(233, 206, 206, 0.3)" }}
-        >
-          <div className="mb-10 text-center">
-            <h1 className="serif-heading mb-3 text-3xl font-bold tracking-tight text-slate-900">
+        {/* Desktop top-right link */}
+        <div className="hidden items-center justify-end lg:flex">
+          <p className="text-[13px] text-[#846262]">
+            ¿No tenés cuenta?{" "}
+            <a
+              href="/registrar"
+              className="ml-1 font-semibold text-[#2d2424] underline decoration-[#e9cece] underline-offset-4 hover:opacity-80"
+            >
+              Crear cuenta
+            </a>
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-[380px]">
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
               Iniciar sesión
-            </h1>
-            <p className="text-sm leading-relaxed text-slate-500">
-              Accede a tu panel para gestionar tus citas y servicios.
             </p>
-          </div>
+            <h1 className="serif-heading mt-2.5 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
+              Buenas,{" "}
+              <em className="font-normal italic text-[#846262]">de vuelta</em>.
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-[#846262]">
+              Tu dashboard te está esperando.
+            </p>
 
-          {params.error && (
-            <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-              {params.error}
-            </div>
-          )}
+            {params.error && (
+              <div className="mt-6 rounded-xl bg-[#b86060]/10 px-4 py-3 text-sm text-[#b86060]">
+                {params.error}
+              </div>
+            )}
+            {params.reset && (
+              <div className="mt-6 rounded-xl bg-[#6b8a5e]/10 px-4 py-3 text-sm text-[#6b8a5e]">
+                Te enviamos un correo para restablecer tu contraseña.
+              </div>
+            )}
 
-          {params.reset && (
-            <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-600">
-              Te enviamos un correo para restablecer tu contraseña.
-            </div>
-          )}
+            <form
+              action={login}
+              className="mt-8 flex flex-col gap-[18px]"
+            >
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+                >
+                  Correo electrónico
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+                />
+              </div>
 
-          <form action={login} className="space-y-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                Correo electrónico
-              </label>
-              <input
-                name="email"
-                type="email"
-                placeholder="ejemplo@nailflow.com"
-                className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
-              />
-            </div>
-
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="block text-sm font-medium text-slate-700">
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+                >
                   Contraseña
                 </label>
-              </div>
-              <div className="group relative">
                 <input
+                  id="password"
                   name="password"
                   type="password"
                   placeholder="••••••••"
-                  className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
+                  className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
                 />
+                <a
+                  href="/forgot-password"
+                  className="mt-2 inline-block text-xs font-medium text-[#846262] underline decoration-[#e9cece] underline-offset-[3px] hover:text-[#2d2424]"
+                >
+                  ¿Olvidaste tu contraseña?
+                </a>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="h-14 w-full rounded-xl bg-[#e9cece] font-bold text-slate-900 shadow-lg shadow-[#e9cece]/20 transition-all hover:opacity-90 active:scale-[0.98]"
-            >
-              Iniciar sesión
-            </button>
-          </form>
-
-          {/* Sección de reset de contraseña */}
-          <div className="mt-2 text-center">
-            <a
-              href="/forgot-password"
-              className="text-xs font-medium text-slate-500 underline decoration-[#e9cece]/30 underline-offset-4 transition-all hover:text-[#e9cece]"
-            >
-              ¿Olvidaste tu contraseña?
-            </a>
-            <br />
-            <br />
-          </div>
-
-          <div className="mt-6 border-t border-slate-100 pt-6 text-center">
-            <p className="text-sm text-slate-600">
-              ¿No tienes cuenta?
-              <a
-                href="/registrar"
-                className="ml-1 font-bold text-slate-900 transition-colors hover:text-[#e9cece]"
+              <button
+                type="submit"
+                className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
               >
-                Crear cuenta
-              </a>
-            </p>
+                Iniciar sesión
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </form>
           </div>
         </div>
-      </main>
 
-      <footer className="w-full p-8 text-center">
-        <p className="text-[10px] uppercase tracking-widest text-slate-400">
-          © 2026 NailFlow · Software para negocios de belleza
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+          © 2026 NailFlow
         </p>
-      </footer>
+      </main>
     </div>
   );
 }

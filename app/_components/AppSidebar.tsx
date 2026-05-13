@@ -1,10 +1,3 @@
-// Shared sidebar — server component. Used across /dashboard, /citas,
-// /servicios, /galeria, /pagos, /reportes, /perfil so the navigation can be
-// edited in one place instead of being duplicated across 7 pages.
-//
-// Drop this file at: app/_components/AppSidebar.tsx
-// Each page renders <AppSidebar active="citas" /> with its own slug.
-
 import {
   LayoutDashboard, Calendar, Scissors, Image as ImageIcon,
   CreditCard, BarChart3, User,
@@ -17,24 +10,19 @@ type ActiveKey =
   | "pagos" | "reportes" | "perfil";
 
 const PRIMARY = [
-  { id: "dashboard" as const, href: "/dashboard",  icon: LayoutDashboard, label: "Dashboard" },
-  { id: "citas"     as const, href: "/citas",      icon: Calendar,        label: "Citas" },
+  { id: "dashboard" as const, href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { id: "citas"     as const, href: "/citas",     icon: Calendar,        label: "Citas" },
 ];
 const SECONDARY = [
-  { id: "servicios" as const, href: "/servicios",  icon: Scissors,        label: "Servicios" },
-  { id: "galeria"   as const, href: "/galeria",    icon: ImageIcon,       label: "Galería" },
-  { id: "pagos"     as const, href: "/pagos",      icon: CreditCard,      label: "Pagos" },
-  { id: "reportes"  as const, href: "/reportes",   icon: BarChart3,       label: "Reportes" },
-  { id: "perfil"    as const, href: "/perfil",     icon: User,            label: "Perfil" },
+  { id: "servicios" as const, href: "/servicios", icon: Scissors,   label: "Servicios" },
+  { id: "galeria"   as const, href: "/galeria",   icon: ImageIcon,  label: "Galería" },
+  { id: "pagos"     as const, href: "/pagos",     icon: CreditCard, label: "Pagos" },
+  { id: "reportes"  as const, href: "/reportes",  icon: BarChart3,  label: "Reportes" },
+  { id: "perfil"    as const, href: "/perfil",    icon: User,       label: "Perfil" },
 ];
 
-function NavLink({
-  href, icon: Icon, label, active,
-}: {
-  href: string;
-  icon: typeof Calendar;
-  label: string;
-  active: boolean;
+function NavLink({ href, icon: Icon, label, active }: {
+  href: string; icon: typeof Calendar; label: string; active: boolean;
 }) {
   return (
     <a
@@ -65,16 +53,15 @@ export default async function AppSidebar({ active }: { active: ActiveKey }) {
   const initial = business?.owner_name?.charAt(0).toUpperCase() ?? "?";
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[220px] shrink-0 flex-col border-r border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3.5 py-5 lg:flex">
-      {/* Logo */}
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[220px] flex-col border-r border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3.5 py-5 lg:flex">
+      {/* Logo — el GLIFO ✦ (U+2726), NO el icono <Sparkles> de lucide */}
       <div className="flex items-center gap-2.5 px-2 pb-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base text-[#e9cece]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
           ✦
         </div>
         <span className="serif-heading text-xl font-medium tracking-tight">NailFlow</span>
       </div>
 
-      {/* Nav */}
       <GroupLabel>Inicio</GroupLabel>
       <nav className="flex flex-col gap-0.5">
         {PRIMARY.map((it) => (
@@ -91,7 +78,7 @@ export default async function AppSidebar({ active }: { active: ActiveKey }) {
 
       <div className="flex-1" />
 
-      {/* Account row */}
+      {/* Account row — avatar ROSA con la inicial en serif, nombre, y Salir */}
       <div className="flex items-center gap-2.5 border-t border-[#2d2424]/[0.08] px-2 py-2.5">
         <div className="serif-heading flex h-8 w-8 items-center justify-center rounded-full bg-[#e9cece] text-sm font-medium text-[#2d2424]">
           {initial}
@@ -105,7 +92,6 @@ export default async function AppSidebar({ active }: { active: ActiveKey }) {
   );
 }
 
-// ---- Mobile header (same one each page uses, now shared) ----
 export function AppMobileHeader() {
   return (
     <header
@@ -116,7 +102,7 @@ export function AppMobileHeader() {
       }}
     >
       <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-sm text-[#e9cece]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-sm leading-none text-[#e9cece]">
           ✦
         </div>
         <span className="serif-heading text-sm font-semibold">NailFlow</span>

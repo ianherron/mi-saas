@@ -120,16 +120,16 @@ export default async function DashboardPage() {
   const firstName = business.owner_name?.split(" ")[0] ?? "";
 
   return (
-    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424] lg:flex">
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
       {business.onboarding_completed === false && (
         <OnboardingModal completeOnboarding={completeOnboarding} />
       )}
 
       <AppSidebar active="dashboard" />
+      <AppMobileHeader />
 
       {/* Main content */}
-      <div className="min-w-0 flex-1">
-        <AppMobileHeader />
+      <div className="lg:pl-[220px]">
         <main className="mx-auto max-w-7xl px-4 py-8 lg:px-10 lg:py-10">
           {/* Editorial header */}
           <div className="mb-6 flex items-end justify-between gap-4">

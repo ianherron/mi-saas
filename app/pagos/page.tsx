@@ -37,11 +37,11 @@ export default async function PagosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424] lg:flex">
+    <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
       <AppSidebar active="pagos" />
+      <AppMobileHeader />
 
-      <div className="min-w-0 flex-1">
-        <AppMobileHeader />
+      <div className="lg:pl-[220px]">
         <main className="mx-auto max-w-7xl px-4 py-8 lg:px-10 lg:py-10">
           {/* Editorial header */}
           <header className="mb-6">

@@ -169,7 +169,7 @@ export default async function ServiciosPage({
       <AppMobileHeader />
 
       <div className="lg:pl-[220px]">
-        <main className="mx-auto max-w-5xl px-4 py-8 lg:px-10 lg:py-10">
+        <main className="mx-auto max-w-7xl px-4 py-8 lg:px-10 lg:py-10">
           {/* Editorial header */}
           <header className="mb-5 flex items-end justify-between gap-3">
             <div>

@@ -126,7 +126,7 @@ export default async function DashboardPage() {
       )}
 
       <AppSidebar active="dashboard" />
-      <AppMobileHeader />
+      <AppMobileHeader active="dashboard" />
 
       {/* Main content */}
       <div className="lg:pl-[220px]">

@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import LogoutButton from "../dashboard/LogoutButton";
 import { getBusiness } from "../../lib/supabase-server";
+import MobileNav from "./MobileNav";
 
 type ActiveKey =
   | "dashboard" | "citas" | "servicios" | "galeria"
@@ -92,22 +93,13 @@ export default async function AppSidebar({ active }: { active: ActiveKey }) {
   );
 }
 
-export function AppMobileHeader() {
+export async function AppMobileHeader({ active }: { active: ActiveKey }) {
+  const business = await getBusiness();
   return (
-    <header
-      className="sticky top-0 z-40 flex items-center justify-between border-b border-[#2d2424]/[0.08] bg-[#fbf9f9] px-4 lg:hidden"
-      style={{
-        paddingTop: "max(env(safe-area-inset-top), 0px)",
-        height: "calc(3.5rem + env(safe-area-inset-top))",
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-sm leading-none text-[#e9cece]">
-          ✦
-        </div>
-        <span className="serif-heading text-sm font-semibold">NailFlow</span>
-      </div>
-      <LogoutButton />
-    </header>
+    <MobileNav
+      active={active}
+      ownerName={business?.owner_name ?? ""}
+      ownerInitial={business?.owner_name?.charAt(0).toUpperCase() ?? "?"}
+    />
   );
 }

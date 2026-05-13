@@ -256,13 +256,12 @@ export default async function ReservarSlugPage({
         {/* Hero: banner + sección de perfil con transición seamless */}
         {business.cover_image_url ? (
           <>
-            <div className="relative w-full aspect-[4/3] md:aspect-[16/5]">
+            <div className="relative w-full aspect-[4/3] md:aspect-[16/5] [clip-path:ellipse(110%_100%_at_50%_0%)]">
               <img
                 src={business.cover_image_url}
                 alt={business.name}
                 className="w-full h-full object-cover object-center"
               />
-              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-pink-50 pointer-events-none" />
             </div>
             {/* Gradiente unificado: avatar + nombre/bio en el mismo fondo */}
             <div className="bg-gradient-to-b from-pink-50 to-white">

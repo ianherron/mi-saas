@@ -80,6 +80,16 @@ html, body {
   animation: marquee-right 20s linear infinite;
 }
 
+/* Hide number input spinners globally */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -35,24 +35,33 @@ export default function MobileNav({
 }) {
   const [open, setOpen] = useState(false);
 
+  // iOS Safari: overflow:hidden on body doesn't block scroll, use position:fixed trick
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
-    }
+    if (!open) return;
+    const y = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${y}px`;
+    document.body.style.width = "100%";
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, y);
+    };
   }, [open]);
 
   useEffect(() => {
+    if (!open) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
-    if (open) window.addEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   return (
     <>
-      {/* Header */}
+      {/* ── Mobile header ── */}
       <header
         className="sticky top-0 z-40 flex items-center justify-between border-b border-[#2d2424]/[0.08] bg-[#fbf9f9] px-4 lg:hidden"
         style={{
@@ -70,32 +79,36 @@ export default function MobileNav({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
-          className="flex h-10 w-10 items-center justify-center rounded-[10px] text-[#2d2424] hover:bg-[#f4ecec]"
+          style={{ touchAction: "manipulation" }}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-[10px] text-[#2d2424] hover:bg-[#f4ecec]"
         >
           <Menu className="h-5 w-5" />
         </button>
       </header>
 
-      {/* Backdrop */}
+      {/* ── Backdrop: div (not button) at z-[49], below drawer ── */}
       {open && (
-        <button
-          type="button"
-          aria-label="Cerrar menú"
+        <div
+          aria-hidden="true"
           onClick={() => setOpen(false)}
-          className="fixed inset-0 z-50 bg-[#2d2424]/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[49] bg-[#2d2424]/40 backdrop-blur-sm lg:hidden"
           style={{ animation: "fadeIn 180ms ease-out" }}
         />
       )}
 
-      {/* Drawer */}
+      {/* ── Drawer: always in DOM, invisible+pointer-events-none when closed ── */}
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-[#fbf9f9] px-3.5 py-5 shadow-2xl transition-transform duration-200 ease-out lg:hidden",
-          open ? "translate-x-0" : "-translate-x-full",
+          "fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-[#fbf9f9] px-3.5 shadow-2xl transition-[transform,visibility] duration-200 ease-out lg:hidden",
+          open
+            ? "visible translate-x-0"
+            : "invisible -translate-x-full pointer-events-none",
         ].join(" ")}
-        style={{ paddingTop: "max(env(safe-area-inset-top), 1.25rem)" }}
+        style={{ paddingTop: "max(env(safe-area-inset-top), 1.25rem)", paddingBottom: "1.25rem" }}
+        aria-modal="true"
         aria-hidden={!open}
       >
+        {/* Drawer header */}
         <div className="flex items-center justify-between px-2 pb-6">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
@@ -107,7 +120,8 @@ export default function MobileNav({
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Cerrar menú"
-            className="flex h-9 w-9 items-center justify-center rounded-[10px] text-[#846262] hover:bg-[#f4ecec]"
+            style={{ touchAction: "manipulation" }}
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[10px] text-[#846262] hover:bg-[#f4ecec]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -167,6 +181,7 @@ export default function MobileNav({
 
         <div className="flex-1" />
 
+        {/* Account footer */}
         <div className="flex items-center gap-2.5 border-t border-[#2d2424]/[0.08] px-2 py-2.5">
           <div className="serif-heading flex h-8 w-8 items-center justify-center rounded-full bg-[#e9cece] text-sm font-medium text-[#2d2424]">
             {ownerInitial}

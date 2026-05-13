@@ -71,7 +71,7 @@ export default function PagosForm({
             aria-checked={enabled}
             onClick={() => setEnabled((v) => !v)}
             className={[
-              "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+              "relative h-7 w-12 shrink-0 overflow-hidden rounded-full transition-colors",
               enabled ? "bg-[#2d2424]" : "bg-[#e9cece]",
             ].join(" ")}
           >

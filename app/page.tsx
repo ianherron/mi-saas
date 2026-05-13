@@ -106,7 +106,7 @@ export default function Home() {
                   </a>
                 </div>
                 <p className="text-[13px] text-[#b89090]">
-                  ✦ 30 días gratis · sin tarjeta
+                  ✦ 30 días gratis
                 </p>
               </div>
 

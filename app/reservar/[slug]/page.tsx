@@ -253,11 +253,9 @@ export default async function ReservarSlugPage({
           </div>
         </header>
 
-        {/* Hero: banner + foto de perfil estilo Instagram */}
-        {/* Hero: banner + foto de perfil estilo Instagram */}
+        {/* Hero: banner + sección de perfil con transición seamless */}
         {business.cover_image_url ? (
           <>
-            {/* Banner sin overflow-hidden para que la foto no quede recortada */}
             <div className="relative w-full aspect-[4/3] md:aspect-[16/5]">
               <img
                 src={business.cover_image_url}
@@ -265,54 +263,73 @@ export default async function ReservarSlugPage({
                 className="w-full h-full object-cover object-center"
               />
             </div>
-            {/* Foto de perfil centrada, con margin-top negativo para superponerse al banner */}
-            <div className="relative z-10 flex justify-center -mt-10">
-              {business.profile_image_url ? (
-                <img
-                  src={business.profile_image_url}
-                  alt={business.owner_name ?? business.name}
-                  className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
-                  {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
-                </div>
-              )}
+            {/* Gradiente unificado: avatar + nombre/bio en el mismo fondo */}
+            <div className="bg-gradient-to-b from-pink-50 to-white">
+              <div className="relative z-10 flex justify-center -mt-10 pb-2">
+                {business.profile_image_url ? (
+                  <img
+                    src={business.profile_image_url}
+                    alt={business.owner_name ?? business.name}
+                    className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md ring-4 ring-pink-50"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424] ring-4 ring-pink-50">
+                    {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+                  </div>
+                )}
+              </div>
+              <div className="px-6 pb-6 pt-2 text-center">
+                <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
+                  {business.name}
+                </h2>
+                {business.owner_name && (
+                  <p className="mt-1 text-sm text-[#846262]">
+                    by {business.owner_name}
+                  </p>
+                )}
+                {business.bio && (
+                  <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
+                    {business.bio}
+                  </p>
+                )}
+              </div>
             </div>
           </>
-        ) : (business.profile_image_url || business.owner_name) ? (
-          /* Sin banner: foto centrada con margen normal */
-          <div className="flex justify-center pt-10">
-            {business.profile_image_url ? (
-              <img
-                src={business.profile_image_url}
-                alt={business.owner_name ?? business.name}
-                className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
-              />
-            ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
-                {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+        ) : (
+          /* Sin banner: gradiente cubre toda la zona superior */
+          <div className="bg-gradient-to-b from-pink-50 to-white">
+            {(business.profile_image_url || business.owner_name) && (
+              <div className="flex justify-center pt-10 pb-2">
+                {business.profile_image_url ? (
+                  <img
+                    src={business.profile_image_url}
+                    alt={business.owner_name ?? business.name}
+                    className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
+                    {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+                  </div>
+                )}
               </div>
             )}
+            <div className="px-6 pb-6 pt-4 text-center">
+              <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
+                {business.name}
+              </h2>
+              {business.owner_name && (
+                <p className="mt-1 text-sm text-[#846262]">
+                  by {business.owner_name}
+                </p>
+              )}
+              {business.bio && (
+                <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
+                  {business.bio}
+                </p>
+              )}
+            </div>
           </div>
-        ) : null}
-
-        {/* Nombre + bio debajo del hero */}
-        <div className="bg-white px-6 pb-6 pt-4 text-center">
-          <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
-            {business.name}
-          </h2>
-          {business.owner_name && (
-            <p className="mt-1 text-sm text-[#846262]">
-              by {business.owner_name}
-            </p>
-          )}
-          {business.bio && (
-            <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
-              {business.bio}
-            </p>
-          )}
-        </div>
+        )}
 
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
           {!services || services.length === 0 ? (

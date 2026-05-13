@@ -56,7 +56,7 @@ export default async function DashboardPage() {
 
   const { data: todayAppointments } = await supabase
     .from("appointments")
-    .select("time, client_name, total_price, duration")
+    .select("time, client_name, total_price, duration, status")
     .eq("business_id", business.id)
     .eq("date", today)
     .in("status", ["active", "completed"])

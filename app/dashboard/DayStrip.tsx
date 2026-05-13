@@ -1,8 +1,11 @@
+import { Check } from "lucide-react";
+
 type TodayAppt = {
   time: string;
   duration: number | null;
   client_name: string | null;
   total_price: number | null;
+  status: "active" | "completed" | "cancelled" | string | null;
 };
 
 type Upcoming = {
@@ -110,59 +113,68 @@ export default function DayStrip({
     .toLocaleDateString("es-CR", { weekday: "long", day: "numeric", month: "short" })
     .replace(".", "");
 
-  // ---- Parse slot times (filter out unparseable) ----
+  // ---- Parse slot times ----
   const slotMinutes = slotTimes
     .map(toMinutes)
     .filter((n): n is number => n !== null);
 
-  // ---- Parse appointment times, keeping alignment with original array ----
+  // ---- Parse appointments: skip cancelled, pre-compute dur ----
   const parsedAppts = appointments
-    .map((a) => ({ ...a, startMin: toMinutes(a.time) }))
+    .filter((a) => a.status !== "cancelled")
+    .map((a) => ({
+      ...a,
+      startMin: toMinutes(a.time),
+      dur: Math.max(15, a.duration ?? 60),
+    }))
     .filter((a): a is typeof a & { startMin: number } => a.startMin !== null);
 
   const slotsConfigured = slotMinutes.length > 0;
   const hasAppts = parsedAppts.length > 0;
 
-  // ---- Build day range from BOTH slots and real appointment start/end times ----
+  // ---- Status-derived counts ----
+  const activeCount  = parsedAppts.filter((a) => a.status === "active").length;
+  const allDone      = hasAppts && activeCount === 0;
+  const firstActive  = parsedAppts.find((a) => a.status === "active");
+
+  // ---- Build day range from both slots and appointments ----
   const longestDuration = hasAppts
-    ? Math.max(60, ...parsedAppts.map((a) => a.duration ?? 60))
+    ? Math.max(60, ...parsedAppts.map((a) => a.dur))
     : 60;
 
   const allStarts: number[] = [...slotMinutes, ...parsedAppts.map((a) => a.startMin)];
   const allEnds: number[] = [
     ...(slotsConfigured ? [Math.max(...slotMinutes) + longestDuration] : []),
-    ...parsedAppts.map((a) => a.startMin + (a.duration ?? 60)),
+    ...parsedAppts.map((a) => a.startMin + a.dur),
   ];
 
   const dayStart = allStarts.length > 0 ? Math.min(...allStarts) : null;
-  const dayEnd = allEnds.length > 0 ? Math.max(...allEnds) : null;
+  const dayEnd   = allEnds.length   > 0 ? Math.max(...allEnds)   : null;
   const dayTotal = dayStart !== null && dayEnd !== null
     ? Math.max(dayEnd - dayStart, 60)
     : 60;
-
-  // Show the strip if we have either slots or appointments
   const hasRange = dayStart !== null && dayEnd !== null;
 
   // ---- Hour tick marks ----
   const ticks: number[] = [];
   if (hasRange) {
     const firstHour = Math.floor(dayStart! / 60);
-    const lastHour = Math.ceil(dayEnd! / 60);
+    const lastHour  = Math.ceil(dayEnd! / 60);
     for (let h = firstHour; h <= lastHour; h++) ticks.push(h * 60);
   }
 
   // ---- Copy variant ----
-  const dayMid = hasRange ? dayStart! + dayTotal / 2 : 0;
+  const dayMid  = hasRange ? dayStart! + dayTotal / 2 : 0;
   const isEmpty = todayCount === 0;
 
-  function copyVariant(): "rest" | "empty" | "morning" | "afternoon" | "spread" | "full" {
+  function copyVariant(): "rest" | "empty" | "allDone" | "morning" | "afternoon" | "spread" | "full" {
     if (!isWorkingDay) return "rest";
-    if (isEmpty) return "empty";
+    if (isEmpty)  return "empty";
+    if (allDone)  return "allDone";
     if (todayCount >= 6) return "full";
     const before = parsedAppts.filter((a) => a.startMin < dayMid).length;
-    const after = todayCount - before;
+    const after  = todayCount - before;
     if (before >= 3 && after === 0) return "morning";
-    if (after >= 3 && before === 0) return "afternoon";
+    if (after  >= 3 && before === 0) return "afternoon";
     return "spread";
   }
   const variant = copyVariant();
@@ -172,6 +184,8 @@ export default function DayStrip({
       <>Hoy es <em className="font-normal italic text-[#846262]">día libre</em>.</>
     ) : variant === "empty" ? (
       <>El día está <em className="font-normal italic text-[#846262]">despejado</em>.</>
+    ) : variant === "allDone" ? (
+      <>Día completo <em className="font-normal italic text-[#846262]">✓ buen trabajo</em>.</>
     ) : variant === "morning" ? (
       <>{todayCount} citas hoy — <em className="font-normal italic text-[#846262]">mañana llena</em>.</>
     ) : variant === "afternoon" ? (
@@ -187,13 +201,16 @@ export default function DayStrip({
       </>
     );
 
-  const firstAppt = parsedAppts[0];
   const subline =
     variant === "rest"
       ? "Tu agenda está cerrada para hoy."
       : isEmpty
-        ? "Sin citas para hoy. Disfrutá la mañana."
-        : `Próxima: ${firstAppt?.client_name ?? "tu clienta"} a las ${formatTime12h(firstAppt!.startMin)}.`;
+      ? "Sin citas para hoy. Disfrutá la mañana."
+      : allDone
+      ? "Todas las citas del día completadas."
+      : firstActive
+      ? `Próxima: ${firstActive.client_name ?? "tu clienta"} a las ${formatTime12h(firstActive.startMin)}.`
+      : "Sin citas activas pendientes.";
 
   return (
     <section className="rounded-2xl border border-[#e9cece]/60 bg-white p-5 sm:rounded-3xl sm:p-6 lg:p-7">
@@ -224,30 +241,36 @@ export default function DayStrip({
               );
             })}
 
-            {/* Appointment blocks */}
+            {/* Appointment blocks — active=dark, completed=rose+check */}
             {parsedAppts.map((a, i) => {
-              const dur = Math.max(15, a.duration ?? 60);
+              const isDone = a.status === "completed";
               const left = Math.max(0, ((a.startMin - dayStart!) / dayTotal) * 100);
-              const widthRaw = (dur / dayTotal) * 100;
+              const widthRaw = (a.dur / dayTotal) * 100;
               const width = Math.min(widthRaw, 100 - left);
               if (width <= 0) return null;
               const firstName = (a.client_name ?? "").split(" ")[0];
               return (
                 <div
                   key={`appt-${i}`}
-                  className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden rounded-md bg-[#2d2424] text-[#fbf9f9]"
+                  className={[
+                    "absolute top-0 bottom-0 flex items-center justify-center gap-1.5 overflow-hidden rounded-md",
+                    isDone
+                      ? "bg-[#e9cece] text-[#2d2424]"
+                      : "bg-[#2d2424] text-[#fbf9f9]",
+                  ].join(" ")}
                   style={{
                     left: `calc(${left}% + 2px)`,
                     width: `calc(${width}% - 4px)`,
                   }}
-                  title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${dur}min`}
+                  title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${a.dur}min${isDone ? " · completada" : ""}`}
                 >
+                  {isDone && <Check className="h-3 w-3 shrink-0" strokeWidth={2.5} />}
                   {width < 8 ? (
                     <span className="serif-heading text-xs leading-none">
                       {initial(a.client_name)}
                     </span>
                   ) : (
-                    <span className="truncate px-1 text-[11px] font-medium text-[#fbf9f9] sm:text-xs">
+                    <span className="truncate px-1 text-[11px] font-medium sm:text-xs">
                       {firstName}
                     </span>
                   )}
@@ -280,7 +303,6 @@ export default function DayStrip({
           )}
         </div>
       ) : (
-        // No slots AND no appointments — onboarding nudge
         <div className="mt-4 rounded-md border border-dashed border-[#e9cece] bg-[#f4ecec]/50 px-4 py-5">
           <p className="text-[13px] text-[#846262] sm:text-sm">
             Todavía no tenés horarios configurados.{" "}
@@ -291,7 +313,7 @@ export default function DayStrip({
         </div>
       )}
 
-      {/* Stats — 3 cols always */}
+      {/* Stats — 3 cols */}
       <div className="mt-5 grid grid-cols-3 gap-4 border-t border-[#e9cece]/40 pt-4 sm:mt-6 sm:gap-6 sm:pt-5">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
@@ -315,11 +337,13 @@ export default function DayStrip({
             Próxima
           </p>
           <p className="serif-heading mt-1 text-xl font-medium leading-none tracking-tight text-[#2d2424] sm:text-2xl">
-            {variant === "rest" || isEmpty
+            {variant === "rest" || isEmpty || allDone
               ? nextUpcoming
                 ? formatDateShort(nextUpcoming.date)
                 : "—"
-              : formatTime12h(firstAppt!.startMin)}
+              : firstActive
+              ? formatTime12h(firstActive.startMin)
+              : "—"}
           </p>
         </div>
       </div>

@@ -186,77 +186,83 @@ export default async function ReservarSlugPage({
           </div>
         </header>
 
-        {/* Hero: banner + sección de perfil con transición seamless */}
+        {/* Hero: con banner o fallback editorial */}
         {business.cover_image_url ? (
           <>
-            <div className="relative w-full aspect-[4/3] md:aspect-[16/5] [clip-path:ellipse(110%_100%_at_50%_0%)]">
+            {/* Banner completo — sin clip-path, ratio natural con letterbox cream */}
+            <div className="flex w-full items-center justify-center overflow-hidden bg-[#f4ecec]">
               <img
                 src={business.cover_image_url}
                 alt={business.name}
-                className="w-full h-full object-cover object-center"
+                className="block h-auto max-h-[360px] w-full object-contain"
               />
             </div>
-            {/* Gradiente unificado: avatar + nombre/bio en el mismo fondo */}
-            <div className="bg-gradient-to-b from-pink-50 to-white">
-              <div className="relative z-10 flex justify-center -mt-10 pb-2">
+            {/* Identity row — avatar + owner + bio, NO repetimos nombre del negocio */}
+            <div className="border-t border-[#2d2424]/[0.06] bg-white">
+              <div className="mx-auto flex max-w-3xl items-center gap-4 px-6 py-5 sm:gap-5 sm:px-10">
                 {business.profile_image_url ? (
                   <img
                     src={business.profile_image_url}
                     alt={business.owner_name ?? business.name}
-                    className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md ring-4 ring-pink-50"
+                    className="h-14 w-14 shrink-0 rounded-full border border-[#2d2424]/[0.08] object-cover"
                   />
                 ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424] ring-4 ring-pink-50">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e9cece] font-serif text-xl font-medium text-[#2d2424]">
                     {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
                   </div>
                 )}
-              </div>
-              <div className="px-6 pb-6 pt-2 text-center">
-                <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
-                  {business.name}
-                </h2>
-                {business.owner_name && (
-                  <p className="mt-1 text-sm text-[#846262]">
-                    by {business.owner_name}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                    Tu manicurista
                   </p>
-                )}
-                {business.bio && (
-                  <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
-                    {business.bio}
-                  </p>
-                )}
+                  {business.owner_name && (
+                    <p className="serif-heading mt-1 text-lg font-medium leading-tight tracking-tight text-[#2d2424]">
+                      {business.owner_name}
+                    </p>
+                  )}
+                  {business.bio && (
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-[#846262]">
+                      {business.bio}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </>
         ) : (
-          /* Sin banner: gradiente cubre toda la zona superior */
-          <div className="bg-gradient-to-b from-pink-50 to-white">
-            {(business.profile_image_url || business.owner_name) && (
-              <div className="flex justify-center pt-10 pb-2">
-                {business.profile_image_url ? (
-                  <img
-                    src={business.profile_image_url}
-                    alt={business.owner_name ?? business.name}
-                    className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
-                  />
-                ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] shadow-md text-2xl font-semibold text-[#2d2424]">
-                    {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
-                  </div>
-                )}
-              </div>
-            )}
-            <div className="px-6 pb-6 pt-4 text-center">
-              <h2 className="serif-heading text-2xl font-bold text-[#2d2424]">
+          /* Sin banner: hero editorial con ✦ decorativo */
+          <div className="relative overflow-hidden bg-gradient-to-b from-[#f4ecec]/70 to-[#fbf9f9]">
+            <span
+              aria-hidden
+              className="serif-heading pointer-events-none absolute -right-12 -top-12 text-[260px] leading-none text-[#e9cece]/30"
+            >
+              ✦
+            </span>
+            <div className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-14 text-center sm:py-16">
+              {business.profile_image_url ? (
+                <img
+                  src={business.profile_image_url}
+                  alt={business.owner_name ?? business.name}
+                  className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-[0_8px_24px_rgba(45,36,36,0.08)]"
+                />
+              ) : (
+                <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#e9cece] font-serif text-3xl font-medium text-[#2d2424] shadow-[0_8px_24px_rgba(45,36,36,0.08)]">
+                  {business.owner_name?.charAt(0).toUpperCase() ?? "?"}
+                </div>
+              )}
+              <p className="mt-5 text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                Para tus clientas
+              </p>
+              <h1 className="serif-heading mt-2 text-3xl font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
                 {business.name}
-              </h2>
+              </h1>
               {business.owner_name && (
-                <p className="mt-1 text-sm text-[#846262]">
+                <p className="mt-2 text-sm text-[#846262]">
                   by {business.owner_name}
                 </p>
               )}
               {business.bio && (
-                <p className="mx-auto mt-3 max-w-xl text-sm text-[#846262]">
+                <p className="mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-[#846262]">
                   {business.bio}
                 </p>
               )}

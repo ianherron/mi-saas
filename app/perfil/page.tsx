@@ -193,6 +193,10 @@ export default async function PerfilPage({
                       currentUrl={(business as any).cover_image_url}
                       updateCoverImage={updateCoverImage}
                     />
+                    <p className="mt-1.5 text-xs text-[#846262]">
+                      Tamaño recomendado: <strong className="text-[#2d2424]">1600 × 500 px</strong> (paisaje, ratio 16:5).
+                      Mantené lo importante centrado.
+                    </p>
                   </div>
                 </div>
               </section>

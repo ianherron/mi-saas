@@ -102,7 +102,7 @@ async function register(formData: FormData) {
   });
 
   redirect(
-    `${process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}?checkout[email]=${email}&checkout[name]=${owner_name}`,
+    `${process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}?checkout[email]=${encodeURIComponent(email)}&checkout[name]=${encodeURIComponent(owner_name)}`,
   );
 }
 

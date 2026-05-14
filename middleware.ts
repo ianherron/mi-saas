@@ -17,7 +17,9 @@ export async function middleware(request: NextRequest) {
   // Rate limiting en reservas y registro
   if (
     request.nextUrl.pathname.startsWith("/reservar/") ||
-    request.nextUrl.pathname === "/registrar"
+    request.nextUrl.pathname === "/registrar" ||
+    request.nextUrl.pathname === "/login" ||
+    request.nextUrl.pathname === "/forgot-password"
   ) {
     const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
     const { success } = await ratelimit.limit(ip);

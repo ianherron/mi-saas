@@ -27,20 +27,15 @@ export async function GET(request: NextRequest) {
   let user = null;
 
   if (code) {
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("exchangeCodeForSession:", error?.message);
+    const { data } = await supabase.auth.exchangeCodeForSession(code);
     user = data?.user;
   } else if (token_hash && type) {
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { data } = await supabase.auth.verifyOtp({
       token_hash,
       type: type as any,
     });
-    console.log("verifyOtp:", error?.message);
     user = data?.user;
   }
-
-  console.log("user:", user?.id);
-  console.log("metadata:", user?.user_metadata);
 
   if (user) {
     const { data: existing } = await supabase
@@ -52,14 +47,13 @@ export async function GET(request: NextRequest) {
     if (!existing) {
       const { business_name, owner_name, slug, email } = user.user_metadata ?? {};
       if (business_name && slug) {
-        const { error: insertError } = await supabase.from("businesses").insert({
+        await supabase.from("businesses").insert({
           user_id: user.id,
           name: business_name,
           owner_name,
           slug,
           email,
         });
-        console.log("insert error:", insertError?.message);
       }
     }
   }

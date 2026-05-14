@@ -13,7 +13,7 @@ export default async function ReservarSlugPage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, owner_name, email, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy, profile_image_url")
+    .select("id, name, slug, owner_name, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy, profile_image_url")
     .eq("slug", slug)
     .single();
 
@@ -28,15 +28,17 @@ export default async function ReservarSlugPage({
     const phone = formData.get("phone") as string;
     const email = formData.get("email") as string;
     const duration = parseInt(formData.get("duration") as string);
-    const business_id = formData.get("business_id") as string;
     const total_price = parseInt(formData.get("total_price") as string);
     const reference_image = formData.get("reference_image") as string;
     const payment_proof = formData.get("payment_proof") as string;
 
+    // Usar el business.id capturado del outer scope — no confiar en FormData
+    const business_id = business!.id;
+
     // Validaciones
     if (!client_name?.trim() || client_name.trim().length < 2) return;
     if (client_name.length > 100) return;
-    if (!service_id || !business_id) return;
+    if (!service_id) return;
     if (!date || isNaN(new Date(date).getTime())) return;
     const today = new Date().toISOString().split("T")[0];
     if (date < today) return;

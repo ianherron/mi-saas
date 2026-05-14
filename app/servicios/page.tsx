@@ -165,6 +165,12 @@ export default async function ServiciosPage({
 
   const workingDaysList = workingDaysData?.map((d) => d.day) ?? [];
 
+  const categories = [
+    ...new Set(
+      (services ?? []).map((s: any) => s.category).filter((c: any) => c && c !== "General")
+    ),
+  ] as string[];
+
   return (
     <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">
       <AppSidebar active="servicios" />
@@ -203,7 +209,7 @@ export default async function ServiciosPage({
                 <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
                   <p className="text-sm font-medium text-[#2d2424]">Agregar servicio</p>
                 </div>
-                <AddServiceForm addService={addService} />
+                <AddServiceForm addService={addService} categories={categories} />
               </section>
 
               {/* Service grid */}
@@ -261,7 +267,7 @@ export default async function ServiciosPage({
                         </p>
                         <div className="mt-1.5 flex gap-1.5">
                           <div className="flex-1">
-                            <EditServiceForm service={service} updateService={updateService} />
+                            <EditServiceForm service={service} updateService={updateService} categories={categories} />
                           </div>
                           <DeleteButton action={deleteService.bind(null, service.id)} />
                         </div>

@@ -5,13 +5,18 @@ import { toast } from "sonner";
 
 type Service = { id: string; name: string; price: number; duration: number; description?: string; image_url?: string; category?: string; };
 
-export default function EditServiceForm({ service, updateService }: {
+export default function EditServiceForm({ service, updateService, categories }: {
   service: Service;
   updateService: (formData: FormData) => Promise<void>;
+  categories: string[];
 }) {
   const [editing, setEditing] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(service.image_url ?? null);
+  const currentCategory = service.category && service.category !== "General" ? service.category : categories[0] ?? "";
+  const [customCategory, setCustomCategory] = useState(
+    categories.length === 0 || !categories.includes(service.category ?? "")
+  );
 
   if (!editing) {
     return (
@@ -59,10 +64,49 @@ export default function EditServiceForm({ service, updateService }: {
       <input name="description" type="text" defaultValue={service.description ?? ""}
         placeholder="Descripción (opcional)"
         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
-      <input name="category" type="text" defaultValue={service.category ?? "General"}
-        maxLength={50}
-        placeholder="Categoría (Ej. Manicure, Pedicure, Gel X)"
-        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]" />
+
+      {/* Category — dropdown or text input */}
+      {!customCategory ? (
+        <div className="flex gap-2">
+          <select
+            name="category"
+            defaultValue={currentCategory}
+            className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]"
+          >
+            {categories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => setCustomCategory(true)}
+            className="shrink-0 rounded-lg border border-dashed border-[#e9cece] px-2 py-1.5 text-[10px] text-[#846262] transition-colors hover:bg-[#f4ecec]"
+          >
+            + Nueva
+          </button>
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <input
+            name="category"
+            type="text"
+            defaultValue={!categories.includes(service.category ?? "") ? (service.category ?? "") : ""}
+            placeholder="Nueva categoría"
+            maxLength={50}
+            autoFocus
+            className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none focus:border-[#e9cece]"
+          />
+          {categories.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setCustomCategory(false)}
+              className="shrink-0 rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] text-[#846262] transition-colors hover:bg-slate-50"
+            >
+              ← Volver
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Imagen */}
       <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 py-3 transition-all hover:border-[#e9cece]">

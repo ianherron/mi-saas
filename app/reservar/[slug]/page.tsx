@@ -189,16 +189,17 @@ export default async function ReservarSlugPage({
         {/* Hero: con banner o fallback editorial */}
         {business.cover_image_url ? (
           <>
-            {/* Banner completo — sin clip-path, ratio natural con letterbox cream */}
-            <div className="flex w-full items-center justify-center overflow-hidden bg-[#f4ecec]">
+            {/* Banner completo — sin clip-path, ratio natural sobre cream + fade abajo */}
+            <div className="relative flex w-full items-center justify-center overflow-hidden bg-[#fbf9f9]">
               <img
                 src={business.cover_image_url}
                 alt={business.name}
                 className="block h-auto max-h-[360px] w-full object-contain"
               />
+              <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#fbf9f9] to-transparent" />
             </div>
-            {/* Identity row — avatar + owner + bio, NO repetimos nombre del negocio */}
-            <div className="border-t border-[#2d2424]/[0.06] bg-white">
+            {/* Identity row — sobre el mismo cream, sin border-top */}
+            <div className="bg-[#fbf9f9]">
               <div className="mx-auto flex max-w-3xl items-center gap-4 px-6 py-5 sm:gap-5 sm:px-10">
                 {business.profile_image_url ? (
                   <img

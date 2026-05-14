@@ -94,7 +94,7 @@ export default async function ServiciosPage({
     const hour = formData.get("hour") as string;
     const period = formData.get("period") as string;
     if (!hour || !period) return;
-    if (!/^(0[1-9]|1[0-2])$/.test(hour)) return;
+    if (!/^(1[0-2]|[1-9]):[03]0$/.test(hour)) return;
     if (period !== "AM" && period !== "PM") return;
     const formatted = `${hour} ${period}`;
     await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
@@ -337,17 +337,17 @@ export default async function ServiciosPage({
                     <p className="text-sm text-[#b89090]">No hay horarios configurados.</p>
                   </div>
                 ) : (
-                  <ul className="grid grid-cols-2 gap-2 px-5 py-4 sm:grid-cols-3 lg:grid-cols-4">
+                  <div className="flex flex-wrap gap-2 px-6 py-5 sm:px-7">
                     {timeSlots.map((slot: any) => (
-                      <li
+                      <span
                         key={slot.id}
-                        className="flex items-center justify-between gap-2 rounded-xl border border-[#2d2424]/[0.08] bg-[#fbf9f9] px-3 py-2"
+                        className="inline-flex items-center gap-2 rounded-full bg-[#f4ecec] px-3.5 py-1.5 text-[13px] font-medium text-[#2d2424]"
                       >
-                        <span className="text-sm font-medium text-[#2d2424]">{slot.time}</span>
-                        <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} />
-                      </li>
+                        {slot.time}
+                        <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} compact />
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </section>
 

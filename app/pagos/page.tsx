@@ -16,6 +16,16 @@ export default async function PagosPage() {
     if (!business) return;
 
     const payments_enabled = formData.get("payments_enabled") === "on";
+
+    if (!payments_enabled) {
+      await supabase
+        .from("businesses")
+        .update({ payments_enabled: false })
+        .eq("id", business.id);
+      revalidatePath("/pagos");
+      return;
+    }
+
     const payment_percentage = parseInt(formData.get("payment_percentage") as string);
     if (isNaN(payment_percentage) || payment_percentage < 1 || payment_percentage > 100) return;
     const sinpe_number = formData.get("sinpe_number") as string;

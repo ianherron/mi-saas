@@ -307,7 +307,7 @@ export default function Home() {
             </div>
 
             {/* Visual — clean phone mockup with rose halo + scattered ✦s */}
-            <div className="relative flex justify-center py-6 sm:py-10">
+            <div className="relative py-6 sm:py-10">
               <div
                 aria-hidden
                 className="absolute left-1/2 top-1/2 z-0 aspect-square w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(233,206,206,0.45)_0%,rgba(233,206,206,0)_65%)] blur-2xl"
@@ -331,23 +331,25 @@ export default function Home() {
                   ✦
                 </span>
               ))}
-              <div className="relative z-10 drop-shadow-[0_28px_56px_rgba(45,36,36,0.18)]">
-                <PhoneReservas width={240} />
-              </div>
-              {/* Floating notification — stacks below on mobile, overlaps on desktop */}
-              <div className="relative z-20 -mt-2 ml-0 max-w-[260px] rounded-2xl border border-[#2d2424]/[0.08] bg-white p-4 shadow-[0_18px_40px_rgba(45,36,36,0.12)] sm:absolute sm:-bottom-2 sm:-left-2 sm:mt-0">
-                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                  Nueva reserva
-                </p>
-                <p className="serif-heading mt-2 text-[15px] font-medium leading-snug tracking-tight text-[#2d2424]">
-                  <em className="font-normal italic text-[#846262]">
-                    Marta García
-                  </em>{" "}
-                  reservó.
-                </p>
-                <p className="mt-1 text-[12px] text-[#846262]">
-                  Mantenimiento Gel · Mañana, 11:00 AM
-                </p>
+              <div className="flex flex-col items-center gap-5 sm:block">
+                <div className="relative z-10 flex justify-center drop-shadow-[0_28px_56px_rgba(45,36,36,0.18)]">
+                  <PhoneReservas width={240} />
+                </div>
+                {/* Floating notification — stacks below on mobile, overlaps on desktop */}
+                <div className="relative z-20 max-w-[260px] rounded-2xl border border-[#2d2424]/[0.08] bg-white p-4 shadow-[0_18px_40px_rgba(45,36,36,0.12)] sm:absolute sm:-bottom-2 sm:-left-2">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                    Nueva reserva
+                  </p>
+                  <p className="serif-heading mt-2 text-[15px] font-medium leading-snug tracking-tight text-[#2d2424]">
+                    <em className="font-normal italic text-[#846262]">
+                      Marta García
+                    </em>{" "}
+                    reservó.
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#846262]">
+                    Mantenimiento Gel · Mañana, 11:00 AM
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase-server";
 import { ArrowRight } from "lucide-react";
 import AuthSidePanel from "../_components/AuthSidePanel";
+import { renderEmail } from "../../lib/email-template";
 
 async function register(formData: FormData) {
   "use server";
@@ -89,29 +90,15 @@ async function register(formData: FormData) {
     from: "NailFlow <hola@nailflow.app>",
     to: email,
     subject: "¡Bienvenida a NailFlow! 💅",
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
-        <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0;">✦ NailFlow</h1>
-          </div>
-          <h2 style="font-size: 20px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Bienvenida, ${owner_name}!</h2>
-          <p style="color: #846262; margin: 0 0 24px;">Tu cuenta ha sido creada exitosamente. Ya puedes empezar a gestionar tus citas.</p>
-          <div style="border-top: 1px solid #f0eaea; padding-top: 20px; margin-bottom: 24px;">
-            <p style="color: #846262; font-size: 14px; margin: 0 0 8px;">Tu enlace de reservas:</p>
-            <a href="https://nailflow.app/reservar/${slug}" style="color: #e9cece; font-weight: 600; font-size: 14px;">
-              nailflow.app/reservar/${slug}
-            </a>
-          </div>
-          <a href="https://nailflow.app/dashboard" style="display: block; text-align: center; background: #e9cece; color: #2d2424; font-weight: bold; padding: 14px 32px; border-radius: 12px; text-decoration: none;">
-            Ir a mi panel
-          </a>
-          <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
-            NailFlow · El aliado perfecto para tu salón
-          </p>
-        </div>
-      </div>
-    `,
+    html: renderEmail({
+      preheader: `Tu cuenta está lista, ${owner_name}. Empezá a recibir reservas.`,
+      eyebrow: "Bienvenida a NailFlow",
+      heading: `¡Hola, <em>${owner_name}</em>!`,
+      intro: "Tu cuenta está lista. Ya podés empezar a gestionar tus citas, recibir reservas y cobrar por SINPE Móvil — todo en un solo lugar.",
+      linkPill: { label: "Tu enlace de reservas", value: `nailflow.app/reservar/${slug}` },
+      cta: { label: "Ir a mi dashboard →", href: "https://nailflow.app/dashboard" },
+      footer: "✦ El aliado perfecto para tu salón",
+    }),
   });
 
   redirect(

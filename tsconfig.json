@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "design_handoff_dashboard_redesign", "design_handoff_full_redesign", "design_handoff_landing_redesign", "design_handoff_auth_redesign", "design_handoff_auth_extras_redesign"]
+  "exclude": ["node_modules", "design_handoff_dashboard_redesign", "design_handoff_full_redesign", "design_handoff_landing_redesign", "design_handoff_auth_redesign", "design_handoff_auth_extras_redesign", "design_handoff_emails_redesign"]
 }

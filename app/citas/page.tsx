@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient, getBusiness } from "../../lib/supabase-server";
-import { escapeHtml, getCurrencySymbol } from "../../lib/utils";
+import { getCurrencySymbol } from "../../lib/utils";
+import { renderEmail } from "../../lib/email-template";
 import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
 import AppointmentRow from "./AppointmentRow";
 import CitasRealtime from "./CitasRealtime";
@@ -92,7 +93,18 @@ export default async function CitasPage() {
         from: "NailFlow <hola@nailflow.app>",
         to: appointment.email,
         subject: "Tu cita ha sido cancelada",
-        html: `<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;"><div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;"><h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Cita cancelada</h1><p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(appointment.client_name)}, tu cita ha sido cancelada.</p><div style="border-top: 1px solid #f0eaea; padding-top: 20px;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td><td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.services?.name ?? "—"}</td></tr><tr><td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td><td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.date}</td></tr><tr><td style="padding: 8px 0; color: #846262; font-size: 14px;">Hora</td><td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.time}</td></tr></table></div><p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">Si tienes dudas contáctanos · NailFlow</p></div></div>`,
+        html: renderEmail({
+          preheader: `Tu cita del ${appointment.date} fue cancelada.`,
+          eyebrow: "Cita cancelada",
+          heading: `Tu cita fue <em>cancelada</em>.`,
+          intro: `Hola ${appointment.client_name}, te confirmamos que tu cita ha sido cancelada. Si fue un error o querés agendar otra fecha, contactanos directamente.`,
+          rows: [
+            { label: "Servicio", value: appointment.services?.name ?? "—" },
+            { label: "Fecha", value: appointment.date },
+            { label: "Hora", value: appointment.time },
+          ],
+          footer: "¿Dudas? Escribinos a hola@nailflow.app",
+        }),
       });
     }
 
@@ -127,7 +139,18 @@ export default async function CitasPage() {
         from: "NailFlow <hola@nailflow.app>",
         to: appointment.email,
         subject: "¡Gracias por tu visita! 💅",
-        html: `<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;"><div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;"><div style="text-align: center; margin-bottom: 24px;"><h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0;">✦ NailFlow</h1></div><h2 style="font-size: 20px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Gracias por tu visita! 💅</h2><p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(appointment.client_name)}, fue un placer atenderte.</p><div style="border-top: 1px solid #f0eaea; padding-top: 20px;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td><td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.services?.name ?? "—"}</td></tr><tr><td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td><td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${appointment.date}</td></tr></table></div><a href="https://nailflow.app/reservar/${business?.slug}" style="display: block; text-align: center; background: #e9cece; color: #2d2424; font-weight: bold; padding: 14px 32px; border-radius: 12px; text-decoration: none; margin-top: 24px;">Reservar otra cita</a></div></div>`,
+        html: renderEmail({
+          preheader: `Gracias por venir a ${business?.name ?? "tu salón"}.`,
+          eyebrow: "Gracias por tu visita",
+          heading: `Hasta la <em>próxima</em>, ${appointment.client_name}.`,
+          intro: `Fue un placer atenderte en <em>${business?.name ?? "nuestro salón"}</em>. Esperamos verte pronto.`,
+          rows: [
+            { label: "Servicio", value: appointment.services?.name ?? "—" },
+            { label: "Fecha", value: appointment.date },
+          ],
+          cta: { label: "Reservar otra cita →", href: `https://nailflow.app/reservar/${business?.slug}` },
+          footer: "✦ NailFlow",
+        }),
       });
     }
 

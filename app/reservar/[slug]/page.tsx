@@ -2,7 +2,7 @@ import { supabase } from "../../../lib/supabase";
 import { notFound } from "next/navigation";
 import BookingForm from "../BookingForm";
 import { resend } from "../../../lib/resend";
-import { escapeHtml } from "../../../lib/utils";
+import { renderEmail } from "../../../lib/email-template";
 import { Sparkles } from "lucide-react";
 
 export default async function ReservarSlugPage({
@@ -79,43 +79,20 @@ export default async function ReservarSlugPage({
         from: "NailFlow <hola@nailflow.app>",
         to: email,
         subject: "¡Tu cita ha sido confirmada! 💅",
-        html: `
-        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
-          <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
-            <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">¡Cita confirmada! ✓</h1>
-            <p style="color: #846262; margin: 0 0 24px;">Hola ${escapeHtml(client_name)}, tu reserva fue registrada exitosamente.</p>
-            
-            <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
-                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${service?.name ?? "—"}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td>
-                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${date}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Hora</td>
-                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${time}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #846262; font-size: 14px;">Duración</td>
-                  <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${duration} min</td>
-                </tr>
-                <tr style="border-top: 1px solid #f0eaea;">
-                  <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Precio</td>
-                  <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${safePrice.toLocaleString()}</td>
-                </tr>
-              </table>
-            </div>
-
-            <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
-              NailFlow · El aliado perfecto para tu salón
-            </p>
-          </div>
-        </div>
-      `,
+        html: renderEmail({
+          preheader: `Tu reserva del ${date} a las ${time} quedó confirmada.`,
+          eyebrow: "Cita confirmada",
+          heading: `Te esperamos, <em>${client_name}</em>.`,
+          intro: "Tu reserva quedó registrada. Estos son los detalles.",
+          rows: [
+            { label: "Servicio", value: service?.name ?? "—" },
+            { label: "Fecha", value: date },
+            { label: "Hora", value: time },
+            { label: "Duración", value: `${duration} min` },
+            { label: "Total", value: `₡${safePrice.toLocaleString()}`, total: true },
+          ],
+          footer: "✦ NailFlow · El aliado perfecto para tu salón",
+        }),
       });
     }
 
@@ -132,68 +109,25 @@ export default async function ReservarSlugPage({
         from: "NailFlow <hola@nailflow.app>",
         to: businessData.email,
         subject: `Nueva cita — ${client_name}`,
-        html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafafa;">
-        <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #f0eaea;">
-          <h1 style="font-size: 24px; font-weight: bold; color: #2d2424; margin: 0 0 8px;">Nueva reserva 💅</h1>
-          <p style="color: #846262; margin: 0 0 24px;">${escapeHtml(client_name)} ha reservado una cita.</p>
-          <div style="border-top: 1px solid #f0eaea; padding-top: 20px;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Cliente</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${escapeHtml(client_name)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Servicio</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${service?.name ?? "—"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Fecha</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${date}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Hora</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${time}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Teléfono</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${phone || "—"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #846262; font-size: 14px;">Duración</td>
-                <td style="padding: 8px 0; font-weight: 600; color: #2d2424; font-size: 14px; text-align: right;">${duration} min</td>
-              </tr>
-              <tr style="border-top: 1px solid #f0eaea;">
-                <td style="padding: 12px 0 0; font-weight: 700; color: #2d2424; font-size: 14px;">Total</td>
-                <td style="padding: 12px 0 0; font-weight: 700; color: #e9cece; font-size: 16px; text-align: right;">₡${safePrice.toLocaleString()}</td>
-              </tr>
-            </table>
-            ${
-              reference_image
-                ? `
-              <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
-                <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Foto de referencia:</p>
-                <img src="${escapeHtml(reference_image)}" alt="Referencia" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
-              </div>`
-                : ""
-            }
-          </div>
-          ${
-            payment_proof
-              ? `
-  <div style="margin-top: 20px; border-top: 1px solid #f0eaea; padding-top: 20px;">
-    <p style="color: #846262; font-size: 14px; margin: 0 0 12px;">Comprobante de pago:</p>
-    <img src="${escapeHtml(payment_proof)}" alt="Comprobante" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;" />
-  </div>
-`
-              : ""
-          }
-          <p style="margin: 24px 0 0; font-size: 12px; color: #846262; text-align: center;">
-            NailFlow · El aliado perfecto para tu salón
-          </p>
-        </div>
-      </div>
-    `,
+        html: renderEmail({
+          preheader: `${client_name} reservó ${service?.name ?? "una cita"} para el ${date}.`,
+          eyebrow: "Nueva reserva",
+          heading: `<em>${client_name}</em> reservó una cita.`,
+          intro: "Tenés una clienta nueva. Acá los detalles para tu agenda.",
+          rows: [
+            { label: "Clienta", value: client_name },
+            { label: "Servicio", value: service?.name ?? "—" },
+            { label: "Fecha", value: `${date} · ${time}` },
+            { label: "Teléfono", value: phone || "—" },
+            { label: "Duración", value: `${duration} min` },
+            { label: "Total", value: `₡${safePrice.toLocaleString()}`, total: true },
+          ],
+          image: reference_image
+            ? { url: reference_image, alt: "Referencia", label: "Foto de referencia" }
+            : undefined,
+          cta: { label: "Ver en mi agenda →", href: "https://nailflow.app/citas" },
+          footer: "✦ NailFlow",
+        }),
       });
     }
   }

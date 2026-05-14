@@ -3,6 +3,44 @@
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
+
+function SidePanelClient() {
+  return (
+    <aside className="relative hidden flex-col overflow-hidden bg-[#2d2424] px-10 py-12 text-[#fbf9f9] lg:flex lg:w-[480px] lg:flex-none xl:w-[540px]">
+      <span
+        aria-hidden
+        className="serif-heading pointer-events-none absolute -right-16 -top-20 text-[480px] leading-none text-[#e9cece]/[0.08]"
+      >
+        ✦
+      </span>
+      <div className="relative z-10 flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#e9cece] text-base leading-none text-[#2d2424]">
+          ✦
+        </div>
+        <span className="serif-heading text-lg font-medium tracking-tight">
+          NailFlow
+        </span>
+      </div>
+      <div className="relative z-10 my-auto max-w-[420px]">
+        <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#e9cece]">
+          Nueva contraseña
+        </p>
+        <h2 className="serif-heading mt-3.5 text-5xl font-medium leading-[1.05] tracking-tight text-[#fbf9f9]">
+          Casi
+          <br />
+          <em className="font-normal italic text-[#e9cece]">lista</em>.
+        </h2>
+        <p className="mt-5 max-w-sm text-base leading-relaxed text-[#fbf9f9]/70">
+          Elegí una contraseña nueva y volvé al dashboard.
+        </p>
+      </div>
+      <p className="relative z-10 text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+        ✦ Hecho en Costa Rica
+      </p>
+    </aside>
+  );
+}
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -19,7 +57,6 @@ export default function ResetPasswordPage() {
       setError("Las contraseñas no coinciden.");
       return;
     }
-
     if (password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres.");
       return;
@@ -27,110 +64,108 @@ export default function ResetPasswordPage() {
 
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     );
-
-    const { error } = await supabase.auth.updateUser({ password });
-
-    if (error) {
-      setError("Error al actualizar la contraseña. Intenta de nuevo.");
+    const { error: err } = await supabase.auth.updateUser({ password });
+    if (err) {
+      setError("Error al actualizar la contraseña. Intentá de nuevo.");
       return;
     }
-
     setSuccess(true);
     setTimeout(() => router.push("/dashboard"), 2000);
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
-      <header
-        className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8"
-        style={{
-          paddingTop: "max(2rem, calc(env(safe-area-inset-top) + 1rem))",
-        }}
-      >
-        <div className="flex items-center gap-2 text-slate-900">
-          <div className="size-6 text-[#e9cece]">
-            <svg
-              fill="currentColor"
-              viewBox="0 0 48 48"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"></path>
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
-        </div>
-      </header>
+    <div className="flex min-h-screen w-full bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <SidePanelClient />
 
-      <main className="flex flex-1 items-center justify-center p-6">
-        <div
-          className="w-full max-w-[480px] rounded-xl border border-[#e9cece]/10 bg-white p-8 shadow-lg md:p-12"
-          style={{ boxShadow: "0 10px 40px -10px rgba(233, 206, 206, 0.3)" }}
-        >
-          <div className="mb-10 text-center">
-            <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900">
-              Nueva contraseña
-            </h1>
-            <p className="text-sm leading-relaxed text-slate-500">
-              Ingresa tu nueva contraseña.
-            </p>
-          </div>
-
-          {success ? (
-            <div className="rounded-xl bg-green-50 px-4 py-3 text-center text-sm text-green-600">
-              ¡Contraseña actualizada! Redirigiendo...
+      <main className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
+        <div className="mb-8 flex items-center justify-between lg:hidden">
+          <a href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-                  {error}
-                </div>
-              )}
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Nueva contraseña
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Confirmar contraseña
-                </label>
-                <input
-                  type="password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="h-14 w-full rounded-xl bg-[#e9cece] font-bold text-slate-900 shadow-lg shadow-[#e9cece]/20 transition-all hover:opacity-90 active:scale-[0.98]"
-              >
-                Actualizar contraseña
-              </button>
-            </form>
-          )}
+            <span className="serif-heading text-lg font-medium tracking-tight">
+              NailFlow
+            </span>
+          </a>
         </div>
-      </main>
 
-      <footer className="w-full p-8 text-center">
-        <p className="text-[10px] uppercase tracking-widest text-slate-400">
-          © 2026 NailFlow · Software para negocios de belleza
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-[380px]">
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              Nueva contraseña
+            </p>
+            <h1 className="serif-heading mt-2.5 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
+              Elegí una{" "}
+              <em className="font-normal italic text-[#846262]">nueva</em>.
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-[#846262]">
+              Mínimo 6 caracteres. Después te llevamos al dashboard.
+            </p>
+
+            {success ? (
+              <div className="mt-6 rounded-xl bg-[#6b8a5e]/10 px-4 py-3 text-center text-sm text-[#6b8a5e]">
+                ¡Contraseña actualizada! Redirigiendo…
+              </div>
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className="mt-8 flex flex-col gap-[18px]"
+              >
+                {error && (
+                  <div className="rounded-xl bg-[#b86060]/10 px-4 py-3 text-sm text-[#b86060]">
+                    {error}
+                  </div>
+                )}
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+                  >
+                    Nueva contraseña
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="confirm"
+                    className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+                  >
+                    Confirmar contraseña
+                  </label>
+                  <input
+                    id="confirm"
+                    type="password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="••••••••"
+                    className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
+                >
+                  Actualizar contraseña
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+          © 2026 NailFlow
         </p>
-      </footer>
+      </main>
     </div>
   );
 }

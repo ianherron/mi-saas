@@ -1,59 +1,111 @@
-import { Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import LogoutButton from "./LogoutButton";
+import AuthSidePanel from "../_components/AuthSidePanel";
+
+const features = [
+  "Página de reservas personalizada",
+  "Servicios con imagen y descripción",
+  "Galería de trabajos",
+  "Correos automáticos",
+  "Dashboard con estadísticas",
+  "Reportes de ingresos",
+  "Pagos anticipados con SINPE",
+];
 
 export default function SuscripcionPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#fbf9f9] px-6" style={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 1rem))' }}>
-      <div className="w-full max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e9cece] text-[#2d2424]">
-          <Sparkles className="h-8 w-8" />
-        </div>
-        <h1 className="serif-heading mb-3 text-3xl font-medium text-[#2d2424]">
-          Tu prueba gratuita ha terminado
-        </h1>
-        <p className="mb-8 text-[#846262]">
-          Activa tu suscripción para seguir gestionando tus citas con NailFlow.
-        </p>
+    <div className="flex min-h-screen w-full bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AuthSidePanel kind="suscripcion" />
 
-        <div className="mb-8 rounded-2xl border border-[#e9cece]/30 bg-white p-6 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-widest text-[#846262]">Plan NailFlow</p>
-          <p className="serif-heading mt-2 text-4xl font-bold text-[#2d2424]">₡3,500</p>
-          <p className="text-sm text-[#846262]">por mes</p>
-          <ul className="mt-4 space-y-2 text-left text-sm text-[#2d2424]">
-            {[
-              "Página de reservas personalizada",
-              "Servicios con imagen y descripción",
-              "Galería de trabajos",
-              "Correos automáticos",
-              "Dashboard con estadísticas",
-              "Reportes de ingresos",
-              "Pagos anticipados con SINPE",
-            ].map((f) => (
-              <li key={f} className="flex items-center gap-2">
-                <span className="text-[#e9cece]">✓</span> {f}
-              </li>
-            ))}
-          </ul>
+      <main className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
+        {/* Mobile-only header */}
+        <div className="mb-8 flex items-center justify-between lg:hidden">
+          <a href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
+            </div>
+            <span className="serif-heading text-lg font-medium tracking-tight">
+              NailFlow
+            </span>
+          </a>
         </div>
 
-        
-        <a
-          href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
-          className="block w-full rounded-xl bg-[#e9cece] px-6 py-4 text-center text-base font-bold text-[#2d2424] shadow-lg transition-all hover:scale-105"
-        >
-          Activar suscripción
-        </a>
-
-        <p className="mt-4 text-xs text-[#846262]">
-          Procesado de forma segura por Lemon Squeezy
-        </p>
-            <br />
+        <div className="hidden items-center justify-end lg:flex">
           <LogoutButton />
+        </div>
 
-        <p className="mt-6 text-xs text-[#846262]">
-          ¿Necesitas ayuda? Escríbenos a hola@nailflow.app
+        <div className="flex flex-1 items-center justify-center py-4">
+          <div className="w-full max-w-[440px]">
+            <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              Tu prueba gratuita terminó
+            </p>
+            <h1 className="serif-heading mt-2.5 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
+              Seguí en{" "}
+              <em className="font-normal italic text-[#846262]">modo pro</em>.
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-[#846262]">
+              Activá tu suscripción para seguir gestionando tus citas sin interrupciones.
+            </p>
+
+            {/* Pricing card */}
+            <div className="mt-7 rounded-3xl border border-[#e9cece] bg-white p-7 shadow-[0_12px_30px_rgba(184,144,144,0.18)] sm:p-8">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[#b89090]">✦</span>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Plan único
+                </p>
+              </div>
+              <div className="mb-5 mt-4 flex items-baseline gap-1.5">
+                <p className="serif-heading text-5xl font-medium leading-none tracking-tight text-[#2d2424]">
+                  ₡3.500
+                </p>
+                <p className="text-sm text-[#846262]">/ mes</p>
+              </div>
+              <div className="mb-4 h-px bg-[#2d2424]/[0.08]" />
+              <ul className="flex flex-col gap-2.5">
+                {features.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-center gap-2.5 text-[13.5px] text-[#2d2424]"
+                  >
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#e9cece] text-[10px] font-semibold text-[#2d2424]">
+                      ✓
+                    </span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <a
+              href={process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL}
+              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
+            >
+              Activar suscripción
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
+            <p className="mt-4 text-center text-[11px] leading-relaxed text-[#b89090]">
+              Procesado de forma segura por Lemon Squeezy · ¿Necesitás ayuda?{" "}
+              <a
+                href="mailto:hola@nailflow.app"
+                className="text-[#846262] underline decoration-[#e9cece]"
+              >
+                hola@nailflow.app
+              </a>
+            </p>
+
+            {/* Mobile-only logout */}
+            <div className="mt-6 flex justify-center lg:hidden">
+              <LogoutButton />
+            </div>
+          </div>
+        </div>
+
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+          © 2026 NailFlow
         </p>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase-server";
+import { Mail, ArrowRight } from "lucide-react";
+import AuthSidePanel from "../_components/AuthSidePanel";
 
 export default async function ForgotPasswordPage({
   searchParams,
@@ -20,105 +22,118 @@ export default async function ForgotPasswordPage({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fbf9f9] font-sans">
-      <header
-        className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-8"
-        style={{
-          paddingTop: "max(2rem, calc(env(safe-area-inset-top) + 1rem))",
-        }}
-      >
-        <div className="flex items-center gap-2 text-slate-900">
-          <div className="size-6 text-[#e9cece]">
-            <svg
-              fill="currentColor"
-              viewBox="0 0 48 48"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"></path>
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold tracking-tight">NailFlow</h2>
-        </div>
-      </header>
+    <div className="flex min-h-screen w-full bg-[#fbf9f9] font-sans text-[#2d2424]">
+      <AuthSidePanel kind="forgot" />
 
-      <main className="flex flex-1 items-center justify-center p-6">
-        <div
-          className="w-full max-w-[480px] rounded-xl border border-[#e9cece]/10 bg-white p-8 shadow-lg md:p-12"
-          style={{ boxShadow: "0 10px 40px -10px rgba(233, 206, 206, 0.3)" }}
-        >
-          {params.sent ? (
-            <div className="text-center">
-              <div className="mb-6 flex justify-center">
-                <div className="flex size-16 items-center justify-center rounded-full bg-[#e9cece]/30 text-2xl">
-                  ✓
-                </div>
-              </div>
-              <h1 className="mb-3 text-2xl font-bold tracking-tight text-slate-900">
-                Correo enviado
-              </h1>
-              <p className="mb-8 text-sm text-slate-500">
-                Te enviamos un enlace para restablecer tu contraseña. Revisa tu
-                bandeja de entrada.
-              </p>
-
-              <a
-                href="/login"
-                className="text-sm font-medium text-[#e9cece] hover:opacity-80"
-              >
-                ← Volver al login
-              </a>
+      <main className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
+        {/* Mobile-only header */}
+        <div className="mb-8 flex items-center justify-between lg:hidden">
+          <a href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
             </div>
-          ) : (
-            <>
-              <div className="mb-10 text-center">
-                <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900">
-                  ¿Olvidaste tu contraseña?
-                </h1>
-                <p className="text-sm leading-relaxed text-slate-500">
-                  Ingresa tu correo y te enviaremos un enlace para
-                  restablecerla.
-                </p>
-              </div>
+            <span className="serif-heading text-lg font-medium tracking-tight">
+              NailFlow
+            </span>
+          </a>
+          <a
+            href="/login"
+            className="text-[13px] text-[#846262] underline decoration-[#e9cece] underline-offset-4 hover:text-[#2d2424]"
+          >
+            Iniciar sesión
+          </a>
+        </div>
 
-              <form action={sendReset} className="space-y-6">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Correo electrónico
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="ejemplo@nailflow.com"
-                    className="h-14 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/50"
-                  />
+        {/* Desktop top-right link */}
+        <div className="hidden items-center justify-end lg:flex">
+          <p className="text-[13px] text-[#846262]">
+            ¿Te acordaste?{" "}
+            <a
+              href="/login"
+              className="ml-1 font-semibold text-[#2d2424] underline decoration-[#e9cece] underline-offset-4 hover:opacity-80"
+            >
+              Iniciar sesión
+            </a>
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-[380px]">
+            {params.sent ? (
+              <div className="text-center">
+                <div className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#e9cece] text-[#2d2424]">
+                  <Mail className="h-7 w-7" />
                 </div>
-
-                <button
-                  type="submit"
-                  className="h-14 w-full rounded-xl bg-[#e9cece] font-bold text-slate-900 shadow-lg shadow-[#e9cece]/20 transition-all hover:opacity-90 active:scale-[0.98]"
-                >
-                  Enviar enlace
-                </button>
-              </form>
-
-              <div className="mt-8 text-center">
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Correo enviado
+                </p>
+                <h1 className="serif-heading mt-2.5 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
+                  Revisá tu{" "}
+                  <em className="font-normal italic text-[#846262]">bandeja</em>.
+                </h1>
+                <p className="mt-3 text-sm leading-relaxed text-[#846262]">
+                  Te enviamos un enlace para restablecer tu contraseña. Si no aparece en unos minutos, revisá la carpeta de spam.
+                </p>
                 <a
                   href="/login"
-                  className="text-sm font-medium text-slate-500 hover:text-[#e9cece]"
+                  className="mt-7 inline-block text-sm font-medium text-[#2d2424] underline decoration-[#e9cece] underline-offset-4 hover:opacity-80"
                 >
                   ← Volver al login
                 </a>
               </div>
-            </>
-          )}
-        </div>
-      </main>
+            ) : (
+              <>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Recuperar contraseña
+                </p>
+                <h1 className="serif-heading mt-2.5 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-4xl">
+                  Te mandamos un{" "}
+                  <em className="font-normal italic text-[#846262]">enlace</em>.
+                </h1>
+                <p className="mt-2 text-sm leading-relaxed text-[#846262]">
+                  Ingresá tu correo y te enviamos un link para restablecerla.
+                </p>
 
-      <footer className="w-full p-8 text-center">
-        <p className="text-[10px] uppercase tracking-widest text-slate-400">
-          © 2026 NailFlow · Software para negocios de belleza
+                <form action={sendReset} className="mt-8 flex flex-col gap-[18px]">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+                    >
+                      Correo electrónico
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="tu@email.com"
+                      className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
+                  >
+                    Enviar enlace
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <a
+                    href="/login"
+                    className="text-center text-xs font-medium text-[#846262] underline decoration-[#e9cece] underline-offset-[3px] hover:text-[#2d2424]"
+                  >
+                    ← Volver al login
+                  </a>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+          © 2026 NailFlow
         </p>
-      </footer>
+      </main>
     </div>
   );
 }

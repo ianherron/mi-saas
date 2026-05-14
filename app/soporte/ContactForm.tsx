@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
 import { sendSupportMessage } from "./actions";
 
 export default function ContactForm() {
@@ -24,52 +25,65 @@ export default function ContactForm() {
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-[#2d2424]">
+        <label
+          htmlFor="name"
+          className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+        >
           Nombre
         </label>
         <input
+          id="name"
           name="name"
           type="text"
           required
           placeholder="Tu nombre"
-          className="h-13 w-full rounded-xl border border-[#e9cece]/40 bg-white px-4 py-3 text-[#2d2424] outline-none transition-all placeholder:text-[#846262]/50 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+          className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-[#2d2424]">
+        <label
+          htmlFor="email"
+          className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+        >
           Correo electrónico
         </label>
         <input
+          id="email"
           name="email"
           type="email"
           required
           placeholder="tu@correo.com"
-          className="h-13 w-full rounded-xl border border-[#e9cece]/40 bg-white px-4 py-3 text-[#2d2424] outline-none transition-all placeholder:text-[#846262]/50 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+          className="h-12 w-full rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 text-sm text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-[#2d2424]">
+        <label
+          htmlFor="message"
+          className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]"
+        >
           Mensaje
         </label>
         <textarea
+          id="message"
           name="message"
           required
           rows={5}
-          placeholder="¿En qué podemos ayudarte?"
-          className="w-full resize-none rounded-xl border border-[#e9cece]/40 bg-white px-4 py-3 text-[#2d2424] outline-none transition-all placeholder:text-[#846262]/50 focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
+          placeholder="¿En qué te ayudamos?"
+          className="w-full resize-none rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-3 text-sm leading-relaxed text-[#2d2424] outline-none transition-colors placeholder:text-[#b89090] focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/30"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="h-13 w-full rounded-xl bg-[#2d2424] px-6 py-3 font-semibold text-white transition-all hover:opacity-80 active:scale-[0.98] disabled:opacity-50"
+        className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] disabled:opacity-50"
       >
         {loading ? "Enviando…" : "Enviar mensaje"}
+        {!loading && <ArrowRight className="h-4 w-4" />}
       </button>
     </form>
   );

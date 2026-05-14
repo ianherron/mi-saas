@@ -71,120 +71,116 @@ export default function PagosForm({
             aria-checked={enabled}
             onClick={() => setEnabled((v) => !v)}
             className={[
-              "relative h-7 w-12 shrink-0 overflow-hidden rounded-full transition-colors",
-              enabled ? "bg-[#2d2424]" : "bg-[#e9cece]",
+              "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+              enabled ? "bg-[#2d2424]" : "bg-[#2d2424]/20",
             ].join(" ")}
           >
             <span
               className={[
-                "absolute top-1 h-5 w-5 rounded-full bg-[#fbf9f9] shadow-sm transition-transform",
-                enabled ? "translate-x-6" : "translate-x-1",
+                "absolute top-1 left-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
+                enabled ? "translate-x-5" : "translate-x-0",
               ].join(" ")}
             />
           </button>
         </section>
 
-        {/* Settings card */}
-        <section
-          className={[
-            "flex flex-col gap-4 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6 transition-opacity",
-            enabled ? "" : "opacity-50 pointer-events-none",
-          ].join(" ")}
-          aria-disabled={!enabled}
-        >
-          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-            Configuración
-          </p>
-
-          {/* Percentage */}
-          <div>
-            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-              Porcentaje de adelanto
+        {/* Settings card — only shown when enabled */}
+        {enabled && (
+          <section className="flex flex-col gap-4 rounded-3xl border border-[#2d2424]/[0.08] bg-white p-5 sm:p-6">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+              Configuración
             </p>
-            <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
-              <input
-                name="payment_percentage"
-                type="number"
-                min={1}
-                max={100}
-                value={pct}
-                onChange={(e) => setPct(parseInt(e.target.value || "0", 10))}
-                className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
-              />
-              <span className="text-sm text-[#846262]">%</span>
-            </div>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
-              Lo que la clienta paga por adelantado del total de la cita.
-            </p>
-          </div>
 
-          {/* SINPE number + bank */}
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-[1.4fr_1fr]">
+            {/* Percentage */}
             <div>
               <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                Número SINPE
+                Porcentaje de adelanto
               </p>
               <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-[#846262]" />
                 <input
-                  name="sinpe_number"
+                  name="payment_percentage"
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={pct}
+                  onChange={(e) => setPct(parseInt(e.target.value || "0", 10))}
+                  className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+                />
+                <span className="text-sm text-[#846262]">%</span>
+              </div>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
+                Lo que la clienta paga por adelantado del total de la cita.
+              </p>
+            </div>
+
+            {/* SINPE number + bank */}
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-[1.4fr_1fr]">
+              <div>
+                <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Número SINPE
+                </p>
+                <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+                  <Phone className="h-4 w-4 shrink-0 text-[#846262]" />
+                  <input
+                    name="sinpe_number"
+                    type="tel"
+                    value={sinpe}
+                    onChange={(e) => setSinpe(e.target.value)}
+                    placeholder="8888-1234"
+                    className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Banco
+                </p>
+                <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+                  <Building2 className="h-4 w-4 shrink-0 text-[#846262]" />
+                  <input
+                    name="sinpe_bank"
+                    type="text"
+                    value={bank}
+                    onChange={(e) => setBank(e.target.value)}
+                    placeholder="BCR"
+                    className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* WhatsApp */}
+            <div>
+              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                WhatsApp para comprobantes
+              </p>
+              <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
+                <MessageCircleMore className="h-4 w-4 shrink-0 text-[#846262]" />
+                <input
+                  name="whatsapp_number"
                   type="tel"
-                  value={sinpe}
-                  onChange={(e) => setSinpe(e.target.value)}
-                  placeholder="8888-1234"
+                  defaultValue={business.whatsapp_number ?? ""}
+                  placeholder="+506 8888-1234"
                   className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
                 />
               </div>
-            </div>
-            <div>
-              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                Banco
+              <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
+                Donde las clientas te envían el comprobante de la transferencia.
               </p>
-              <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
-                <Building2 className="h-4 w-4 shrink-0 text-[#846262]" />
-                <input
-                  name="sinpe_bank"
-                  type="text"
-                  value={bank}
-                  onChange={(e) => setBank(e.target.value)}
-                  placeholder="BCR"
-                  className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
-                />
-              </div>
             </div>
-          </div>
+          </section>
+        )}
 
-          {/* WhatsApp */}
-          <div>
-            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-              WhatsApp para comprobantes
-            </p>
-            <div className="flex items-center gap-2 rounded-xl border border-[#2d2424]/[0.16] bg-white px-3.5 py-2.5">
-              <MessageCircleMore className="h-4 w-4 shrink-0 text-[#846262]" />
-              <input
-                name="whatsapp_number"
-                type="tel"
-                defaultValue={business.whatsapp_number ?? ""}
-                placeholder="+506 8888-1234"
-                className="w-full bg-transparent text-sm text-[#2d2424] outline-none"
-              />
-            </div>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#846262]">
-              Donde las clientas te envían el comprobante de la transferencia.
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="mt-1 flex gap-2.5">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d2424] px-5 py-2.5 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] disabled:opacity-50"
-            >
-              {submitting ? "Guardando…" : "Guardar cambios"}
-            </button>
-          </div>
-        </section>
+        {/* Save button — always accessible */}
+        <div className="flex">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d2424] px-5 py-2.5 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] disabled:opacity-50"
+          >
+            {submitting ? "Guardando…" : "Guardar cambios"}
+          </button>
+        </div>
       </div>
 
       {/* ---------- Right column: preview ---------- */}

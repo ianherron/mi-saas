@@ -94,6 +94,8 @@ export default async function ServiciosPage({
     const hour = formData.get("hour") as string;
     const period = formData.get("period") as string;
     if (!hour || !period) return;
+    if (!/^(0[1-9]|1[0-2])$/.test(hour)) return;
+    if (period !== "AM" && period !== "PM") return;
     const formatted = `${hour} ${period}`;
     await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
     revalidatePath("/servicios");

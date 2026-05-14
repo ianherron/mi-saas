@@ -19,7 +19,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/reservar/") ||
     request.nextUrl.pathname === "/registrar" ||
     request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/forgot-password"
+    request.nextUrl.pathname === "/forgot-password" ||
+    request.nextUrl.pathname === "/soporte"
   ) {
     const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
     const { success } = await ratelimit.limit(ip);
@@ -132,6 +133,7 @@ export const config = {
     "/login",
     "/registrar",
     "/reservar/:path*",
+    "/soporte",
     "/suscripcion",
   ],
 };

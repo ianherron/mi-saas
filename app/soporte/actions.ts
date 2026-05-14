@@ -13,6 +13,14 @@ export async function sendSupportMessage(formData: FormData) {
     throw new Error("Todos los campos son requeridos.");
   }
 
+  if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    throw new Error("Correo inválido.");
+  }
+
+  if (name.length > 100 || message.length > 2000) {
+    throw new Error("Contenido demasiado largo.");
+  }
+
   await resend.emails.send({
     from: "NailFlow Soporte <onboarding@resend.dev>",
     to: "hola@nailflow.app",

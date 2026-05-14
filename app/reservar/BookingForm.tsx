@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight, Info } from "lucide-react";
+import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight, Info, Camera, Receipt } from "lucide-react";
 import { getBookedSlots } from "./actions";
 import { getCurrencySymbol } from "../../lib/utils";
 
@@ -179,11 +179,14 @@ export default function BookingForm({
               <Check className="h-7 w-7 text-[#2d2424]" strokeWidth={2.5} />
             </div>
           </div>
-          <h2 className="serif-heading text-3xl font-medium tracking-tight text-[#2d2424] md:text-4xl">
-            Cita Confirmada
+          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+            Listo
+          </p>
+          <h2 className="serif-heading mt-3 text-3xl font-medium tracking-tight text-[#2d2424] md:text-4xl">
+            Cita <em className="font-normal italic text-[#846262]">confirmada</em>.
           </h2>
           <p className="mt-3 text-[#846262]">
-            Tu reserva ha sido registrada exitosamente. Te esperamos.
+            Te esperamos. Te enviamos un correo con los detalles.
           </p>
           <div className="mt-10 rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-sm">
             <div className="mb-4 flex items-center gap-2">
@@ -244,15 +247,15 @@ export default function BookingForm({
     <div className="min-h-screen bg-[#fbf9f9] overflow-hidden">
       <main className="mx-auto max-w-6xl px-4 py-12 md:py-16">
         <div className="mb-16 text-center">
-          <h1 className="serif-heading text-4xl font-medium tracking-tight text-[#2d2424] md:text-5xl lg:text-6xl">
-            <span className="block">Reserva tu</span>
-            <span className="block italic text-[#cfaeae]">
-              momento de cuidado
-            </span>
+          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+            Reservá tu cita
+          </p>
+          <h1 className="serif-heading mt-3 text-[36px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-5xl lg:text-6xl">
+            Tu momento,{" "}
+            <em className="font-normal italic text-[#846262]">con calma</em>.
           </h1>
-          <p className="mx-auto mt-6 max-w-md text-[#846262]">
-            Disfruta una experiencia exclusiva de belleza y bienestar, diseñada
-            especialmente para ti.
+          <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-[#846262]">
+            Elegí tu servicio, fecha y hora. Te confirmamos al instante por correo.
           </p>
         </div>
 
@@ -450,8 +453,8 @@ export default function BookingForm({
                     </select>
                   </div>
                   {timeSlots.length === 0 && (
-                    <p className="mt-2 text-sm text-amber-600">
-                      Este negocio aún no tiene horarios configurados. Contáctanos para más información.
+                    <p className="mt-2 text-sm text-[#c89b6a]">
+                      Este negocio aún no tiene horarios configurados.
                     </p>
                   )}
                 </div>
@@ -523,9 +526,9 @@ export default function BookingForm({
                       />
                     ) : (
                       <>
-                        <span className="text-2xl">📷</span>
+                        <Camera className="h-6 w-6 text-[#b89090]" strokeWidth={1.5} />
                         <span className="text-xs text-[#846262]">
-                          Sube una foto del diseño que quieres
+                          Subí una foto del diseño que querés
                         </span>
                       </>
                     )}
@@ -590,9 +593,9 @@ export default function BookingForm({
                         />
                       ) : (
                         <>
-                          <span className="text-2xl">🧾</span>
+                          <Receipt className="h-6 w-6 text-[#b89090]" strokeWidth={1.5} />
                           <span className="text-xs text-[#846262]">
-                            Sube la captura del comprobante
+                            Subí la captura del comprobante
                           </span>
                         </>
                       )}
@@ -801,11 +804,11 @@ export default function BookingForm({
         {gallery.length > 0 && (
           <section className="mt-24">
             <div className="mb-8 text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#846262]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
                 Nuestro trabajo
               </p>
-              <h2 className="serif-heading mt-2 text-2xl font-medium text-[#2d2424]">
-                Inspiración para tu próxima visita
+              <h2 className="serif-heading mt-3 text-3xl font-medium tracking-tight text-[#2d2424]">
+                Últimos <em className="font-normal italic text-[#846262]">trabajos</em>.
               </h2>
             </div>
             <div className="overflow-hidden rounded-2xl">
@@ -845,11 +848,13 @@ export default function BookingForm({
 
 function StepHeader({ number, title }: { number: number; title: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9cece] text-sm font-semibold text-[#2d2424]">
-        {number}
-      </div>
-      <h2 className="serif-heading text-xl font-medium tracking-tight text-[#2d2424] md:text-2xl">{title}</h2>
+    <div className="flex items-baseline gap-4">
+      <span className="serif-heading text-2xl font-medium leading-none tracking-tight text-[#b89090]">
+        {String(number).padStart(2, "0")}
+      </span>
+      <h2 className="serif-heading text-xl font-medium tracking-tight text-[#2d2424] md:text-2xl">
+        {title}
+      </h2>
     </div>
   );
 }

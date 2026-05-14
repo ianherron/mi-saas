@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import BookingForm from "../BookingForm";
 import { resend } from "../../../lib/resend";
 import { renderEmail } from "../../../lib/email-template";
-import { Sparkles } from "lucide-react";
 
 export default async function ReservarSlugPage({
   params,
@@ -175,10 +174,10 @@ export default async function ReservarSlugPage({
       <div className="flex h-full grow flex-col">
         <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[#e9cece]/20 bg-white/50 px-6 py-4 backdrop-blur-md md:px-20 lg:px-40">
           <div className="flex items-center gap-2 text-slate-900">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex size-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
             </div>
-            <h1 className="serif-heading text-xl font-bold tracking-tight">
+            <h1 className="serif-heading text-xl font-medium tracking-tight text-[#2d2424]">
               {business.name}
             </h1>
           </div>
@@ -295,10 +294,10 @@ export default async function ReservarSlugPage({
         <footer className="mt-auto border-t border-slate-200 bg-white px-4 py-10 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2 text-slate-400">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-[#e9cece] text-[#2d2424]">
-                <Sparkles className="h-4 w-4" />
+              <div className="flex size-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+                ✦
               </div>
-              <span className="font-bold">NailFlow</span>
+              <span className="serif-heading text-base font-medium tracking-tight">NailFlow</span>
             </div>
             <p className="text-sm text-slate-500">
               © 2026 NailFlow Todos los derechos reservados.

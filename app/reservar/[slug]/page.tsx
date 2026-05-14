@@ -28,7 +28,7 @@ export default async function ReservarSlugPage({
     const phone = formData.get("phone") as string;
     const email = formData.get("email") as string;
     const duration = parseInt(formData.get("duration") as string);
-    const total_price = parseInt(formData.get("total_price") as string);
+    const total_price = parseInt(formData.get("total_price") as string) || 0;
     const reference_image = formData.get("reference_image") as string;
     const payment_proof = formData.get("payment_proof") as string;
 

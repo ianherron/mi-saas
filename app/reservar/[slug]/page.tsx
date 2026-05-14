@@ -19,7 +19,7 @@ export default async function ReservarSlugPage({
 
   if (!business) notFound();
 
-  async function createAppointment(formData: FormData) {
+  async function createAppointment(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const client_name = formData.get("client_name") as string;
     const service_id = formData.get("service_id") as string;
@@ -36,18 +36,16 @@ export default async function ReservarSlugPage({
     const business_id = business!.id;
 
     // Validaciones
-    if (!client_name?.trim() || client_name.trim().length < 2) return;
-    if (client_name.length > 100) return;
-    if (!service_id) return;
-    if (!date || isNaN(new Date(date).getTime())) return;
+    if (!client_name?.trim() || client_name.trim().length < 2) return { error: "El nombre debe tener al menos 2 caracteres." };
+    if (client_name.length > 100) return { error: "El nombre es demasiado largo." };
+    if (!service_id) return { error: "Seleccioná un servicio." };
+    if (!date || isNaN(new Date(date).getTime())) return { error: "La fecha no es válida." };
     const today = new Date().toISOString().split("T")[0];
-    if (date < today) return;
-    if (!time) return;
-    if (isNaN(duration) || duration <= 0) return;
-    if (email && !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return;
-    if (phone && !/^[\d\s\-+]{7,15}$/.test(phone)) return;
-
-    if (!client_name || !service_id || !date || !time) return;
+    if (date < today) return { error: "No podés reservar en una fecha pasada." };
+    if (!time) return { error: "Seleccioná una hora." };
+    if (isNaN(duration) || duration <= 0) return { error: "La duración no es válida." };
+    if (email && !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return { error: "El correo no es válido." };
+    if (phone && !/^[\d\s\-+]{7,15}$/.test(phone)) return { error: "El teléfono no es válido." };
 
     const { data: service } = await supabase
       .from("services")
@@ -56,11 +54,11 @@ export default async function ReservarSlugPage({
       .eq("business_id", business_id)
       .single();
 
-    if (!service) return;
+    if (!service) return { error: "Este servicio ya no está disponible." };
 
     const safePrice = typeof total_price === "number" && !isNaN(total_price) ? total_price : 0;
 
-    await supabase.from("appointments").insert({
+    const { error: insertError } = await supabase.from("appointments").insert({
       client_name,
       service_id,
       date,
@@ -73,6 +71,8 @@ export default async function ReservarSlugPage({
       reference_image,
       payment_proof,
     });
+
+    if (insertError) return { error: "No se pudo guardar la cita. Intentá de nuevo." };
 
     // Enviar correo si hay email
     if (email) {

@@ -8,7 +8,7 @@ export default function AddServiceForm({
   addService,
   categories,
 }: {
-  addService: (formData: FormData) => Promise<void>;
+  addService: (formData: FormData) => Promise<{ error: string } | void>;
   categories: string[];
 }) {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -60,7 +60,12 @@ export default function AddServiceForm({
       }
     }
 
-    await addService(formData);
+    const result = await addService(formData);
+    if (result?.error) {
+      toast.error(result.error);
+      setUploading(false);
+      return;
+    }
     setUploading(false);
     setImageFile(null);
     setPreview(null);

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight, Info, Camera, Receipt } from "lucide-react";
+import { toast } from "sonner";
 import { getBookedSlots } from "./actions";
 import { getCurrencySymbol } from "../../lib/utils";
 
@@ -48,7 +49,7 @@ export default function BookingForm({
   whatsappNumber: string;
   currency: string;
   cancellationPolicy?: string;
-  createAppointment: (formData: FormData) => Promise<void>;
+  createAppointment: (formData: FormData) => Promise<{ error: string } | void>;
 }) {
   const sym = getCurrencySymbol(currency);
   const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
@@ -104,6 +105,7 @@ export default function BookingForm({
 
   if (referenceImage) {
     if (!referenceImage.type.startsWith("image/") || referenceImage.size > 5 * 1024 * 1024) {
+      toast.error("La imagen de referencia debe ser una foto de menos de 5MB.");
       setSubmitting(false);
       return;
     }
@@ -122,6 +124,7 @@ export default function BookingForm({
 
   if (paymentProof) {
     if (!paymentProof.type.startsWith("image/") || paymentProof.size > 5 * 1024 * 1024) {
+      toast.error("El comprobante debe ser una imagen de menos de 5MB.");
       setSubmitting(false);
       return;
     }
@@ -138,7 +141,12 @@ export default function BookingForm({
     }
   }
 
-  await createAppointment(formData);
+  const result = await createAppointment(formData);
+  if (result?.error) {
+    toast.error(result.error);
+    setSubmitting(false);
+    return;
+  }
   setConfirmed(true);
   setSubmitting(false);
 }

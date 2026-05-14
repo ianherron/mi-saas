@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function AddExtraForm({ addExtra }: { addExtra: (formData: FormData) => Promise<void> }) {
+export function AddExtraForm({ addExtra }: { addExtra: (formData: FormData) => Promise<{ error: string } | void> }) {
   return (
     <form
       action={async (formData) => {
-        await addExtra(formData);
+        const result = await addExtra(formData);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success("Extra agregado correctamente");
       }}
       className="relative overflow-hidden bg-white px-6 py-7 sm:px-7"
@@ -81,11 +82,12 @@ export function AddExtraForm({ addExtra }: { addExtra: (formData: FormData) => P
   );
 }
 
-export function AddTimeSlotForm({ addTimeSlot }: { addTimeSlot: (formData: FormData) => Promise<void> }) {
+export function AddTimeSlotForm({ addTimeSlot }: { addTimeSlot: (formData: FormData) => Promise<{ error: string } | void> }) {
   return (
     <form
       action={async (formData) => {
-        await addTimeSlot(formData);
+        const result = await addTimeSlot(formData);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success("Horario agregado correctamente");
       }}
       className="grid grid-cols-1 gap-3.5 px-6 pb-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end sm:px-7"
@@ -128,7 +130,7 @@ export function AddTimeSlotForm({ addTimeSlot }: { addTimeSlot: (formData: FormD
 }
 
 export function WorkingDaysForm({ saveWorkingDays, workingDaysList }: {
-  saveWorkingDays: (formData: FormData) => Promise<void>;
+  saveWorkingDays: (formData: FormData) => Promise<{ error: string } | void>;
   workingDaysList: number[];
 }) {
   const days = [
@@ -152,7 +154,8 @@ export function WorkingDaysForm({ saveWorkingDays, workingDaysList }: {
   return (
     <form
       action={async (formData) => {
-        await saveWorkingDays(formData);
+        const result = await saveWorkingDays(formData);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success("Días de trabajo guardados");
       }}
       className="px-6 py-5 sm:px-7"

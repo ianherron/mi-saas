@@ -26,11 +26,11 @@ export default async function ServiciosPage({
   if (!business) return <p>No se encontró tu negocio.</p>;
 
   // ---------- Server actions (unchanged) ----------
-  async function addService(formData: FormData) {
+  async function addService(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return;
+    if (!business) return { error: "No se encontró tu negocio." };
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const duration = Number(formData.get("duration"));
@@ -38,14 +38,15 @@ export default async function ServiciosPage({
     const image_url = formData.get("image_url") as string;
     const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
 
-    if (!name?.trim() || name.trim().length < 2) return;
-    if (isNaN(price) || price <= 0 || price > 10000000) return;
-    if (isNaN(duration) || duration <= 0 || duration > 480) return;
-    if (name.length > 100) return;
+    if (!name?.trim() || name.trim().length < 2) return { error: "El nombre debe tener al menos 2 caracteres." };
+    if (name.length > 100) return { error: "El nombre es demasiado largo." };
+    if (isNaN(price) || price <= 0 || price > 10000000) return { error: "El precio no es válido." };
+    if (isNaN(duration) || duration <= 0 || duration > 480) return { error: "La duración debe ser entre 1 y 480 minutos." };
 
-    await supabase.from("services").insert({
+    const { error: insertError } = await supabase.from("services").insert({
       name, price, duration, description, image_url, category, business_id: business.id,
     });
+    if (insertError) return { error: "No se pudo guardar el servicio. Intentá de nuevo." };
     revalidatePath("/servicios");
   }
 
@@ -58,11 +59,11 @@ export default async function ServiciosPage({
     revalidatePath("/servicios");
   }
 
-  async function updateService(formData: FormData) {
+  async function updateService(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return;
+    if (!business) return { error: "No se encontró tu negocio." };
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
@@ -71,11 +72,11 @@ export default async function ServiciosPage({
     const image_url = formData.get("image_url") as string;
     const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
 
-    if (!id || !name?.trim()) return;
-    if (isNaN(price) || price <= 0 || price > 10000000) return;
-    if (isNaN(duration) || duration <= 0 || duration > 480) return;
+    if (!id || !name?.trim()) return { error: "Faltan datos requeridos." };
+    if (isNaN(price) || price <= 0 || price > 10000000) return { error: "El precio no es válido." };
+    if (isNaN(duration) || duration <= 0 || duration > 480) return { error: "La duración debe ser entre 1 y 480 minutos." };
 
-    await supabase
+    const { error: updateError } = await supabase
       .from("services")
       .update({
         name, price, duration, description,
@@ -83,21 +84,23 @@ export default async function ServiciosPage({
       })
       .eq("id", id)
       .eq("business_id", business.id);
+    if (updateError) return { error: "No se pudo actualizar el servicio. Intentá de nuevo." };
     revalidatePath("/servicios");
   }
 
-  async function addTimeSlot(formData: FormData) {
+  async function addTimeSlot(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return;
+    if (!business) return { error: "No se encontró tu negocio." };
     const hour = formData.get("hour") as string;
     const period = formData.get("period") as string;
-    if (!hour || !period) return;
-    if (!/^(1[0-2]|[1-9]):[03]0$/.test(hour)) return;
-    if (period !== "AM" && period !== "PM") return;
+    if (!hour || !period) return { error: "Seleccioná hora y período." };
+    if (!/^(1[0-2]|[1-9]):[03]0$/.test(hour)) return { error: "Hora inválida." };
+    if (period !== "AM" && period !== "PM") return { error: "Período inválido." };
     const formatted = `${hour} ${period}`;
-    await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
+    const { error: insertError } = await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
+    if (insertError) return { error: "No se pudo agregar el horario. Intentá de nuevo." };
     revalidatePath("/servicios");
   }
 
@@ -110,18 +113,20 @@ export default async function ServiciosPage({
     revalidatePath("/servicios");
   }
 
-  async function addExtra(formData: FormData) {
+  async function addExtra(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return;
+    if (!business) return { error: "No se encontró tu negocio." };
     const name = formData.get("name") as string;
     const duration = Number(formData.get("duration"));
     const price = Number(formData.get("price"));
-    if (!name || !duration) return;
-    await supabase
+    if (!name?.trim()) return { error: "El nombre es requerido." };
+    if (isNaN(duration) || duration <= 0) return { error: "La duración debe ser mayor a 0." };
+    const { error: insertError } = await supabase
       .from("extras")
       .insert({ name, duration, price, business_id: business.id });
+    if (insertError) return { error: "No se pudo agregar el extra. Intentá de nuevo." };
     revalidatePath("/servicios");
   }
 
@@ -134,16 +139,16 @@ export default async function ServiciosPage({
     revalidatePath("/servicios");
   }
 
-  async function saveWorkingDays(formData: FormData) {
+  async function saveWorkingDays(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return;
+    if (!business) return { error: "No se encontró tu negocio." };
 
     const days = [0, 1, 2, 3, 4, 5, 6].filter(
       (d) => formData.get(`day_${d}`) === "on",
     );
-    if (days.length === 0) return;
+    if (days.length === 0) return { error: "Seleccioná al menos un día de trabajo." };
 
     await supabase.from("working_days").delete().eq("business_id", business.id);
     if (days.length > 0) {

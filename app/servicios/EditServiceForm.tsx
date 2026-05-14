@@ -7,7 +7,7 @@ type Service = { id: string; name: string; price: number; duration: number; desc
 
 export default function EditServiceForm({ service, updateService, categories }: {
   service: Service;
-  updateService: (formData: FormData) => Promise<void>;
+  updateService: (formData: FormData) => Promise<{ error: string } | void>;
   categories: string[];
 }) {
   const [editing, setEditing] = useState(false);
@@ -46,7 +46,11 @@ export default function EditServiceForm({ service, updateService, categories }: 
           formData.set("image_url", urlData.publicUrl);
         }
       }
-      await updateService(formData);
+      const result = await updateService(formData);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
       setEditing(false);
       toast.success("Servicio actualizado", {
         description: "Los cambios se guardaron correctamente.",

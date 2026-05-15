@@ -6,6 +6,9 @@ import {
   Globe,
   BarChart3,
   Instagram,
+  Lock,
+  Shield,
+  CreditCard,
 } from "lucide-react";
 import {
   PhoneDashboard,
@@ -530,6 +533,22 @@ export default function Home() {
                 </div>
               </div>
             </AnimateOnScroll>
+
+            {/* Trust strip */}
+            <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-0 sm:divide-x sm:divide-[#2d2424]/[0.1]">
+              {[
+                { Icon: Lock, label: "Conexión SSL segura" },
+                { Icon: Shield, label: "Datos encriptados" },
+                { Icon: CreditCard, label: "Pagos con LemonSqueezy" },
+              ].map(({ Icon, label }) => (
+                <div key={label} className="flex items-center gap-2 px-7">
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-[#b89090]" strokeWidth={1.75} />
+                  <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#b89090]">
+                    {label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

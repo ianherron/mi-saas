@@ -22,7 +22,10 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === "/forgot-password" ||
     request.nextUrl.pathname === "/soporte"
   ) {
-    const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      request.headers.get("x-real-ip") ??
+      "anonymous";
     const { success } = await ratelimit.limit(ip);
     if (!success) {
       return new NextResponse(

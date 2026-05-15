@@ -23,6 +23,10 @@ function dateParts(iso: string) {
 }
 
 function formatTime(t: string): string {
+  // Handle "9:00 AM" / "10:30 PM" already in 12h format
+  const ampm = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (ampm) return `${ampm[1]}:${ampm[2]} ${ampm[3].toUpperCase()}`;
+  // Handle 24h "09:00" / "09:00:00"
   const [h, m] = t.split(":").map(Number);
   const period = h >= 12 ? "PM" : "AM";
   const hh = ((h + 11) % 12) + 1;

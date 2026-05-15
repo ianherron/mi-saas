@@ -117,7 +117,7 @@ export default async function DashboardPage() {
   const currency = business.currency ?? "CRC";
   const symbol = getCurrencySymbol(currency);
   const BOOKING_URL = `nailflow.app/reservar/${business.slug}`;
-  const firstName = business.owner_name?.split(" ")[0] ?? "";
+  const firstName = business.owner_name?.split(" ")[0] || "";
 
   return (
     <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">

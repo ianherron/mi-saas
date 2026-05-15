@@ -88,7 +88,7 @@ export default async function PerfilPage({
     revalidatePath("/perfil");
   }
 
-  const ownerInitial = business.owner_name?.charAt(0).toUpperCase() ?? "?";
+  const ownerInitial = business.owner_name?.charAt(0).toUpperCase() || "?";
 
   return (
     <div className="min-h-screen bg-[#fbf9f9] font-sans text-[#2d2424]">

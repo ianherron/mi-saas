@@ -420,9 +420,15 @@ export default function BookingForm({
                       type="date"
                       value={date}
                       onChange={handleDateChange}
-                      className="w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
+                      disabled={workingDays.length === 0}
+                      className={`w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20 ${workingDays.length === 0 ? "cursor-not-allowed opacity-50" : ""}`}
                     />
                   </div>
+                  {workingDays.length === 0 && (
+                    <p className="mt-2 text-sm text-[#b89090]">
+                      Este negocio aún no tiene días de trabajo configurados.
+                    </p>
+                  )}
                   {dateError && (
                     <p className="mt-1 text-xs text-red-500">{dateError}</p>
                   )}
@@ -806,46 +812,52 @@ export default function BookingForm({
         </form>
 
         {/* Gallery */}
-        {gallery.length > 0 && (
-          <section className="mt-24">
-            <div className="mb-8 text-center">
-              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                Nuestro trabajo
-              </p>
-              <h2 className="serif-heading mt-3 text-3xl font-medium tracking-tight text-[#2d2424]">
-                Últimos <em className="font-normal italic text-[#846262]">trabajos</em>.
-              </h2>
-            </div>
-            <div className="overflow-hidden rounded-2xl">
-              <div className="mb-3 flex animate-marquee-left gap-3">
-                {[
-                  ...gallery.slice(0, Math.ceil(gallery.length / 2)),
-                  ...gallery.slice(0, Math.ceil(gallery.length / 2)),
-                ].map((img, i) => (
-                  <img
-                    key={i}
-                    src={img.image_url}
-                    alt="Trabajo"
-                    className="h-40 w-40 shrink-0 rounded-xl object-cover"
-                  />
-                ))}
+        {gallery.length > 0 && (() => {
+          const half = Math.ceil(gallery.length / 2);
+          const top = gallery.slice(0, half);
+          const bot = gallery.length > 1 ? gallery.slice(half) : gallery;
+          function padRow(items: GalleryImage[]): GalleryImage[] {
+            let out = [...items];
+            while (out.length < 4) out = [...out, ...items];
+            return out;
+          }
+          const row1 = padRow(top);
+          const row2 = padRow(bot);
+          return (
+            <section className="mt-24">
+              <div className="mb-8 text-center">
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                  Nuestro trabajo
+                </p>
+                <h2 className="serif-heading mt-3 text-3xl font-medium tracking-tight text-[#2d2424]">
+                  Últimos <em className="font-normal italic text-[#846262]">trabajos</em>.
+                </h2>
               </div>
-              <div className="flex animate-marquee-right gap-3">
-                {[
-                  ...gallery.slice(Math.ceil(gallery.length / 2)),
-                  ...gallery.slice(Math.ceil(gallery.length / 2)),
-                ].map((img, i) => (
-                  <img
-                    key={i}
-                    src={img.image_url}
-                    alt="Trabajo"
-                    className="h-40 w-40 shrink-0 rounded-xl object-cover"
-                  />
-                ))}
+              <div className="overflow-hidden rounded-2xl">
+                <div className="mb-3 flex animate-marquee-left gap-3">
+                  {[...row1, ...row1].map((img, i) => (
+                    <img
+                      key={i}
+                      src={img.image_url}
+                      alt="Trabajo"
+                      className="h-40 w-40 shrink-0 rounded-xl object-cover"
+                    />
+                  ))}
+                </div>
+                <div className="flex animate-marquee-right gap-3">
+                  {[...row2, ...row2].map((img, i) => (
+                    <img
+                      key={i}
+                      src={img.image_url}
+                      alt="Trabajo"
+                      className="h-40 w-40 shrink-0 rounded-xl object-cover"
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          );
+        })()}
       </main>
     </div>
   );

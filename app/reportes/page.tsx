@@ -63,8 +63,8 @@ export default async function ReportesPage({
   const avgPerAppt = totalCompleted > 0 ? Math.round(totalRevenue / totalCompleted) : 0;
   const prevAvg = prevCompleted.length > 0 ? Math.round(prevRevenue / prevCompleted.length) : 0;
 
-  const pct = (curr: number, prev: number) =>
-    prev > 0 ? Math.round(((curr - prev) / prev) * 100) : 0;
+  const pct = (curr: number, prev: number): number | null =>
+    prev > 0 ? Math.round(((curr - prev) / prev) * 100) : null;
 
   const revenueChange = pct(totalRevenue, prevRevenue);
   const completedChange = pct(totalCompleted, prevCompleted.length);
@@ -138,7 +138,7 @@ export default async function ReportesPage({
                 {fmt(totalRevenue)}{" "}
                 <em className="font-normal italic text-[#846262]">este mes</em>.
               </h1>
-              {prevRevenue > 0 && (
+              {prevRevenue > 0 && revenueChange !== null && (
                 <p className="mt-1.5 text-sm text-[#846262]">
                   {revenueChange >= 0 ? "+" : ""}
                   {revenueChange}% vs mes anterior.
@@ -191,7 +191,7 @@ export default async function ReportesPage({
                 </p>
               </div>
             ) : (
-              <ReportesChart data={chartData} />
+              <ReportesChart data={chartData} currencySymbol={symbol} />
             )}
           </section>
 
@@ -279,11 +279,11 @@ function SubStat({
 }: {
   label: string;
   value: string;
-  change: number;
+  change: number | null;
   variant?: "warning";
   className?: string;
 }) {
-  const positive = change > 0;
+  const positive = (change ?? 0) > 0;
   const neutral = change === 0;
   const goodWhenUp = variant !== "warning";
   const tone = neutral
@@ -307,17 +307,19 @@ function SubStat({
       <p className="serif-heading mt-1.5 text-2xl font-medium leading-none tracking-tight text-[#2d2424]">
         {value}
       </p>
-      <div className="mt-2 flex items-center gap-1.5">
-        <span
-          className={[
-            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-            toneClasses[tone],
-          ].join(" ")}
-        >
-          {positive ? "↑" : neutral ? "·" : "↓"} {Math.abs(change)}%
-        </span>
-        <span className="text-[11px] text-[#846262]">vs mes anterior</span>
-      </div>
+      {change !== null && (
+        <div className="mt-2 flex items-center gap-1.5">
+          <span
+            className={[
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+              toneClasses[tone],
+            ].join(" ")}
+          >
+            {positive ? "↑" : neutral ? "·" : "↓"} {Math.abs(change)}%
+          </span>
+          <span className="text-[11px] text-[#846262]">vs mes anterior</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -153,6 +153,26 @@ export default function DayStrip({
     : 60;
   const hasRange = dayStart !== null && dayEnd !== null;
 
+  // ---- Row assignment for overlapping appointments ----
+  const rowAssignments: number[] = new Array(parsedAppts.length).fill(0);
+  const rowEndTimes: number[] = [];
+  parsedAppts.forEach((a, i) => {
+    let assigned = false;
+    for (let r = 0; r < rowEndTimes.length; r++) {
+      if (a.startMin >= rowEndTimes[r]) {
+        rowAssignments[i] = r;
+        rowEndTimes[r] = a.startMin + a.dur;
+        assigned = true;
+        break;
+      }
+    }
+    if (!assigned) {
+      rowAssignments[i] = rowEndTimes.length;
+      rowEndTimes.push(a.startMin + a.dur);
+    }
+  });
+  const totalRows = Math.max(1, rowEndTimes.length);
+
   // ---- Hour tick marks ----
   const ticks: number[] = [];
   if (hasRange) {
@@ -251,11 +271,12 @@ export default function DayStrip({
               const width = (visibleDur / dayTotal) * 100;
               if (width <= 0) return null;
               const firstName = (a.client_name ?? "").split(" ")[0];
+              const rowH = 100 / totalRows;
               return (
                 <div
                   key={`appt-${i}`}
                   className={[
-                    "absolute top-0 bottom-0 flex items-center justify-center gap-1.5 overflow-hidden rounded-md",
+                    "absolute flex items-center justify-center gap-1.5 overflow-hidden rounded-md",
                     isDone
                       ? "bg-[#e9cece] text-[#2d2424]"
                       : "bg-[#2d2424] text-[#fbf9f9]",
@@ -263,6 +284,9 @@ export default function DayStrip({
                   style={{
                     left: `calc(${left}% + 2px)`,
                     width: `calc(${width}% - 4px)`,
+                    minWidth: "20px",
+                    top: `${rowAssignments[i] * rowH}%`,
+                    height: `${rowH}%`,
                   }}
                   title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${a.dur}min${overflowsSchedule ? " · se extiende fuera del horario" : isDone ? " · completada" : ""}`}
                 >

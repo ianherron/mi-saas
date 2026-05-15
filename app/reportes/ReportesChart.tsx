@@ -12,17 +12,12 @@ import {
 
 interface RevenueChartProps {
   data: { date: string; total: number }[]
+  currencySymbol: string
 }
 
-export default function ReportesChart({ data }: RevenueChartProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("es-CR", {
-      style: "currency",
-      currency: "CRC",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
+export default function ReportesChart({ data, currencySymbol }: RevenueChartProps) {
+  const formatCurrency = (value: number) =>
+    `${currencySymbol}${value.toLocaleString()}`
 
   const formatDate = (dateStr: string) => {
     const [, , day] = dateStr.split("-")
@@ -58,7 +53,11 @@ export default function ReportesChart({ data }: RevenueChartProps) {
             dy={10}
           />
           <YAxis
-            tickFormatter={(value) => `₡${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) =>
+              value < 1000
+                ? `${currencySymbol}${value}`
+                : `${currencySymbol}${(value / 1000).toFixed(0)}k`
+            }
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#846262", fontSize: 12 }}

@@ -201,7 +201,8 @@ export default function PagosForm({
             </p>
             <p className="mt-1 text-[11px] text-[#846262]">
               de {symbol}
-              {samplePrice.toLocaleString()} total
+              {samplePrice.toLocaleString()} total{" "}
+              <span className="opacity-60">(ejemplo)</span>
             </p>
           </div>
 

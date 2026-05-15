@@ -42,7 +42,7 @@ export default function AppointmentRow({
       {/* Info */}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-[#2d2424]">
-          {appointment.client_name}
+          {appointment.client_name ?? "—"}
         </p>
         <p className="truncate text-xs text-[#846262]">
           {appointment.services?.name ?? "Servicio"} · {appointment.duration} min

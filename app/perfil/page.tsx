@@ -321,7 +321,7 @@ function PreviewCard({ business, ownerInitial }: { business: any; ownerInitial: 
           <p className="mt-0.5 text-xs text-[#846262]">by {business.owner_name}</p>
         )}
         {business.bio && (
-          <p className="mx-auto mt-3 max-w-[260px] text-xs leading-relaxed text-[#846262]">
+          <p className="mx-auto mt-3 max-w-[260px] line-clamp-3 text-xs leading-relaxed text-[#846262]">
             {business.bio}
           </p>
         )}

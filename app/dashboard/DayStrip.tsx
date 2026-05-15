@@ -136,19 +136,18 @@ export default function DayStrip({
   const allDone      = hasAppts && activeCount === 0;
   const firstActive  = parsedAppts.find((a) => a.status === "active");
 
-  // ---- Build day range from both slots and appointments ----
-  const longestDuration = hasAppts
-    ? Math.max(60, ...parsedAppts.map((a) => a.dur))
-    : 60;
-
+  // ---- Build day range ----
+  const apptEnds = parsedAppts.map((a) => a.startMin + a.dur);
   const allStarts: number[] = [...slotMinutes, ...parsedAppts.map((a) => a.startMin)];
-  const allEnds: number[] = [
-    ...(slotsConfigured ? [Math.max(...slotMinutes) + longestDuration] : []),
-    ...parsedAppts.map((a) => a.startMin + a.dur),
-  ];
 
   const dayStart = allStarts.length > 0 ? Math.min(...allStarts) : null;
-  const dayEnd   = allEnds.length   > 0 ? Math.max(...allEnds)   : null;
+  // Day range is driven by the manicurista's CONFIGURED slots only.
+  // Appointments that overflow the schedule get clipped visually (see render below).
+  const dayEnd = slotsConfigured
+    ? Math.max(...slotMinutes) + 60
+    : apptEnds.length > 0
+      ? Math.max(...apptEnds)
+      : dayStart !== null ? dayStart + 4 * 60 : null;
   const dayTotal = dayStart !== null && dayEnd !== null
     ? Math.max(dayEnd - dayStart, 60)
     : 60;
@@ -245,8 +244,11 @@ export default function DayStrip({
             {parsedAppts.map((a, i) => {
               const isDone = a.status === "completed";
               const left = Math.max(0, ((a.startMin - dayStart!) / dayTotal) * 100);
-              const widthRaw = (a.dur / dayTotal) * 100;
-              const width = Math.min(widthRaw, 100 - left);
+              const apptEndMin = a.startMin + a.dur;
+              const overflowsSchedule = apptEndMin > dayEnd!;
+              const visibleEnd = Math.min(apptEndMin, dayEnd!);
+              const visibleDur = visibleEnd - Math.max(a.startMin, dayStart!);
+              const width = (visibleDur / dayTotal) * 100;
               if (width <= 0) return null;
               const firstName = (a.client_name ?? "").split(" ")[0];
               return (
@@ -262,7 +264,7 @@ export default function DayStrip({
                     left: `calc(${left}% + 2px)`,
                     width: `calc(${width}% - 4px)`,
                   }}
-                  title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${a.dur}min${isDone ? " · completada" : ""}`}
+                  title={`${a.client_name ?? ""} · ${formatTime12h(a.startMin)} · ${a.dur}min${overflowsSchedule ? " · se extiende fuera del horario" : isDone ? " · completada" : ""}`}
                 >
                   {isDone && <Check className="h-3 w-3 shrink-0" strokeWidth={2.5} />}
                   {width < 8 ? (
@@ -273,6 +275,9 @@ export default function DayStrip({
                     <span className="truncate px-1 text-[11px] font-medium sm:text-xs">
                       {firstName}
                     </span>
+                  )}
+                  {overflowsSchedule && (
+                    <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] opacity-70">→</span>
                   )}
                 </div>
               );

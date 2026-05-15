@@ -57,6 +57,15 @@ export default function AppointmentRow({
             />
           </a>
         )}
+        {appointment.payment_proof_url && (
+          <a href={appointment.payment_proof_url} target="_blank" rel="noopener noreferrer" title="Ver comprobante de pago">
+            <img
+              src={appointment.payment_proof_url}
+              alt="Comprobante"
+              className="mt-2 h-14 w-14 rounded-lg border border-[#e9cece] object-cover transition-opacity hover:opacity-80"
+            />
+          </a>
+        )}
       </div>
 
       {/* Price + actions */}

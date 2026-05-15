@@ -134,10 +134,7 @@ export default function BookingForm({
       .from("payment-proofs")
       .upload(fileName, paymentProof);
     if (!error && data) {
-      const { data: urlData } = supabase.storage
-        .from("payment-proofs")
-        .getPublicUrl(data.path);
-      formData.set("payment_proof", urlData.publicUrl);
+      formData.set("payment_proof", data.path);
     }
   }
 

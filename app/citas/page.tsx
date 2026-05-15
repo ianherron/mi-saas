@@ -170,9 +170,30 @@ export default async function CitasPage() {
     .order("date", { ascending: true })
     .order("time", { ascending: true });
 
+  // Generar signed URLs para comprobantes de pago (bucket privado, 1 hora de vigencia)
+  const { createClient: createAdmin } = await import("@supabase/supabase-js");
+  const admin = createAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const appointmentsWithProofs = await Promise.all(
+    (appointments ?? []).map(async (a) => {
+      if (!a.payment_proof) return { ...a, payment_proof_url: null };
+      // Compatibilidad: registros viejos tienen URL completa, nuevos tienen solo el path
+      const path = a.payment_proof.startsWith("http")
+        ? a.payment_proof.split("/payment-proofs/")[1]
+        : a.payment_proof;
+      if (!path) return { ...a, payment_proof_url: null };
+      const { data: signed } = await admin.storage
+        .from("payment-proofs")
+        .createSignedUrl(path, 3600);
+      return { ...a, payment_proof_url: signed?.signedUrl ?? null };
+    }),
+  );
+
   // ----- NEW: group by date for the day-grouped layout -----
   const grouped = new Map<string, any[]>();
-  for (const a of appointments ?? []) {
+  for (const a of appointmentsWithProofs) {
     if (!grouped.has(a.date)) grouped.set(a.date, []);
     grouped.get(a.date)!.push(a);
   }
@@ -184,7 +205,7 @@ export default async function CitasPage() {
   const todayHours = (todayMinutes / 60).toFixed(todayMinutes % 60 ? 1 : 0);
 
   const weekEnd = isoDate(new Date(new Date(today + "T12:00:00").getTime() + 6 * 86_400_000));
-  const weekAppts = (appointments ?? []).filter(
+  const weekAppts = appointmentsWithProofs.filter(
     (a) => a.date >= today && a.date <= weekEnd,
   );
   const weekRevenue = weekAppts.reduce((acc, a) => acc + (a.total_price ?? 0), 0);

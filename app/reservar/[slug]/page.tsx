@@ -56,24 +56,6 @@ export default async function ReservarSlugPage({
 
     if (!service) return { error: "Este servicio ya no está disponible." };
 
-    // Verificar que el slot no esté ya tomado (protección server-side contra doble reserva)
-    const { createClient: createAdmin } = await import("@supabase/supabase-js");
-    const admin = createAdmin(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-    const { data: existing } = await admin
-      .from("appointments")
-      .select("id")
-      .eq("date", date)
-      .eq("time", time)
-      .eq("business_id", business_id)
-      .neq("status", "cancelled")
-      .limit(1)
-      .maybeSingle();
-
-    if (existing) return { error: "Ese horario ya fue reservado. Por favor elegí otro." };
-
     const safePrice = typeof total_price === "number" && !isNaN(total_price) ? total_price : 0;
 
     const { error: insertError } = await supabase.from("appointments").insert({
@@ -90,7 +72,10 @@ export default async function ReservarSlugPage({
       payment_proof,
     });
 
-    if (insertError) return { error: "No se pudo guardar la cita. Intentá de nuevo." };
+    if (insertError) {
+      if (insertError.code === "23505") return { error: "Ese horario ya fue reservado. Por favor elegí otro." };
+      return { error: "No se pudo guardar la cita. Intentá de nuevo." };
+    }
 
     // Enviar correo si hay email
     if (email) {

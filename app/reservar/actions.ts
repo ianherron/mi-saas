@@ -1,15 +1,23 @@
 "use server";
 
-import { supabase } from "../../lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+function getAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 export async function getBookedSlots(date: string, businessId: string): Promise<string[]> {
   if (!date || !businessId) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await getAdminClient()
     .from("appointments")
     .select("time")
     .eq("date", date)
-    .eq("business_id", businessId);
+    .eq("business_id", businessId)
+    .neq("status", "cancelled");
 
   if (error || !data) return [];
 

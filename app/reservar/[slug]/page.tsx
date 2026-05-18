@@ -13,7 +13,7 @@ export default async function ReservarSlugPage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, owner_name, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy, profile_image_url")
+    .select("id, name, slug, owner_name, payments_enabled, payment_percentage, sinpe_number, sinpe_bank, whatsapp_number, currency, cover_image_url, bio, cancellation_policy, profile_image_url, schedule_mode")
     .eq("slug", slug)
     .single();
 
@@ -157,7 +157,7 @@ export default async function ReservarSlugPage({
 
   const { data: timeSlots } = await supabase
     .from("time_slots")
-    .select("*")
+    .select("id, time, day")
     .eq("business_id", business.id)
     .order("time", { ascending: true });
 
@@ -284,6 +284,7 @@ export default async function ReservarSlugPage({
             </div>
           ) : (
             <BookingForm
+              scheduleMode={((business as any).schedule_mode === "per-day" ? "per-day" : "unified")}
               services={services}
               groupedServices={groupedServices}
               timeSlots={timeSlots ?? []}

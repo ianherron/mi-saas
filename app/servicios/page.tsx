@@ -4,7 +4,8 @@ import { Plus } from "lucide-react";
 import EditServiceForm from "./EditServiceForm";
 import AddServiceForm from "./AddServiceForm";
 import DeleteButton from "./DeleteButton";
-import { AddExtraForm, AddTimeSlotForm, WorkingDaysForm } from "./ServiciosToasts";
+import { AddExtraForm } from "./ServiciosToasts";
+import HorariosManager from "./HorariosManager";
 import AppSidebar, { AppMobileHeader } from "../_components/AppSidebar";
 import ServiciosTabs from "./ServiciosTabs";
 
@@ -88,19 +89,50 @@ export default async function ServiciosPage({
     revalidatePath("/servicios");
   }
 
+  async function setScheduleMode(formData: FormData): Promise<{ error: string } | void> {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    const mode = formData.get("mode") as string;
+    if (mode !== "unified" && mode !== "per-day") return { error: "Modo inválido." };
+    const { error } = await supabase
+      .from("businesses")
+      .update({ schedule_mode: mode })
+      .eq("id", business.id);
+    if (error) return { error: "No se pudo cambiar el modo." };
+    revalidatePath("/servicios");
+  }
+
   async function addTimeSlot(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return { error: "No se encontró tu negocio." };
+    if (!business) return;
     const hour = formData.get("hour") as string;
     const period = formData.get("period") as string;
-    if (!hour || !period) return { error: "Seleccioná hora y período." };
-    if (!/^(1[0-2]|[1-9]):[03]0$/.test(hour)) return { error: "Hora inválida." };
-    if (period !== "AM" && period !== "PM") return { error: "Período inválido." };
-    const formatted = `${hour} ${period}`;
-    const { error: insertError } = await supabase.from("time_slots").insert({ time: formatted, business_id: business.id });
-    if (insertError) return { error: "No se pudo agregar el horario. Intentá de nuevo." };
+    const dayRaw = formData.get("day");
+    if (!hour || !period) return { error: "Faltan datos del horario." };
+    const time = `${hour} ${period}`;
+    let day: number | null = null;
+    if (dayRaw !== null && dayRaw !== "") {
+      const n = Number(dayRaw);
+      if (Number.isNaN(n) || n < 0 || n > 6) return { error: "Día inválido." };
+      day = n;
+    }
+    const { data: exists } = await supabase
+      .from("time_slots")
+      .select("id")
+      .eq("business_id", business.id)
+      .eq("time", time)
+      .is("day", day)
+      .limit(1)
+      .maybeSingle();
+    if (exists) return { error: "Ese horario ya existe." };
+    const { error } = await supabase
+      .from("time_slots")
+      .insert({ business_id: business.id, time, day });
+    if (error) return { error: "No se pudo agregar el horario." };
     revalidatePath("/servicios");
   }
 
@@ -110,6 +142,53 @@ export default async function ServiciosPage({
     const business = await getBusiness();
     if (!business) return;
     await supabase.from("time_slots").delete().eq("id", id).eq("business_id", business.id);
+    revalidatePath("/servicios");
+  }
+
+  async function copyDayHours(formData: FormData): Promise<{ error: string } | void> {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    const srcDayRaw = formData.get("src_day") as string;
+    const targets = formData.getAll("target_day").map((t) => Number(t));
+    const src = Number(srcDayRaw);
+    if (Number.isNaN(src) || src < 0 || src > 6) return { error: "Día origen inválido." };
+    if (!targets.length || targets.some((d) => Number.isNaN(d) || d < 0 || d > 6)) {
+      return { error: "Días destino inválidos." };
+    }
+    const { data: srcSlots } = await supabase
+      .from("time_slots")
+      .select("time")
+      .eq("business_id", business.id)
+      .eq("day", src);
+    if (!srcSlots || srcSlots.length === 0) return { error: "El día origen no tiene horarios." };
+    await supabase
+      .from("time_slots")
+      .delete()
+      .eq("business_id", business.id)
+      .in("day", targets);
+    const rows = targets.flatMap((day) =>
+      srcSlots.map((s) => ({ business_id: business.id, time: s.time, day })),
+    );
+    const { error } = await supabase.from("time_slots").insert(rows);
+    if (error) return { error: "No se pudieron copiar los horarios." };
+    revalidatePath("/servicios");
+  }
+
+  async function clearDayHours(formData: FormData): Promise<{ error: string } | void> {
+    "use server";
+    const supabase = await createClient();
+    const business = await getBusiness();
+    if (!business) return;
+    const dayRaw = formData.get("day") as string;
+    const day = Number(dayRaw);
+    if (Number.isNaN(day) || day < 0 || day > 6) return { error: "Día inválido." };
+    await supabase
+      .from("time_slots")
+      .delete()
+      .eq("business_id", business.id)
+      .eq("day", day);
     revalidatePath("/servicios");
   }
 
@@ -143,18 +222,16 @@ export default async function ServiciosPage({
     "use server";
     const supabase = await createClient();
     const business = await getBusiness();
-    if (!business) return { error: "No se encontró tu negocio." };
-
+    if (!business) return;
     const days = [0, 1, 2, 3, 4, 5, 6].filter(
       (d) => formData.get(`day_${d}`) === "on",
     );
-    if (days.length === 0) return { error: "Seleccioná al menos un día de trabajo." };
-
     await supabase.from("working_days").delete().eq("business_id", business.id);
     if (days.length > 0) {
-      await supabase
+      const { error } = await supabase
         .from("working_days")
         .insert(days.map((day) => ({ day, business_id: business.id })));
+      if (error) return { error: "No se pudieron guardar los días." };
     }
     revalidatePath("/servicios");
   }
@@ -163,12 +240,19 @@ export default async function ServiciosPage({
   const [{ data: services }, { data: timeSlots }, { data: extras }, { data: workingDaysData }] =
     await Promise.all([
       supabase.from("services").select("*").eq("business_id", business.id).order("created_at", { ascending: true }),
-      supabase.from("time_slots").select("*").eq("business_id", business.id).order("time", { ascending: true }),
+      supabase
+        .from("time_slots")
+        .select("id, time, day")
+        .eq("business_id", business.id)
+        .order("day", { ascending: true, nullsFirst: true })
+        .order("time", { ascending: true }),
       supabase.from("extras").select("*").eq("business_id", business.id).order("created_at", { ascending: true }),
       supabase.from("working_days").select("day").eq("business_id", business.id),
     ]);
 
   const workingDaysList = workingDaysData?.map((d) => d.day) ?? [];
+  const scheduleMode: "unified" | "per-day" =
+    (business as any).schedule_mode === "per-day" ? "per-day" : "unified";
 
   const categories = [
     ...new Set(
@@ -327,48 +411,17 @@ export default async function ServiciosPage({
 
           {/* ----- Horarios y días tab ----- */}
           {tab === "horarios" && (
-            <>
-              <section className="mb-5 overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white">
-                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
-                  <p className="text-sm font-medium text-[#2d2424]">Horarios disponibles</p>
-                  <p className="mt-0.5 text-xs text-[#846262]">
-                    Las horas que tus clientas pueden elegir al reservar.
-                  </p>
-                </div>
-                <AddTimeSlotForm addTimeSlot={addTimeSlot} />
-
-                {!timeSlots?.length ? (
-                  <div className="px-5 py-6 text-center">
-                    <p className="text-sm text-[#b89090]">No hay horarios configurados.</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2 px-6 py-5 sm:px-7">
-                    {timeSlots.map((slot: any) => (
-                      <span
-                        key={slot.id}
-                        className="inline-flex items-center gap-2 rounded-full bg-[#f4ecec] px-3.5 py-1.5 text-[13px] font-medium text-[#2d2424]"
-                      >
-                        {slot.time}
-                        <DeleteButton action={deleteTimeSlot.bind(null, slot.id)} compact />
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </section>
-
-              <section className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.08] bg-white">
-                <div className="px-5 py-3.5 border-b border-[#2d2424]/[0.06]">
-                  <p className="text-sm font-medium text-[#2d2424]">Días de trabajo</p>
-                  <p className="mt-0.5 text-xs text-[#846262]">
-                    Elegí los días que atendés clientas.
-                  </p>
-                </div>
-                <WorkingDaysForm
-                  saveWorkingDays={saveWorkingDays}
-                  workingDaysList={workingDaysList}
-                />
-              </section>
-            </>
+            <HorariosManager
+              scheduleMode={scheduleMode}
+              workingDaysList={workingDaysList}
+              timeSlots={(timeSlots ?? []) as { id: number; time: string; day: number | null }[]}
+              setScheduleMode={setScheduleMode}
+              addTimeSlot={addTimeSlot}
+              deleteTimeSlot={deleteTimeSlot}
+              copyDayHours={copyDayHours}
+              clearDayHours={clearDayHours}
+              saveWorkingDays={saveWorkingDays}
+            />
           )}
         </main>
       </div>

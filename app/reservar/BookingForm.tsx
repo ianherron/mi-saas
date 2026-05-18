@@ -14,11 +14,12 @@ type Service = {
   image_url?: string;
   category?: string;
 };
-type TimeSlot = { id: number; time: string };
+type TimeSlot = { id: number; time: string; day: number | null };
 type Extra = { id: number; name: string; duration: number; price: number };
 type GalleryImage = { image_url: string };
 
 export default function BookingForm({
+  scheduleMode,
   services,
   groupedServices,
   timeSlots,
@@ -35,6 +36,7 @@ export default function BookingForm({
   cancellationPolicy,
   createAppointment,
 }: {
+  scheduleMode: "unified" | "per-day";
   services: Service[];
   groupedServices: Record<string, Service[]>;
   timeSlots: TimeSlot[];
@@ -55,7 +57,7 @@ export default function BookingForm({
   const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState(timeSlots[0]?.time ?? "");
+  const [time, setTime] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -89,6 +91,13 @@ export default function BookingForm({
     }
     setDateError("");
     setDate(newDate);
+    const dow = new Date(newDate + "T12:00:00").getDay();
+    const slotsForDay = timeSlots.filter((s) =>
+      scheduleMode === "per-day" ? s.day === dow : s.day === null,
+    );
+    if (!slotsForDay.some((s) => s.time === time)) {
+      setTime(slotsForDay[0]?.time ?? "");
+    }
     const booked = await getBookedSlots(newDate, businessId);
     setBookedSlots(booked);
   }
@@ -237,7 +246,7 @@ export default function BookingForm({
               setConfirmed(false);
               setSelectedExtras([]);
               setDate("");
-              setTime(timeSlots[0]?.time ?? "");
+              setTime("");
             }}
             className="mt-8 inline-flex items-center gap-2 rounded-full border border-slate-200 px-8 py-3 text-sm font-medium text-[#2d2424] transition-all hover:bg-[#f4ecec]"
           >
@@ -445,22 +454,28 @@ export default function BookingForm({
                       onChange={(e) => setTime(e.target.value)}
                       className="w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
                     >
-                      {timeSlots.length === 0 && (
-                        <option value="">Sin horarios disponibles</option>
-                      )}
-                      {timeSlots.map((slot) => {
-                        const isBooked = bookedSlots.includes(slot.time);
-                        return (
-                          <option
-                            key={slot.id}
-                            value={slot.time}
-                            disabled={isBooked}
-                          >
-                            {slot.time}
-                            {isBooked ? " — ocupado" : ""}
-                          </option>
-                        );
-                      })}
+                      {(() => {
+                        const dow = date ? new Date(date + "T12:00:00").getDay() : null;
+                        const available = timeSlots.filter((s) => {
+                          if (scheduleMode === "per-day") return dow !== null && s.day === dow;
+                          return s.day === null;
+                        });
+                        if (!date) {
+                          return <option value="">Elegí una fecha primero</option>;
+                        }
+                        if (available.length === 0) {
+                          return <option value="">No hay horarios para este día</option>;
+                        }
+                        return available.map((slot) => {
+                          const isBooked = bookedSlots.includes(slot.time);
+                          return (
+                            <option key={slot.id} value={slot.time} disabled={isBooked}>
+                              {slot.time}
+                              {isBooked ? " — ocupado" : ""}
+                            </option>
+                          );
+                        });
+                      })()}
                     </select>
                   </div>
                   {timeSlots.length === 0 && (

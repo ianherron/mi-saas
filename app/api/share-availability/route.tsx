@@ -1,10 +1,24 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { createClient, getBusiness } from "../../../lib/supabase-server";
 
 export const runtime = "nodejs";
 
 const DAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+// Glyph ✦ como SVG inline (siempre renderiza, no depende de la fuente)
+function Sparkle({ size = 90, color = "#e9cece", opacity = 1 }: { size?: number; color?: string; opacity?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
+      <path
+        d="M50 0 L55 45 L100 50 L55 55 L50 100 L45 55 L0 50 L45 45 Z"
+        fill={color}
+      />
+    </svg>
+  );
+}
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -16,17 +30,25 @@ export async function GET(req: NextRequest) {
 
   const supabase = await createClient();
   const business = await getBusiness();
-  if (!business) {
-    return new Response("No business", { status: 401 });
-  }
+  if (!business) return new Response("No business", { status: 401 });
 
+  // ── Fuentes ──────────────────────────────────────────────────────
+  const fontsDir = path.join(process.cwd(), "public", "fonts");
+  const [playfairRegular, playfairMedium, playfairItalic, dmSans] =
+    await Promise.all([
+      readFile(path.join(fontsDir, "PlayfairDisplay-Regular.ttf")),
+      readFile(path.join(fontsDir, "PlayfairDisplay-Medium.ttf")),
+      readFile(path.join(fontsDir, "PlayfairDisplay-Italic.ttf")),
+      readFile(path.join(fontsDir, "DMSans-Regular.ttf")),
+    ]);
+
+  // ── Cargar datos ─────────────────────────────────────────────────
   const today = new Date();
   const dates: { date: string; dow: number }[] = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
-    const iso = d.toISOString().slice(0, 10);
-    dates.push({ date: iso, dow: d.getDay() });
+    dates.push({ date: d.toISOString().slice(0, 10), dow: d.getDay() });
   }
   const fromDate = dates[0].date;
   const toDate = dates[dates.length - 1].date;
@@ -48,9 +70,8 @@ export async function GET(req: NextRequest) {
   const allSlots = timeSlotsData ?? [];
   const scheduleMode = biz?.schedule_mode === "per-day" ? "per-day" : "unified";
   const slug = biz?.slug ?? "";
-  const ownerName = biz?.owner_name ?? "";
 
-  type DayEntry = { date: string; dow: number; label: string; times: { time: string; booked: boolean }[] };
+  type DayEntry = { label: string; times: { time: string; booked: boolean }[] };
   const week: DayEntry[] = dates
     .filter((d) => workingDays.length === 0 || workingDays.includes(d.dow))
     .slice(0, 5)
@@ -64,8 +85,6 @@ export async function GET(req: NextRequest) {
       );
       const dayLabel = `${DAY_LABELS[dow]} ${new Date(date + "T12:00:00").getDate()}`;
       return {
-        date,
-        dow,
         label: dayLabel,
         times: slotsForDow.map((s) => ({ time: s.time, booked: bookedTimes.has(s.time) })),
       };
@@ -73,11 +92,17 @@ export async function GET(req: NextRequest) {
 
   const freeTotal = week.reduce((sum, d) => sum + d.times.filter((t) => !t.booked).length, 0);
 
-  const node = renderTemplate(template, { week, freeTotal, slug, ownerName });
+  const node = renderTemplate(template, { week, freeTotal, slug });
 
   const response = new ImageResponse(node, {
     width: 1080,
     height: 1920,
+    fonts: [
+      { name: "Playfair", data: playfairRegular, weight: 400, style: "normal" },
+      { name: "Playfair", data: playfairMedium, weight: 500, style: "normal" },
+      { name: "Playfair", data: playfairItalic, weight: 400, style: "italic" },
+      { name: "DM Sans", data: dmSans, weight: 400, style: "normal" },
+    ],
   });
 
   if (download) {
@@ -93,18 +118,9 @@ export async function GET(req: NextRequest) {
   return response;
 }
 
-// ─────────────────────────────────────────────────────────────────────────
-// Templates — solo inline styles, sin className, sin gap
-// ─────────────────────────────────────────────────────────────────────────
-
 function renderTemplate(
   template: "editorial" | "dark" | "cards",
-  data: {
-    week: { label: string; times: { time: string; booked: boolean }[] }[];
-    freeTotal: number;
-    slug: string;
-    ownerName: string;
-  },
+  data: { week: any[]; freeTotal: number; slug: string },
 ) {
   switch (template) {
     case "dark":
@@ -117,27 +133,31 @@ function renderTemplate(
   }
 }
 
+// ── Templates ──────────────────────────────────────────────────────
+// IMPORTANTE: todo elemento contenedor debe tener display: "flex".
+// NO usar `gap` — usar marginRight/marginTop.
+
 function StoryEditorial({ week, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#fbf9f9", color: "#2d2424",
-      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
+      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
       padding: "110px 90px", position: "relative",
     }}>
-      <div style={{
-        position: "absolute", right: -120, top: -180,
-        fontSize: 900, color: "#e9cece", opacity: 0.35, lineHeight: 1,
-      }}>✦</div>
+      <div style={{ position: "absolute", right: 40, top: 40, display: "flex", opacity: 0.4 }}>
+        <Sparkle size={500} color="#e9cece" />
+      </div>
       <div style={{
         fontSize: 28, letterSpacing: "0.25em", textTransform: "uppercase",
-        color: "#846262", display: "flex",
+        color: "#846262", display: "flex", fontFamily: "DM Sans",
       }}>
         Esta semana
       </div>
       <div style={{
-        fontSize: 130, lineHeight: 1.02, marginTop: 90, display: "flex",
+        fontFamily: "Playfair", fontWeight: 500,
+        fontSize: 130, lineHeight: 1.02, marginTop: 60, display: "flex",
       }}>
-        Citas disponibles.
+        Citas <span style={{ fontStyle: "italic", fontWeight: 400, color: "#846262", marginLeft: 18 }}>disponibles</span>.
       </div>
       <div style={{ marginTop: 80, display: "flex", flexDirection: "column" }}>
         {week.map((d: any, i: number) => (
@@ -145,13 +165,16 @@ function StoryEditorial({ week, slug }: any) {
             display: "flex", alignItems: "baseline", marginBottom: 36,
             paddingBottom: 28, borderBottom: "1px solid rgba(45,36,36,0.08)",
           }}>
-            <div style={{ fontSize: 48, width: 280, display: "flex" }}>{d.label}</div>
+            <div style={{
+              fontFamily: "Playfair", fontWeight: 500,
+              fontSize: 48, width: 280, display: "flex",
+            }}>{d.label}</div>
             <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
               {d.times.length === 0 ? (
-                <span style={{ color: "#b89090", fontSize: 36, display: "flex" }}>cerrado</span>
+                <span style={{ color: "#b89090", fontSize: 36, display: "flex", fontStyle: "italic" }}>cerrado</span>
               ) : d.times.map((t: any, j: number) => (
                 <span key={j} style={{
-                  marginRight: 16, fontSize: 36,
+                  marginRight: 24, fontSize: 36,
                   color: t.booked ? "#b89090" : "#2d2424",
                   textDecoration: t.booked ? "line-through" : "none",
                   textDecorationColor: "#b86060", display: "flex",
@@ -161,13 +184,16 @@ function StoryEditorial({ week, slug }: any) {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: "auto", display: "flex", alignItems: "flex-end" }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <div style={{
-            fontSize: 26, letterSpacing: "0.2em", textTransform: "uppercase",
-            color: "#b89090", marginBottom: 10, display: "flex",
-          }}>Reservá en</div>
-          <div style={{ fontSize: 48, display: "flex" }}>nailflow.app/{slug}</div>
+      <div style={{ marginTop: "auto", display: "flex", flexDirection: "column" }}>
+        <div style={{
+          fontSize: 26, letterSpacing: "0.2em", textTransform: "uppercase",
+          color: "#b89090", marginBottom: 10, display: "flex",
+        }}>Reservá en</div>
+        <div style={{
+          fontFamily: "Playfair", fontWeight: 500,
+          fontSize: 56, display: "flex",
+        }}>
+          nailflow.app/<span style={{ fontStyle: "italic", color: "#846262", fontWeight: 400 }}>{slug}</span>
         </div>
       </div>
     </div>
@@ -178,22 +204,25 @@ function StoryDark({ week, freeTotal, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#2d2424", color: "#fbf9f9",
-      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
+      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
       padding: "130px 120px", position: "relative",
     }}>
-      <div style={{ textAlign: "center", fontSize: 90, color: "#e9cece", display: "flex", justifyContent: "center" }}>✦</div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Sparkle size={90} color="#e9cece" />
+      </div>
       <div style={{
         marginTop: 30, fontSize: 26, letterSpacing: "0.3em",
-        textTransform: "uppercase", color: "#b89090", textAlign: "center",
+        textTransform: "uppercase", color: "#b89090",
         display: "flex", justifyContent: "center",
       }}>
         {freeTotal} cupos libres
       </div>
       <div style={{
+        fontFamily: "Playfair", fontWeight: 500,
         marginTop: 30, fontSize: 140, lineHeight: 1,
-        textAlign: "center", display: "flex", justifyContent: "center",
+        display: "flex", justifyContent: "center",
       }}>
-        Esta semana.
+        Esta <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 24 }}>semana</span>.
       </div>
       <div style={{ marginTop: 100, display: "flex", flexDirection: "column" }}>
         {week.map((d: any, i: number) => {
@@ -203,10 +232,14 @@ function StoryDark({ week, freeTotal, slug }: any) {
               display: "flex", alignItems: "baseline", paddingTop: 28,
               paddingBottom: 28, borderBottom: "1px solid rgba(251,249,249,0.1)",
             }}>
-              <div style={{ fontSize: 42, width: 260, display: "flex" }}>{d.label}</div>
+              <div style={{
+                fontFamily: "Playfair", fontWeight: 500,
+                fontSize: 42, width: 260, display: "flex",
+              }}>{d.label}</div>
               <div style={{
                 fontSize: 32, display: "flex",
                 color: free.length ? "#fbf9f9" : "#846262",
+                fontStyle: free.length ? "normal" : "italic",
               }}>
                 {free.length === 0 ? "completo" : free.map((f: any) => f.time).join(" · ")}
               </div>
@@ -215,12 +248,12 @@ function StoryDark({ week, freeTotal, slug }: any) {
         })}
       </div>
       <div style={{
-        marginTop: "auto", display: "flex", flexDirection: "column",
-        alignItems: "center",
+        marginTop: "auto", display: "flex", flexDirection: "column", alignItems: "center",
       }}>
         <div style={{
-          padding: "20px 44px", borderRadius: 999,
-          background: "#e9cece", color: "#2d2424", fontSize: 38, display: "flex",
+          padding: "24px 48px", borderRadius: 999,
+          background: "#e9cece", color: "#2d2424",
+          fontFamily: "Playfair", fontWeight: 500, fontSize: 44, display: "flex",
         }}>
           nailflow.app/{slug}
         </div>
@@ -233,8 +266,7 @@ function StoryCards({ week, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#f4ecec", color: "#2d2424",
-      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
-      position: "relative",
+      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
     }}>
       <div style={{
         background: "#2d2424", color: "#fbf9f9", padding: "100px 90px 70px",
@@ -246,7 +278,12 @@ function StoryCards({ week, slug }: any) {
         }}>
           Esta semana
         </div>
-        <div style={{ fontSize: 110, lineHeight: 1, display: "flex" }}>Mi agenda.</div>
+        <div style={{
+          fontFamily: "Playfair", fontWeight: 500,
+          fontSize: 110, lineHeight: 1, display: "flex",
+        }}>
+          Mi <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 18 }}>agenda</span>.
+        </div>
       </div>
       <div style={{
         padding: "40px 60px", display: "flex", flexDirection: "column", flex: 1,
@@ -264,19 +301,22 @@ function StoryCards({ week, slug }: any) {
                 display: "flex", alignItems: "center",
                 justifyContent: "space-between", marginBottom: completo ? 0 : 14,
               }}>
-                <div style={{ fontSize: 48, display: "flex" }}>{d.label}</div>
+                <div style={{
+                  fontFamily: "Playfair", fontWeight: 500,
+                  fontSize: 48, display: "flex",
+                }}>{d.label}</div>
                 <div style={{
                   fontSize: 22, letterSpacing: "0.2em",
                   textTransform: "uppercase", color: "#846262", display: "flex",
                 }}>
-                  {completo ? "Completo" : `${free.length} libres`}
+                  {completo ? "Completo" : `${free.length} ${free.length === 1 ? "libre" : "libres"}`}
                 </div>
               </div>
               {!completo && (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
                   {free.map((f: any, j: number) => (
                     <span key={j} style={{
-                      marginRight: 12, marginTop: 4, padding: "10px 22px",
+                      marginRight: 12, marginTop: 8, padding: "10px 22px",
                       borderRadius: 999, background: "#f4ecec", fontSize: 28, display: "flex",
                     }}>{f.time}</span>
                   ))}
@@ -298,9 +338,12 @@ function StoryCards({ week, slug }: any) {
           }}>
             Reservá
           </div>
-          <div style={{ fontSize: 44, display: "flex" }}>nailflow.app/{slug}</div>
+          <div style={{
+            fontFamily: "Playfair", fontWeight: 500,
+            fontSize: 44, display: "flex",
+          }}>nailflow.app/{slug}</div>
         </div>
-        <div style={{ fontSize: 60, color: "#b89090", display: "flex" }}>✦</div>
+        <Sparkle size={60} color="#b89090" />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+
 import { createClient, getBusiness } from "../../../lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -34,13 +35,11 @@ export async function GET(req: NextRequest) {
 
   // ── Fuentes ──────────────────────────────────────────────────────
   const fontsDir = path.join(process.cwd(), "public", "fonts");
-  const [playfairRegular, playfairMedium, playfairItalic, dmSans] =
-    await Promise.all([
-      readFile(path.join(fontsDir, "PlayfairDisplay-Regular.ttf")),
-      readFile(path.join(fontsDir, "PlayfairDisplay-Medium.ttf")),
-      readFile(path.join(fontsDir, "PlayfairDisplay-Italic.ttf")),
-      readFile(path.join(fontsDir, "DMSans-Regular.ttf")),
-    ]);
+  const [playfairRegular, playfairMedium, playfairItalic] = await Promise.all([
+    readFile(path.join(fontsDir, "PlayfairDisplay-400.woff")),
+    readFile(path.join(fontsDir, "PlayfairDisplay-500.woff")),
+    readFile(path.join(fontsDir, "PlayfairDisplay-400-italic.woff")),
+  ]);
 
   // ── Cargar datos ─────────────────────────────────────────────────
   const today = new Date();
@@ -101,7 +100,6 @@ export async function GET(req: NextRequest) {
       { name: "Playfair", data: playfairRegular, weight: 400, style: "normal" },
       { name: "Playfair", data: playfairMedium, weight: 500, style: "normal" },
       { name: "Playfair", data: playfairItalic, weight: 400, style: "italic" },
-      { name: "DM Sans", data: dmSans, weight: 400, style: "normal" },
     ],
   });
 
@@ -141,7 +139,7 @@ function StoryEditorial({ week, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#fbf9f9", color: "#2d2424",
-      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
+      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
       padding: "110px 90px", position: "relative",
     }}>
       <div style={{ position: "absolute", right: 40, top: 40, display: "flex", opacity: 0.4 }}>
@@ -149,7 +147,7 @@ function StoryEditorial({ week, slug }: any) {
       </div>
       <div style={{
         fontSize: 28, letterSpacing: "0.25em", textTransform: "uppercase",
-        color: "#846262", display: "flex", fontFamily: "DM Sans",
+        color: "#846262", display: "flex", fontFamily: "sans-serif",
       }}>
         Esta semana
       </div>
@@ -204,7 +202,7 @@ function StoryDark({ week, freeTotal, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#2d2424", color: "#fbf9f9",
-      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
+      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
       padding: "130px 120px", position: "relative",
     }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
@@ -266,7 +264,7 @@ function StoryCards({ week, slug }: any) {
   return (
     <div style={{
       width: 1080, height: 1920, background: "#f4ecec", color: "#2d2424",
-      fontFamily: "DM Sans", display: "flex", flexDirection: "column",
+      fontFamily: "sans-serif", display: "flex", flexDirection: "column",
     }}>
       <div style={{
         background: "#2d2424", color: "#fbf9f9", padding: "100px 90px 70px",

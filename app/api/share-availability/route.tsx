@@ -29,8 +29,24 @@ export async function GET(req: NextRequest) {
     | "cards";
   const download = url.searchParams.get("download") === "1";
 
-  const supabase = await createClient();
-  const business = await getBusiness();
+  // Auth: cookie session (web) o Bearer token (app móvil)
+  let business: any = null;
+  const { createClient: createAdmin } = await import("@supabase/supabase-js");
+  const supabase = createAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (user) {
+      const { data } = await supabase.from("businesses").select("*").eq("user_id", user.id).single();
+      business = data;
+    }
+  } else {
+    business = await getBusiness();
+  }
   if (!business) return new Response("No business", { status: 401 });
 
   // ── Fuentes ──────────────────────────────────────────────────────

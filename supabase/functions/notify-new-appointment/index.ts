@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const message = {
       to: biz.expo_push_token,
       sound: "default",
-      title: "Nueva cita 📅",
+      title: "Nueva cita",
       body: serviceName
         ? `${record.client_name} · ${serviceName} · ${record.date} ${record.time}`
         : `${record.client_name} · ${record.date} ${record.time}`,

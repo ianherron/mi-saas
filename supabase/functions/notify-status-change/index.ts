@@ -70,16 +70,31 @@ function buildCompletedHtml(clientName: string, businessName: string, serviceNam
 
 Deno.serve(async (req) => {
   try {
-    const { appointmentId, status } = await req.json();
-
-    if (!appointmentId || !["completed", "cancelled"].includes(status)) {
-      return new Response("invalid payload", { status: 400 });
-    }
+    // Verify caller is an authenticated NailFlow user
+    const token = (req.headers.get("authorization") ?? "").replace("Bearer ", "").trim();
+    if (!token) return new Response("Unauthorized", { status: 401 });
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) return new Response("Unauthorized", { status: 401 });
+
+    // Get the business owned by this user
+    const { data: callerBiz } = await supabase
+      .from("businesses")
+      .select("id")
+      .eq("user_id", user.id)
+      .single();
+    if (!callerBiz) return new Response("Forbidden", { status: 403 });
+
+    const { appointmentId, status } = await req.json();
+
+    if (!appointmentId || !["completed", "cancelled"].includes(status)) {
+      return new Response("invalid payload", { status: 400 });
+    }
 
     const { data: appt } = await supabase
       .from("appointments")
@@ -87,7 +102,12 @@ Deno.serve(async (req) => {
       .eq("id", appointmentId)
       .single();
 
-    if (!appt?.email) {
+    // Verify the appointment belongs to the caller's business
+    if (!appt || appt.business_id !== callerBiz.id) {
+      return new Response("Forbidden", { status: 403 });
+    }
+
+    if (!appt.email) {
       return new Response("no email", { status: 200 });
     }
 

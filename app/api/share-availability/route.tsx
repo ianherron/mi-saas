@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
         .select("date, time")
         .eq("business_id", business.id)
         .gte("date", fromDate)
-        .lte("date", toDate),
+        .lte("date", toDate)
+        .neq("status", "cancelled"),
       supabase.from("businesses").select("schedule_mode, owner_name, slug").eq("id", business.id).single(),
     ]);
 

@@ -284,7 +284,6 @@ export default async function ReservarSlugPage({
         <main className="flex flex-1 justify-center px-4 py-8 md:px-0">
           {onVacation ? (
             <div className="flex flex-1 flex-col items-center justify-center py-24 text-center px-6">
-              <div className="text-5xl mb-6">🌴</div>
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#846262] mb-3">Fuera de servicio</p>
               <h2 className="font-serif text-2xl font-medium text-[#2d2424] tracking-tight mb-3">
                 {business.owner_name ?? business.name} está de vacaciones

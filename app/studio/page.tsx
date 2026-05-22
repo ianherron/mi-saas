@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Users, Calendar, BarChart3, Shield, Clock, Layers } from "lucide-react";
+import LandingNav from "@/app/components/LandingNav";
 
 export const metadata: Metadata = {
   title: "NailFlow Studio — Para estudios y equipos",
@@ -40,49 +41,24 @@ const FEATURES = [
   },
 ];
 
+const COMPARE = [
+  { feature: "Página de reservas personalizada", individual: true, studio: true },
+  { feature: "Servicios con imagen y descripción", individual: true, studio: true },
+  { feature: "Galería de trabajos", individual: true, studio: true },
+  { feature: "Correos automáticos", individual: true, studio: true },
+  { feature: "Pagos anticipados con SINPE", individual: true, studio: true },
+  { feature: "Dashboard con estadísticas", individual: true, studio: true },
+  { feature: "Múltiples manicuristas (hasta 4)", individual: false, studio: true },
+  { feature: "Agenda compartida del estudio", individual: false, studio: true },
+  { feature: "Reportes por empleada", individual: false, studio: true },
+  { feature: "Reservas con selección de manicurista", individual: false, studio: true },
+  { feature: "Permisos por rol (dueña / empleada)", individual: false, studio: true },
+];
+
 export default function StudioPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#fbf9f9] text-[#2d2424]">
-      {/* Header */}
-      <header className="fixed top-0 z-50 w-full border-b border-[#2d2424]/[0.08] bg-[#fbf9f9]/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-3.5 lg:px-12">
-          <a href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece] sm:h-9 sm:w-9">
-              ✦
-            </div>
-            <h2 className="font-medium tracking-tight text-lg sm:text-xl" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-              NailFlow
-            </h2>
-          </a>
-
-          <nav className="hidden items-center gap-9 md:flex">
-            <a className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]" href="/#beneficios">
-              Beneficios
-            </a>
-            <a className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]" href="/#como-funciona">
-              Cómo funciona
-            </a>
-            <a className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]" href="/#precios">
-              Precios
-            </a>
-            <a className="text-sm font-medium text-[#2d2424]" href="/studio">
-              Studio
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3 sm:gap-4">
-            <a href="/login" className="hidden text-sm text-[#2d2424] hover:opacity-70 sm:block">
-              Iniciar sesión
-            </a>
-            <a
-              href="/registrar"
-              className="inline-flex items-center justify-center rounded-xl bg-[#2d2424] px-4 py-2 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] sm:px-5"
-            >
-              Crear cuenta
-            </a>
-          </div>
-        </div>
-      </header>
+      <LandingNav />
 
       <main className="flex-1 pt-20 sm:pt-24">
         {/* Hero */}
@@ -217,6 +193,57 @@ export default function StudioPage() {
           </div>
         </section>
 
+        {/* Comparison table */}
+        <section className="px-4 pb-16 sm:px-6 sm:pb-24 lg:px-12">
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-10 text-center">
+              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                Comparación
+              </p>
+              <h2
+                className="mt-3 text-[28px] font-medium leading-tight tracking-tight text-[#2d2424] sm:text-4xl"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              >
+                Individual vs Studio.
+              </h2>
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-[#2d2424]/[0.07] bg-white shadow-[0_4px_20px_rgba(45,36,36,0.08)]">
+              {/* Header */}
+              <div className="grid grid-cols-[1fr_100px_100px] border-b border-[#2d2424]/[0.07] px-6 py-4">
+                <div />
+                <div className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#846262]">
+                  Individual<br />
+                  <span className="text-[10px] font-normal normal-case tracking-normal">₡3.500/mes</span>
+                </div>
+                <div className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#2d2424]">
+                  Studio<br />
+                  <span className="text-[10px] font-normal normal-case tracking-normal">₡12.000/mes</span>
+                </div>
+              </div>
+
+              {/* Rows */}
+              {COMPARE.map((row, i) => (
+                <div
+                  key={row.feature}
+                  className={`grid grid-cols-[1fr_100px_100px] items-center px-6 py-3.5 ${i < COMPARE.length - 1 ? "border-b border-[#2d2424]/[0.05]" : ""} ${!row.individual ? "bg-[#fbf9f9]" : ""}`}
+                >
+                  <span className="text-[13.5px] text-[#2d2424]">{row.feature}</span>
+                  <div className="flex justify-center">
+                    {row.individual
+                      ? <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e9cece] text-[10px] font-bold text-[#2d2424]">✓</span>
+                      : <span className="text-[#2d2424]/20 text-lg leading-none">—</span>
+                    }
+                  </div>
+                  <div className="flex justify-center">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2d2424] text-[10px] font-bold text-[#fbf9f9]">✓</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA final */}
         <section className="px-4 pb-24 sm:px-6 lg:px-12">
           <div className="mx-auto max-w-2xl text-center">
@@ -228,7 +255,7 @@ export default function StudioPage() {
               <em className="font-normal italic text-[#846262]">Hablemos.</em>
             </h2>
             <p className="mb-8 text-sm leading-relaxed text-[#846262] sm:text-base">
-              Estamos construyendo NailFlow Studio. Si querés ser de las primeras en probarlo, escribinos.
+              Si querés ser de las primeras en probarlo, escribinos y te avisamos cuando esté listo.
             </p>
             <a
               href="mailto:nailflowapp@gmail.com"

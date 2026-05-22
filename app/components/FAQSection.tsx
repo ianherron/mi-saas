@@ -6,35 +6,50 @@ const faqs = [
   {
     question: "¿Mis clientas necesitan crear una cuenta para reservar?",
     answer:
-      "No, solo llenan el formulario con su nombre, teléfono y seleccionan el servicio.",
+      "No, solo llenan el formulario con su nombre, teléfono y seleccionan el servicio. Sin registros, sin contraseñas.",
   },
   {
     question: "¿Cómo reciben confirmación mis clientas?",
     answer:
-      "Automáticamente por correo electrónico al momento de reservar.",
+      "Automáticamente por correo electrónico al momento de reservar. También recibís vos una notificación en tu celular.",
   },
   {
     question: "¿Puedo cobrar un adelanto por SINPE Móvil?",
     answer:
-      "Sí, configurás el porcentaje de adelanto y tus clientas pagan antes de confirmar la cita.",
+      "Sí, configurás el porcentaje de adelanto y tus clientas pagan antes de confirmar la cita. Esto reduce las cancelaciones de último momento.",
   },
   {
     question: "¿Qué pasa si una clienta cancela?",
     answer:
-      "Recibe un correo de cancelación automático y la cita desaparece de tu agenda.",
+      "Recibe un correo de cancelación automático y la cita desaparece de tu agenda. El horario queda libre para otra clienta.",
+  },
+  {
+    question: "Tengo un estudio con varias manicuristas, ¿NailFlow me sirve?",
+    answer:
+      "El plan actual está diseñado para manicuristas independientes. Si tenés equipo, estamos desarrollando NailFlow Studio — un plan pensado para estudios con hasta 4 manicuristas, agenda compartida y reportes por empleada. Escribinos a nailflowapp@gmail.com para acceso anticipado.",
+  },
+  {
+    question: "No tengo un negocio de uñas, soy estilista. ¿Puedo usar NailFlow igual?",
+    answer:
+      "Sí. NailFlow funciona para cualquier profesional de belleza que trabaje con citas: estilistas, técnicos de pestañas, cejas, masajistas y más. Si agendás clientes, NailFlow te sirve.",
+  },
+  {
+    question: "¿En qué países está disponible?",
+    answer:
+      "Actualmente estamos enfocados en Costa Rica, con SINPE Móvil como método de pago. Próximamente expandimos a más países de Latinoamérica.",
   },
   {
     question: "¿Tienen app móvil?",
     answer:
-      "Estamos trabajando en nuestra app para iOS y Android — muy pronto disponible.",
+      "Sí, tenemos app para iOS disponible muy pronto. Desde ahí gestionás tu agenda, ves tus citas del día y recibís notificaciones en tiempo real.",
   },
   {
     question: "¿Puedo cancelar cuando quiera?",
-    answer: "Sí, sin contratos ni permanencia.",
+    answer: "Sí, sin contratos ni permanencia. Cancelás desde tu cuenta en cualquier momento.",
   },
   {
     question: "¿Cuánto cuesta después del período de prueba?",
-    answer: "₡3,500 al mes, sin costos ocultos.",
+    answer: "₡3.500 al mes, sin costos ocultos ni tarifas por transacción.",
   },
 ];
 

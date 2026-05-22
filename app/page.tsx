@@ -1,6 +1,7 @@
 import LegalModals from "./LegalModals";
 import FAQSection from "./components/FAQSection";
 import AnimateOnScroll from "./AnimateOnScroll";
+import LandingNav from "./components/LandingNav";
 import {
   Calendar,
   Globe,
@@ -19,63 +20,7 @@ import {
 export default function Home() {
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#fbf9f9] text-[#2d2424]">
-      {/* ============================================================
-          HEADER
-          ============================================================ */}
-      <header className="fixed top-0 z-50 w-full border-b border-[#2d2424]/[0.08] bg-[#fbf9f9]/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-3.5 lg:px-12">
-          <a href="#" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece] sm:h-9 sm:w-9">
-              ✦
-            </div>
-            <h2 className="serif-heading text-lg font-medium tracking-tight sm:text-xl">
-              NailFlow
-            </h2>
-          </a>
-
-          <nav className="hidden items-center gap-9 md:flex">
-            <a
-              className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]"
-              href="#beneficios"
-            >
-              Beneficios
-            </a>
-            <a
-              className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]"
-              href="#como-funciona"
-            >
-              Cómo funciona
-            </a>
-            <a
-              className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]"
-              href="#precios"
-            >
-              Precios
-            </a>
-            <a
-              className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]"
-              href="/studio"
-            >
-              Studio
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3 sm:gap-4">
-            <a
-              href="/login"
-              className="hidden text-sm text-[#2d2424] hover:opacity-70 sm:block"
-            >
-              Iniciar sesión
-            </a>
-            <a
-              href="/registrar"
-              className="inline-flex items-center justify-center rounded-xl bg-[#2d2424] px-4 py-2 text-sm font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232] sm:px-5"
-            >
-              Crear cuenta
-            </a>
-          </div>
-        </div>
-      </header>
+      <LandingNav />
 
       <main className="flex-1 pt-20 sm:pt-24">
         {/* ============================================================

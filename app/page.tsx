@@ -52,6 +52,12 @@ export default function Home() {
             >
               Precios
             </a>
+            <a
+              className="text-sm text-[#846262] transition-colors hover:text-[#2d2424]"
+              href="/studio"
+            >
+              Studio
+            </a>
           </nav>
 
           <div className="flex items-center gap-3 sm:gap-4">

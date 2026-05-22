@@ -78,58 +78,60 @@ export default function LandingNav() {
       </header>
 
       {/* Mobile drawer overlay */}
-      {open && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-[#fbf9f9]">
-          {/* Drawer header */}
-          <div className="flex items-center justify-between border-b border-[#2d2424]/[0.08] px-4 py-3">
-            <a href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-              <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
-                ✦
-              </div>
-              <span className="serif-heading text-lg font-medium tracking-tight">NailFlow</span>
-            </a>
-            <button
-              onClick={() => setOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#2d2424]/10 bg-white text-[#2d2424]"
-              aria-label="Cerrar menú"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Links */}
-          <nav className="flex flex-col gap-1 p-4">
-            {LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="rounded-xl px-4 py-4 text-base font-medium text-[#2d2424] transition-colors hover:bg-[#e9cece]/30"
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
-
-          {/* Bottom actions */}
-          <div className="mt-auto flex flex-col gap-3 border-t border-[#2d2424]/[0.08] p-4">
-            <a
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center rounded-xl border border-[#2d2424]/[0.16] px-7 py-4 text-base font-medium text-[#2d2424] transition-colors hover:bg-[#f4ecec]"
-            >
-              Iniciar sesión
-            </a>
-            <a
-              href="/registrar"
-              onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[#2d2424] px-7 py-4 text-base font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
-            >
-              Crear cuenta gratis
-            </a>
-          </div>
+      <div
+        className={`fixed inset-0 z-[60] flex flex-col bg-[#fbf9f9] transition-all duration-300 ease-out md:hidden ${
+          open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none"
+        }`}
+      >
+        {/* Drawer header */}
+        <div className="flex items-center justify-between border-b border-[#2d2424]/[0.08] px-4 py-3">
+          <a href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#2d2424] text-base leading-none text-[#e9cece]">
+              ✦
+            </div>
+            <span className="serif-heading text-lg font-medium tracking-tight">NailFlow</span>
+          </a>
+          <button
+            onClick={() => setOpen(false)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#2d2424]/10 bg-white text-[#2d2424]"
+            aria-label="Cerrar menú"
+          >
+            <X size={18} />
+          </button>
         </div>
-      )}
+
+        {/* Links */}
+        <nav className="flex flex-col gap-1 p-4">
+          {LINKS.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              className="rounded-xl px-4 py-4 text-base font-medium text-[#2d2424] transition-colors hover:bg-[#e9cece]/30"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Bottom actions */}
+        <div className="mt-auto flex flex-col gap-3 border-t border-[#2d2424]/[0.08] p-4">
+          <a
+            href="/login"
+            onClick={() => setOpen(false)}
+            className="inline-flex w-full items-center justify-center rounded-xl border border-[#2d2424]/[0.16] px-7 py-4 text-base font-medium text-[#2d2424] transition-colors hover:bg-[#f4ecec]"
+          >
+            Iniciar sesión
+          </a>
+          <a
+            href="/registrar"
+            onClick={() => setOpen(false)}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-[#2d2424] px-7 py-4 text-base font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
+          >
+            Crear cuenta gratis
+          </a>
+        </div>
+      </div>
     </>
   );
 }

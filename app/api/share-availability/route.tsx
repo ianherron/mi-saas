@@ -172,7 +172,8 @@ function StoryEditorial({ week, slug }: any) {
         fontFamily: "Playfair", fontWeight: 500,
         fontSize: 130, lineHeight: 1.02, marginTop: 60, display: "flex",
       }}>
-        Citas <span style={{ fontStyle: "italic", fontWeight: 400, color: "#846262", marginLeft: 18 }}>disponibles</span>.
+        <span>Citas</span>
+        <span style={{ fontStyle: "italic", fontWeight: 400, color: "#846262", marginLeft: 18 }}>disponibles.</span>
       </div>
       <div style={{ marginTop: 80, display: "flex", flexDirection: "column" }}>
         {week.map((d: any, i: number) => (
@@ -237,7 +238,8 @@ function StoryDark({ week, freeTotal, slug }: any) {
         marginTop: 30, fontSize: 140, lineHeight: 1,
         display: "flex", justifyContent: "center",
       }}>
-        Esta <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 24 }}>semana</span>.
+        <span>Esta</span>
+          <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 24 }}>semana.</span>
       </div>
       <div style={{ marginTop: 100, display: "flex", flexDirection: "column" }}>
         {week.map((d: any, i: number) => {
@@ -297,7 +299,8 @@ function StoryCards({ week, slug }: any) {
           fontFamily: "Playfair", fontWeight: 500,
           fontSize: 110, lineHeight: 1, display: "flex",
         }}>
-          Mi <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 18 }}>agenda</span>.
+          <span>Mi</span>
+          <span style={{ fontStyle: "italic", color: "#e9cece", fontWeight: 400, marginLeft: 18 }}>agenda.</span>
         </div>
       </div>
       <div style={{

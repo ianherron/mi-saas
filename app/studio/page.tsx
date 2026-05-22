@@ -92,7 +92,7 @@ export default function StudioPage() {
               {/* Left */}
               <div>
                 <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#2d2424]/10 bg-[#e9cece]/30 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                  Próximamente · En desarrollo
+                  Próximamente
                 </span>
                 <h1
                   className="mb-5 mt-4 text-[44px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-6xl"

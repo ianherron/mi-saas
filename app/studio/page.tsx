@@ -122,7 +122,7 @@ export default function StudioPage() {
                     className="text-5xl font-medium leading-none tracking-tight text-[#2d2424] sm:text-[56px]"
                     style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                   >
-                    ₡7.000
+                    ₡12.000
                   </p>
                   <p className="text-sm text-[#846262]">/ mes</p>
                 </div>

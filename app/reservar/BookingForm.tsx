@@ -735,13 +735,6 @@ export default function BookingForm({
                   </>
                 )}
               </button>
-              <p className="mt-3 text-center text-xs text-[#846262]">
-                Al confirmar, aceptas nuestros{" "}
-                  <a href="/privacidad" className="underline underline-offset-2 hover:text-[#2d2424]">
-                    términos y condiciones
-                  </a>
-                  .
-              </p>
             </div>
           </div>
 
@@ -831,13 +824,6 @@ export default function BookingForm({
                       </>
                     )}
                   </button>
-                  <p className="mt-4 text-center text-xs text-[#846262]">
-                    Al confirmar, aceptas nuestros{" "}
-                  <a href="/privacidad" className="underline underline-offset-2 hover:text-[#2d2424]">
-                    términos y condiciones
-                  </a>
-                  .
-                  </p>
                 </div>
               </div>
             </div>

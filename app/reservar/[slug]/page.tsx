@@ -191,9 +191,6 @@ export default async function ReservarSlugPage({
               {business.name}
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden text-right md:block"></div>
-          </div>
         </header>
 
         {/* Hero: con banner o fallback editorial */}
@@ -336,7 +333,7 @@ export default async function ReservarSlugPage({
               <span className="serif-heading text-base font-medium tracking-tight">NailFlow</span>
             </div>
             <p className="text-sm text-slate-500">
-              © 2026 NailFlow Todos los derechos reservados.
+              © 2026 NailFlow. Todos los derechos reservados.
             </p>
           </div>
         </footer>

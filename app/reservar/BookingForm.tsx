@@ -446,38 +446,48 @@ export default function BookingForm({
                   <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-[#846262]">
                     Hora
                   </label>
-                  <div className="relative">
-                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#846262]" />
-                    <select
-                      name="time"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20"
-                    >
-                      {(() => {
-                        const dow = date ? new Date(date + "T12:00:00").getDay() : null;
-                        const available = timeSlots.filter((s) => {
-                          if (scheduleMode === "per-day") return dow !== null && s.day === dow;
-                          return s.day === null;
-                        });
-                        if (!date) {
-                          return <option value="">Elegí una fecha primero</option>;
-                        }
-                        if (available.length === 0) {
-                          return <option value="">No hay horarios para este día</option>;
-                        }
-                        return available.map((slot) => {
+                  <input type="hidden" name="time" value={time} />
+                  {!date ? (
+                    <div className="flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-4 py-4">
+                      <Clock className="h-4 w-4 text-[#846262]/40" />
+                      <span className="text-sm text-[#846262]/60">Elegí una fecha primero</span>
+                    </div>
+                  ) : (() => {
+                    const dow = new Date(date + "T12:00:00").getDay();
+                    const available = timeSlots.filter((s) =>
+                      scheduleMode === "per-day" ? s.day === dow : s.day === null,
+                    );
+                    if (available.length === 0) {
+                      return (
+                        <p className="mt-2 text-sm text-[#b89090]">No hay horarios para este día.</p>
+                      );
+                    }
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        {available.map((slot) => {
                           const isBooked = bookedSlots.includes(slot.time);
+                          const isSelected = time === slot.time;
                           return (
-                            <option key={slot.id} value={slot.time} disabled={isBooked}>
+                            <button
+                              key={slot.id}
+                              type="button"
+                              disabled={isBooked}
+                              onClick={() => setTime(slot.time)}
+                              className={`rounded-xl border-2 px-4 py-2.5 text-sm font-medium transition-all ${
+                                isBooked
+                                  ? "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through"
+                                  : isSelected
+                                  ? "border-[#2d2424] bg-[#2d2424] text-white shadow-md"
+                                  : "border-slate-200 bg-white text-[#2d2424] hover:border-[#e9cece]"
+                              }`}
+                            >
                               {slot.time}
-                              {isBooked ? " — ocupado" : ""}
-                            </option>
+                            </button>
                           );
-                        });
-                      })()}
-                    </select>
-                  </div>
+                        })}
+                      </div>
+                    );
+                  })()}
                   {timeSlots.length === 0 && (
                     <p className="mt-2 text-sm text-[#c89b6a]">
                       Este negocio aún no tiene horarios configurados.
@@ -726,7 +736,11 @@ export default function BookingForm({
                 )}
               </button>
               <p className="mt-3 text-center text-xs text-[#846262]">
-                Al confirmar, aceptas nuestros términos y condiciones.
+                Al confirmar, aceptas nuestros{" "}
+                  <a href="/privacidad" className="underline underline-offset-2 hover:text-[#2d2424]">
+                    términos y condiciones
+                  </a>
+                  .
               </p>
             </div>
           </div>
@@ -818,7 +832,11 @@ export default function BookingForm({
                     )}
                   </button>
                   <p className="mt-4 text-center text-xs text-[#846262]">
-                    Al confirmar, aceptas nuestros términos y condiciones.
+                    Al confirmar, aceptas nuestros{" "}
+                  <a href="/privacidad" className="underline underline-offset-2 hover:text-[#2d2424]">
+                    términos y condiciones
+                  </a>
+                  .
                   </p>
                 </div>
               </div>

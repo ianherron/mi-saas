@@ -735,6 +735,9 @@ export default function BookingForm({
                   </>
                 )}
               </button>
+              <p className="mt-3 text-center text-xs text-[#846262]">
+                Al confirmar, aceptas nuestros términos y condiciones.
+              </p>
             </div>
           </div>
 
@@ -824,6 +827,9 @@ export default function BookingForm({
                       </>
                     )}
                   </button>
+                  <p className="mt-4 text-center text-xs text-[#846262]">
+                    Al confirmar, aceptas nuestros términos y condiciones.
+                  </p>
                 </div>
               </div>
             </div>

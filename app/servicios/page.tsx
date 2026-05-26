@@ -38,6 +38,8 @@ export default async function ServiciosPage({
     const description = formData.get("description") as string;
     const image_url = formData.get("image_url") as string;
     const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
+    const image_position_x = Math.min(100, Math.max(0, Number(formData.get("image_position_x")) || 50));
+    const image_position_y = Math.min(100, Math.max(0, Number(formData.get("image_position_y")) || 50));
 
     if (!name?.trim() || name.trim().length < 2) return { error: "El nombre debe tener al menos 2 caracteres." };
     if (name.length > 100) return { error: "El nombre es demasiado largo." };
@@ -46,6 +48,7 @@ export default async function ServiciosPage({
 
     const { error: insertError } = await supabase.from("services").insert({
       name, price, duration, description, image_url, category, business_id: business.id,
+      image_position_x, image_position_y,
     });
     if (insertError) return { error: "No se pudo guardar el servicio. Intentá de nuevo." };
     revalidatePath("/servicios");
@@ -72,6 +75,8 @@ export default async function ServiciosPage({
     const description = formData.get("description") as string;
     const image_url = formData.get("image_url") as string;
     const category = (formData.get("category") as string)?.trim().slice(0, 50) || "General";
+    const image_position_x = Math.min(100, Math.max(0, Number(formData.get("image_position_x")) || 50));
+    const image_position_y = Math.min(100, Math.max(0, Number(formData.get("image_position_y")) || 50));
 
     if (!id || !name?.trim()) return { error: "Faltan datos requeridos." };
     if (isNaN(price) || price <= 0 || price > 10000000) return { error: "El precio no es válido." };
@@ -82,6 +87,7 @@ export default async function ServiciosPage({
       .update({
         name, price, duration, description,
         image_url: image_url || undefined, category,
+        image_position_x, image_position_y,
       })
       .eq("id", id)
       .eq("business_id", business.id);
@@ -330,6 +336,7 @@ export default async function ServiciosPage({
                             src={service.image_url}
                             alt={service.name}
                             className="h-full w-full object-cover"
+                            style={{ objectPosition: `${service.image_position_x ?? 50}% ${service.image_position_y ?? 50}%` }}
                           />
                         ) : (
                           <span className="serif-heading text-3xl text-[#b89090]/50">✦</span>

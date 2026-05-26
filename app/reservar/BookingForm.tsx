@@ -13,6 +13,8 @@ type Service = {
   description?: string;
   image_url?: string;
   category?: string;
+  image_position_x?: number;
+  image_position_y?: number;
 };
 type TimeSlot = { id: number; time: string; day: number | null };
 type Extra = { id: number; name: string; duration: number; price: number };
@@ -322,6 +324,7 @@ export default function BookingForm({
                                       src={service.image_url}
                                       alt={service.name}
                                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                      style={{ objectPosition: `${service.image_position_x ?? 50}% ${service.image_position_y ?? 50}%` }}
                                     />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f4ecec]">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { toast } from "sonner";
+import { FocalPointPicker } from "./FocalPointPicker";
 
 export default function AddServiceForm({
   addService,
@@ -208,32 +209,12 @@ export default function AddServiceForm({
       {/* Focal point picker */}
       {preview && (
         <div className="relative z-10 mt-5">
-          <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-            Ajustar enfoque — hacé click donde querés resaltar
-          </p>
-          <div
-            className="relative cursor-crosshair overflow-hidden rounded-xl border border-[#2d2424]/[0.08]"
-            style={{ aspectRatio: "16/9" }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              setPosX(Math.round(((e.clientX - rect.left) / rect.width) * 100));
-              setPosY(Math.round(((e.clientY - rect.top) / rect.height) * 100));
-            }}
-          >
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-full w-full object-cover"
-              style={{ objectPosition: `${posX}% ${posY}%` }}
-            />
-            <div
-              className="pointer-events-none absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.25)] bg-white/30"
-              style={{ left: `${posX}%`, top: `${posY}%` }}
-            />
-            <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1">
-              <p className="text-[10px] font-medium text-white">Tocá para elegir el punto de enfoque</p>
-            </div>
-          </div>
+          <FocalPointPicker
+            src={preview}
+            posX={posX}
+            posY={posY}
+            onChange={(x, y) => { setPosX(x); setPosY(y); }}
+          />
         </div>
       )}
       <input type="hidden" name="image_position_x" value={posX} />

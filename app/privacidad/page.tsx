@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Cómo NailFlow recopila, usa y protege tu información personal.",
 };
 
-const LAST_UPDATED = "20 de mayo de 2025";
+const LAST_UPDATED = "27 de mayo de 2026";
 
 export default function PrivacidadPage() {
   return (
@@ -40,14 +40,13 @@ export default function PrivacidadPage() {
           <Section title="1. Quiénes somos">
             <p>
               NailFlow es un servicio de gestión de citas y negocio para
-              manicuristas, operado por Ian Eduardo Herrón Ortíz
-              (&quot;nosotros&quot;, &quot;nuestro&quot;). Puedes contactarnos
-              en{" "}
+              manicuristas (&quot;nosotros&quot;, &quot;nuestro&quot;). Puedes
+              contactarnos en{" "}
               <a
-                href="mailto:hola@nailflow.app"
+                href="mailto:nailflowapp@gmail.com"
                 className="font-medium text-[#2d2424] underline underline-offset-2"
               >
-                hola@nailflow.app
+                nailflowapp@gmail.com
               </a>
               .
             </p>
@@ -104,50 +103,29 @@ export default function PrivacidadPage() {
             </p>
           </Section>
 
-          <Section title="4. Servicios de terceros">
-            <p className="mb-3">
-              NailFlow utiliza los siguientes servicios para operar:
+          <Section title="4. Servicios de infraestructura">
+            <p>
+              Para operar, NailFlow utiliza servicios de infraestructura en la
+              nube especializados en almacenamiento de datos, autenticación,
+              gestión de archivos y envío de correos electrónicos. Todos
+              nuestros proveedores están sujetos a estrictas políticas de
+              seguridad y confidencialidad, y solo procesan la información
+              estrictamente necesaria para prestar el servicio. Ninguno de ellos
+              tiene acceso a tu información con fines propios.
             </p>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>
-                <strong>Supabase</strong> — Base de datos, autenticación y
-                almacenamiento de archivos. Los datos se almacenan en servidores
-                de Amazon Web Services (AWS) en la región us-east-1. Política de
-                privacidad:{" "}
-                <a
-                  href="https://supabase.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-2"
-                >
-                  supabase.com/privacy
-                </a>
-                .
-              </li>
-              <li>
-                <strong>Expo / Expo Push Notifications</strong> — Servicio de
-                notificaciones push. Solo se transmite el token del dispositivo y
-                el contenido de la notificación.
-              </li>
-              <li>
-                <strong>Resend</strong> — Servicio de envío de correos
-                electrónicos transaccionales (confirmaciones de cita, cambios de
-                estado).
-              </li>
-            </ul>
           </Section>
 
           <Section title="5. Almacenamiento y seguridad">
             <p>
               Tus datos se almacenan en servidores seguros con cifrado en
-              reposo y en tránsito (TLS/HTTPS). Implementamos políticas de
-              seguridad a nivel de fila (Row Level Security) para garantizar que
-              cada negocio solo acceda a su propia información.
+              reposo y en tránsito (HTTPS). Contamos con controles de acceso
+              estrictos que garantizan que cada negocio solo pueda ver y
+              modificar su propia información.
             </p>
             <p className="mt-3">
-              Los archivos de imágenes sensibles (como comprobantes de pago) se
-              almacenan en buckets privados y solo son accesibles mediante URLs
-              firmadas temporales.
+              Los archivos sensibles, como los comprobantes de pago, están
+              protegidos con acceso restringido y solo son visibles para el
+              negocio correspondiente.
             </p>
           </Section>
 
@@ -157,10 +135,10 @@ export default function PrivacidadPage() {
               deseas eliminar tu cuenta y todos los datos asociados, contáctanos
               a{" "}
               <a
-                href="mailto:hola@nailflow.app"
+                href="mailto:nailflowapp@gmail.com"
                 className="font-medium text-[#2d2424] underline underline-offset-2"
               >
-                hola@nailflow.app
+                nailflowapp@gmail.com
               </a>{" "}
               y procesaremos tu solicitud en un plazo de 30 días.
             </p>
@@ -187,10 +165,10 @@ export default function PrivacidadPage() {
             <p className="mt-3">
               Para ejercer estos derechos, contáctanos a{" "}
               <a
-                href="mailto:hola@nailflow.app"
+                href="mailto:nailflowapp@gmail.com"
                 className="font-medium text-[#2d2424] underline underline-offset-2"
               >
-                hola@nailflow.app
+                nailflowapp@gmail.com
               </a>
               .
             </p>
@@ -233,15 +211,13 @@ export default function PrivacidadPage() {
             <p className="mt-3">
               <strong>NailFlow</strong>
               <br />
-              Ian Eduardo Herrón Ortíz
-              <br />
               Costa Rica
               <br />
               <a
-                href="mailto:hola@nailflow.app"
+                href="mailto:nailflowapp@gmail.com"
                 className="font-medium text-[#2d2424] underline underline-offset-2"
               >
-                hola@nailflow.app
+                nailflowapp@gmail.com
               </a>
             </p>
           </Section>

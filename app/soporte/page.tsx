@@ -5,8 +5,8 @@ const channels = [
   {
     Icon: Mail,
     title: "Escribinos",
-    description: "hola@nailflow.app",
-    href: "mailto:hola@nailflow.app",
+    description: "nailflowapp@gmail.com",
+    href: "mailto:nailflowapp@gmail.com",
   },
   {
     Icon: Instagram,

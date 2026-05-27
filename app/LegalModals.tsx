@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
-type ModalType = "terms" | "privacy" | "cookies" | null;
+type ModalType = "terms" | "cookies" | null;
 
 export default function LegalModals() {
   const [open, setOpen] = useState<ModalType>(null);
@@ -16,12 +17,12 @@ export default function LegalModals() {
         >
           Términos y condiciones
         </button>
-        <button
-          onClick={() => setOpen("privacy")}
+        <Link
+          href="/privacidad"
           className="transition-colors hover:text-[#cfaeae]"
         >
           Privacidad
-        </button>
+        </Link>
         <button
           onClick={() => setOpen("cookies")}
           className="transition-colors hover:text-[#cfaeae]"
@@ -77,32 +78,7 @@ export default function LegalModals() {
               </>
             )}
 
-            {open === "privacy" && (
-              <>
-                <h2 className="mb-6 text-2xl font-bold text-[#2d2424]">Política de privacidad</h2>
-                <div className="space-y-4 text-sm leading-relaxed text-[#846262]">
-                  <p><strong className="text-[#2d2424]">Última actualización:</strong> Mayo 2026</p>
-                  <p>En NailFlow nos tomamos tu privacidad muy en serio. Esta política describe qué datos recopilamos y cómo los usamos.</p>
-
-                  <h3 className="font-bold text-[#2d2424]">1. Datos que recopilamos</h3>
-                  <p>Recopilamos los datos que vos misma nos proporcionás al registrarte: nombre del negocio, correo electrónico y contraseña. También almacenamos los datos de las citas que gestionás a través de la plataforma.</p>
-
-                  <h3 className="font-bold text-[#2d2424]">2. Cómo usamos tus datos</h3>
-                  <p>Usamos tus datos exclusivamente para brindarte el servicio de NailFlow: gestionar tu cuenta, enviarte notificaciones de citas y mejorar la plataforma.</p>
-
-                  <h3 className="font-bold text-[#2d2424]">3. Compartir datos</h3>
-                  <p>No vendemos ni compartimos tus datos con terceros. Utilizamos servicios de infraestructura en la nube que procesan los datos únicamente para operar la plataforma, bajo estrictas políticas de seguridad y confidencialidad.</p>
-
-                  <h3 className="font-bold text-[#2d2424]">4. Seguridad</h3>
-                  <p>Tus datos están protegidos con cifrado y controles de acceso estrictos que garantizan que cada usuaria solo pueda ver y modificar su propia información.</p>
-
-                  <h3 className="font-bold text-[#2d2424]">5. Tus derechos</h3>
-                  <p>Tenés derecho a acceder, corregir o eliminar tus datos en cualquier momento. Para hacerlo, escribinos a <strong className="text-[#2d2424]">nailflowapp@gmail.com</strong></p>
-                </div>
-              </>
-            )}
-
-            {open === "cookies" && (
+{open === "cookies" && (
               <>
                 <h2 className="mb-6 text-2xl font-bold text-[#2d2424]">Política de cookies</h2>
                 <div className="space-y-4 text-sm leading-relaxed text-[#846262]">

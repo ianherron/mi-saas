@@ -1,4 +1,5 @@
 import LandingNav from "../components/LandingNav";
+import WaitlistForm from "../components/WaitlistForm";
 
 export const metadata = {
   title: "El Club · NailFlow",
@@ -75,12 +76,10 @@ export default function ClubPage() {
             <p className="serif-heading mb-3 text-2xl font-medium sm:text-3xl">
               Bienvenida al club.
             </p>
-            <a
-              href="/"
-              className="inline-flex items-center justify-center rounded-xl bg-[#2d2424] px-7 py-4 text-base font-medium text-[#fbf9f9] transition-colors hover:bg-[#3d3232]"
-            >
-              Únete a la lista de espera
-            </a>
+            <p className="mb-8 text-base text-[#846262]">
+              Dejá tu correo y te avisamos cuando NailFlow esté disponible.
+            </p>
+            <WaitlistForm variant="light" />
           </div>
         </section>
       </main>

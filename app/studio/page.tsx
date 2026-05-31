@@ -98,7 +98,7 @@ export default function StudioPage() {
                     className="text-5xl font-medium leading-none tracking-tight text-[#2d2424] sm:text-[56px]"
                     style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                   >
-                    ₡12.000
+                    $23.99
                   </p>
                   <p className="text-sm text-[#846262]">/ mes</p>
                 </div>
@@ -214,11 +214,11 @@ export default function StudioPage() {
                 <div />
                 <div className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#846262]">
                   Individual<br />
-                  <span className="text-[10px] font-normal normal-case tracking-normal">₡3.500/mes</span>
+                  <span className="text-[10px] font-normal normal-case tracking-normal">$6.99/mes</span>
                 </div>
                 <div className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#2d2424]">
                   Studio<br />
-                  <span className="text-[10px] font-normal normal-case tracking-normal">₡12.000/mes</span>
+                  <span className="text-[10px] font-normal normal-case tracking-normal">$23.99/mes</span>
                 </div>
               </div>
 

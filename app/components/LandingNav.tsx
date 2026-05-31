@@ -8,6 +8,7 @@ const LINKS = [
   { label: "Cómo funciona", href: "/#como-funciona" },
   { label: "Precios", href: "/#precios" },
   { label: "Studio", href: "/studio" },
+  { label: "El Club", href: "/club" },
 ];
 
 export default function LandingNav() {

@@ -656,7 +656,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#2d2424]/[0.06] pt-6 text-[11px] text-[#b89090] md:flex-row">
-            <p>© 2026 NailFlow</p>
+            <p>© 2026 NailFlow · Hecho en Costa Rica</p>
             <LegalModals />
           </div>
         </div>

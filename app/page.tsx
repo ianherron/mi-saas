@@ -33,7 +33,7 @@ export default function Home() {
               {/* Left text */}
               <div className="flex flex-col gap-6 sm:gap-7">
                 <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                  Para manicuristas · Costa Rica
+                  Para manicuristas
                 </p>
                 <h1 className="serif-heading text-[44px] font-medium leading-[1.05] tracking-tight text-[#2d2424] sm:text-6xl lg:text-7xl">
                   Tu agenda,
@@ -104,7 +104,7 @@ export default function Home() {
                   <div className="mt-4 grid grid-cols-3 gap-4 border-t border-[#2d2424]/[0.08] pt-4">
                     {[
                       { l: "Citas hoy", v: "3" },
-                      { l: "Ingresos esp.", v: "₡54k" },
+                      { l: "Ingresos esp.", v: "$108" },
                       { l: "Próxima", v: "10:00 AM" },
                     ].map((s, i) => (
                       <div key={i}>
@@ -449,7 +449,7 @@ export default function Home() {
                   </div>
                   <div className="mb-5 mt-4 flex items-baseline gap-1.5">
                     <p className="serif-heading text-5xl font-medium leading-none tracking-tight text-[#2d2424] sm:text-[56px]">
-                      ₡3.500
+                      $6.99
                     </p>
                     <p className="text-sm text-[#846262]">/ mes</p>
                   </div>
@@ -656,7 +656,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#2d2424]/[0.06] pt-6 text-[11px] text-[#b89090] md:flex-row">
-            <p>© 2026 NailFlow · Hecho en Costa Rica</p>
+            <p>© 2026 NailFlow</p>
             <LegalModals />
           </div>
         </div>

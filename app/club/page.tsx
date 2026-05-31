@@ -59,7 +59,7 @@ export default function ClubPage() {
 
               <p>
                 Cada vez que sientas que querés darte por vencida, volvé acá.
-                Recordá por qué empezaste. Y seguí.
+                Recordá por qué empezaste.
               </p>
             </div>
           </div>

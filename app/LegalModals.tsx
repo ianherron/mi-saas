@@ -11,12 +11,12 @@ export default function LegalModals() {
   return (
     <>
       <div className="flex gap-8">
-        <button
-          onClick={() => setOpen("terms")}
+        <Link
+          href="/terminos"
           className="transition-colors hover:text-[#cfaeae]"
         >
           Términos y condiciones
-        </button>
+        </Link>
         <Link
           href="/privacidad"
           className="transition-colors hover:text-[#cfaeae]"

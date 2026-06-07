@@ -67,7 +67,7 @@ export default function StudioPage() {
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
               {/* Left */}
               <div>
-                <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#2d2424]/10 bg-[#e9cece]/30 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
+                <span className="mb-6 inline-block text-[11px] font-medium uppercase tracking-[0.15em] text-[#846262]">
                   Próximamente
                 </span>
                 <h1

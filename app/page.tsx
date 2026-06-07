@@ -140,7 +140,7 @@ export default function Home() {
             BENEFICIOS
             ============================================================ */}
         <section
-          className="bg-[#fbf9f9] px-4 py-20 sm:px-6 sm:py-24 lg:px-12"
+          className="bg-[#fbf9f9] px-4 py-20 sm:px-6 sm:py-24 lg:px-12 scroll-mt-16"
           id="beneficios"
         >
           <div className="mx-auto max-w-6xl">
@@ -204,7 +204,7 @@ export default function Home() {
         {/* ============================================================
             CÓMO FUNCIONA
             ============================================================ */}
-        <section className="px-4 py-20 sm:px-6 sm:py-24 lg:px-12" id="como-funciona">
+        <section className="px-4 py-20 sm:px-6 sm:py-24 lg:px-12 scroll-mt-16" id="como-funciona">
           <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2 lg:gap-20">
             <div>
               <AnimateOnScroll>
@@ -313,7 +313,7 @@ export default function Home() {
         {/* ============================================================
             TU NEGOCIO A TU RITMO  (dark editorial)
             ============================================================ */}
-        <section className="overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-12" id="precios">
+        <section className="overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-12 scroll-mt-16" id="precios">
           <div className="mx-auto max-w-7xl">
             <div className="relative overflow-hidden rounded-[28px] bg-[#2d2424] p-8 text-[#fbf9f9] sm:rounded-[32px] sm:p-12 lg:p-16">
               <span

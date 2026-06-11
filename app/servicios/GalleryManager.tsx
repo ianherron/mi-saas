@@ -21,56 +21,65 @@ export default function GalleryManager({
   const [uploading, setUploading] = useState(false);
   const [localImages, setLocalImages] = useState<GalleryImage[]>(images);
 
+  const MAX_PHOTOS = 12;
+
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const fileCount = files.length; 
+    const remaining = MAX_PHOTOS - localImages.length;
+    if (remaining <= 0) {
+      toast.error("Límite alcanzado", { description: "La galería permite un máximo de 12 fotos." });
+      e.target.value = "";
+      return;
+    }
+
+    const validFiles = Array.from(files)
+      .filter((f) => {
+        if (!f.type.startsWith("image/")) { toast.error(`"${f.name}" no es una imagen`); return false; }
+        if (f.size > 5 * 1024 * 1024) { toast.error(`"${f.name}" supera 5MB`); return false; }
+        return true;
+      })
+      .slice(0, remaining);
+
+    if (validFiles.length < files.length && remaining > 0) {
+      toast.warning(`Solo se subirán ${validFiles.length} foto${validFiles.length !== 1 ? "s" : ""} para no superar el límite de 12.`);
+    }
+
+    if (validFiles.length === 0) { e.target.value = ""; return; }
+
     setUploading(true);
+    const toastId = "gallery-upload";
+    toast.loading(`Subiendo 0 de ${validFiles.length}...`, { id: toastId });
 
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
     );
 
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Solo se permiten imágenes");
-        continue;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("La imagen no puede superar 5MB");
-        continue;
-      }
+    let uploaded = 0;
+    for (const file of validFiles) {
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const fileName = `${businessId}/${Date.now()}.${ext}`;
-      const { data, error } = await supabase.storage
-        .from("gallery-images")
-        .upload(fileName, file);
+      const fileName = `${businessId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { data, error } = await supabase.storage.from("gallery-images").upload(fileName, file);
 
       if (!error && data) {
-        const { data: urlData } = supabase.storage
-          .from("gallery-images")
-          .getPublicUrl(data.path);
-
+        const { data: urlData } = supabase.storage.from("gallery-images").getPublicUrl(data.path);
         const { data: inserted } = await supabase
           .from("gallery")
           .insert({ business_id: businessId, image_url: urlData.publicUrl })
           .select()
           .single();
-
-        if (inserted) {
-          setLocalImages((prev) => [...prev, inserted]);
-        }
+        if (inserted) setLocalImages((prev) => [...prev, inserted]);
       }
+
+      uploaded++;
+      toast.loading(`Subiendo ${uploaded} de ${validFiles.length}...`, { id: toastId });
     }
 
     setUploading(false);
     e.target.value = "";
-    toast.success("Fotos subidas correctamente", {
-    description: `${fileCount} foto${fileCount > 1 ? "s" : ""} agregada${fileCount > 1 ? "s" : ""} a la galería.`,
-  });
-
+    toast.success(`${uploaded} foto${uploaded !== 1 ? "s" : ""} agregada${uploaded !== 1 ? "s" : ""} correctamente`, { id: toastId });
   }
 
   async function handleDelete(id: number) {
@@ -90,11 +99,15 @@ export default function GalleryManager({
             accept="image/*"
             multiple
             onChange={handleUpload}
-            disabled={uploading}
+            disabled={uploading || localImages.length >= MAX_PHOTOS}
             className="hidden"
           />
         </label>
-        <p className="mt-1 text-xs text-slate-400">Puedes subir varias fotos a la vez</p>
+        <p className="mt-1 text-xs text-slate-400">
+          {localImages.length >= MAX_PHOTOS
+            ? "Límite de 12 fotos alcanzado."
+            : `${localImages.length}/12 fotos · podés subir varias a la vez`}
+        </p>
       </div>
 
       {localImages.length === 0 ? (

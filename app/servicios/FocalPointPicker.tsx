@@ -6,15 +6,15 @@ const CROP = 16 / 9;
 function calcFrame(naturalAspect: number, posX: number, posY: number) {
   let fWPct: number, fHPct: number, maxLeftPct: number, maxTopPct: number;
   if (naturalAspect >= CROP) {
+    fHPct = 100;
+    fWPct = (CROP / naturalAspect) * 100;
+    maxTopPct = 0;
+    maxLeftPct = 100 - fWPct;
+  } else {
     fWPct = 100;
-    fHPct = (CROP / naturalAspect) * 100;
+    fHPct = (naturalAspect / CROP) * 100;
     maxLeftPct = 0;
     maxTopPct = 100 - fHPct;
-  } else {
-    fHPct = 100;
-    fWPct = (naturalAspect / CROP) * 100;
-    maxLeftPct = 100 - fWPct;
-    maxTopPct = 0;
   }
   const leftPct = (posX / 100) * maxLeftPct;
   const topPct = (posY / 100) * maxTopPct;

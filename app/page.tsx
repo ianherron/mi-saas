@@ -570,7 +570,7 @@ export default function Home() {
                     "Agenda y citas en un solo lugar",
                     "Historial completo de cada clienta",
                     "Recordatorios automáticos por email",
-                    "Página de reservas online gratis",
+                    "Página de reservas online",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-[14px] text-[#fbf9f9]/70">
                       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#e9cece]/20 text-[#e9cece]">

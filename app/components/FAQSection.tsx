@@ -41,7 +41,7 @@ const faqs = [
   {
     question: "¿Tienen app móvil?",
     answer:
-      "Sí, tenemos app para iOS disponible muy pronto. Desde ahí gestionás tu agenda, ves tus citas del día y recibís notificaciones en tiempo real.",
+      "Sí, NailFlow ya está disponible en el App Store para iPhone. Desde ahí gestionás tu agenda, ves tus citas del día y recibís notificaciones en tiempo real.",
   },
   {
     question: "¿Puedo cancelar cuando quiera?",

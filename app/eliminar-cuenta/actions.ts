@@ -26,7 +26,7 @@ export async function sendDeletionRequest(formData: FormData) {
 
   await resend.emails.send({
     from: "NailFlow <hola@nailflow.app>",
-    to: "hola@nailflow.app",
+    to: "nailflowapp@gmail.com",
     subject: `Solicitud de eliminación de cuenta: ${email}`,
     text: `El usuario con correo ${email} solicita que se elimine su cuenta y todos los datos asociados.`,
   });

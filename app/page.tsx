@@ -656,6 +656,11 @@ export default function Home() {
                     Soporte
                   </a>
                 </li>
+                <li>
+                  <a className="hover:text-[#2d2424]" href="/eliminar-cuenta">
+                    Eliminar cuenta
+                  </a>
+                </li>
               </ul>
             </div>
 

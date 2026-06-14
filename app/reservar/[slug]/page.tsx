@@ -221,7 +221,7 @@ export default async function ReservarSlugPage({
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#846262]">
-                    Tu manicurista
+                    Tu profesional
                   </p>
                   {business.owner_name && (
                     <p className="serif-heading mt-1 text-lg font-medium leading-tight tracking-tight text-[#2d2424]">

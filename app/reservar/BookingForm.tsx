@@ -433,7 +433,7 @@ export default function BookingForm({
                       value={date}
                       onChange={handleDateChange}
                       disabled={workingDays.length === 0}
-                      className={`w-full rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20 ${workingDays.length === 0 ? "cursor-not-allowed opacity-50" : ""}`}
+                      className={`w-full appearance-none sm:appearance-auto rounded-xl border-2 border-slate-200 bg-white py-4 pl-11 pr-4 text-sm text-[#2d2424] outline-none transition-all focus:border-[#e9cece] focus:ring-2 focus:ring-[#e9cece]/20 ${workingDays.length === 0 ? "cursor-not-allowed opacity-50" : ""}`}
                     />
                   </div>
                   {workingDays.length === 0 && (

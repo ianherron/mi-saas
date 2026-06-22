@@ -44,7 +44,7 @@ export default function Home() {
                   .
                 </h1>
                 <p className="max-w-lg text-base leading-relaxed text-[#846262] sm:text-lg">
-                  Reservas automáticas, pagos con SINPE Móvil y reportes claros. Todo en un solo lugar, hecho para vos.
+                  Reservas automáticas, pagos por transferencia y reportes claros. Todo en un solo lugar, hecho para vos.
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
                   <a
@@ -463,7 +463,7 @@ export default function Home() {
                       "Horarios y días configurables",
                       "Extras opcionales",
                       "Dashboard con estadísticas",
-                      "Pagos anticipados con SINPE Móvil",
+                      "Pagos anticipados por transferencia (SINPE Móvil en Costa Rica)",
                     ].map((feature) => (
                       <li
                         key={feature}

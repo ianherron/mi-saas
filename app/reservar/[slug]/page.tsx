@@ -77,29 +77,6 @@ export default async function ReservarSlugPage({
       return { error: "No se pudo guardar la cita. Intentá de nuevo." };
     }
 
-    // Enviar correo si hay email
-    if (email) {
-      const result = await resend.emails.send({
-        from: "NailFlow <hola@nailflow.app>",
-        to: email,
-        subject: "¡Tu cita ha sido confirmada! 💅",
-        html: renderEmail({
-          preheader: `Tu reserva del ${date} a las ${time} quedó confirmada.`,
-          eyebrow: "Cita confirmada",
-          heading: `Te esperamos, <em>${client_name}</em>.`,
-          intro: "Tu reserva quedó registrada. Estos son los detalles.",
-          rows: [
-            { label: "Servicio", value: service?.name ?? "—" },
-            { label: "Fecha", value: date },
-            { label: "Hora", value: time },
-            { label: "Duración", value: `${duration} min` },
-            { label: "Total", value: `₡${safePrice.toLocaleString()}`, total: true },
-          ],
-          footer: "✦ NailFlow · El aliado perfecto para tu salón",
-        }),
-      });
-    }
-
     // Obtener email del negocio
     const { data: businessData } = await supabase
       .from("businesses")

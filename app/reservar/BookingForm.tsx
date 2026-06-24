@@ -1,8 +1,8 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Check, Plus, Clock, Sparkles, Calendar, User, Phone, Mail, ArrowRight, Info, Camera, Receipt } from "lucide-react";
 import { toast } from "sonner";
-import { getBookedSlots } from "./actions";
+import { getBookedSlots, type BookedAppointment } from "./actions";
 import { getCurrencySymbol } from "../../lib/utils";
 
 type Service = {
@@ -60,7 +60,7 @@ export default function BookingForm({
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<BookedAppointment[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [dateError, setDateError] = useState("");
@@ -78,6 +78,36 @@ export default function BookingForm({
     .filter((e) => selectedExtras.includes(String(e.id)))
     .reduce((acc, e) => acc + (e.price ?? 0), 0);
   const totalPrice = (selectedService?.price ?? 0) + extraPrice;
+
+  function timeToMinutes(t: string): number {
+    const upper = t.toUpperCase().trim();
+    const isPM = upper.includes("PM");
+    const isAM = upper.includes("AM");
+    const clean = upper.replace(/\s*(AM|PM)\s*/i, "");
+    let [h, m] = clean.split(":").map(Number);
+    if (isAM && h === 12) h = 0;
+    if (isPM && h !== 12) h += 12;
+    return h * 60 + (m || 0);
+  }
+
+  function isSlotBlocked(slotTime: string): boolean {
+    const slotStart = timeToMinutes(slotTime);
+    const newDuration = totalDuration || 30;
+    const slotEnd = slotStart + newDuration;
+
+    return bookedSlots.some((appt) => {
+      const apptStart = timeToMinutes(appt.time);
+      const apptDuration = appt.duration ?? 30;
+      const apptEnd = apptStart + apptDuration;
+      return slotStart < apptEnd && apptStart < slotEnd;
+    });
+  }
+
+  useEffect(() => {
+    if (time && isSlotBlocked(time)) {
+      setTime("");
+    }
+  }, [totalDuration, bookedSlots]);
 
   function toggleExtra(id: string) {
     setSelectedExtras((prev) =>
@@ -97,11 +127,11 @@ export default function BookingForm({
     const slotsForDay = timeSlots.filter((s) =>
       scheduleMode === "per-day" ? s.day === dow : s.day === null,
     );
-    if (!slotsForDay.some((s) => s.time === time)) {
-      setTime(slotsForDay[0]?.time ?? "");
-    }
     const booked = await getBookedSlots(newDate, businessId);
     setBookedSlots(booked);
+    if (!slotsForDay.some((s) => s.time === time)) {
+      setTime("");
+    }
   }
 
   async function handleSubmit(formData: FormData) {
@@ -468,7 +498,7 @@ export default function BookingForm({
                     return (
                       <div className="flex flex-wrap gap-2">
                         {available.map((slot) => {
-                          const isBooked = bookedSlots.includes(slot.time);
+                          const isBooked = isSlotBlocked(slot.time);
                           const isSelected = time === slot.time;
                           return (
                             <button

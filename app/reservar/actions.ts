@@ -9,17 +9,19 @@ function getAdminClient() {
   );
 }
 
-export async function getBookedSlots(date: string, businessId: string): Promise<string[]> {
+export type BookedAppointment = { time: string; duration: number | null };
+
+export async function getBookedSlots(date: string, businessId: string): Promise<BookedAppointment[]> {
   if (!date || !businessId) return [];
 
   const { data, error } = await getAdminClient()
     .from("appointments")
-    .select("time")
+    .select("time, duration")
     .eq("date", date)
     .eq("business_id", businessId)
     .neq("status", "cancelled");
 
   if (error || !data) return [];
 
-  return data.map((a) => a.time);
+  return data.map((a) => ({ time: a.time, duration: a.duration ?? null }));
 }

@@ -312,6 +312,7 @@ export default function BookingForm({
             <input type="hidden" name="total_price" value={totalPrice} />
             <input type="hidden" name="reference_image" value="" />
             <input type="hidden" name="payment_proof" value="" />
+            <input type="hidden" name="extra_ids" value={selectedExtras.join(",")} />
 
             {/* Step 1 - Services */}
             <section>

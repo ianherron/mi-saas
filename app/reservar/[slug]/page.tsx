@@ -31,6 +31,8 @@ export default async function ReservarSlugPage({
     const total_price = parseInt(formData.get("total_price") as string) || 0;
     const reference_image = formData.get("reference_image") as string;
     const payment_proof = formData.get("payment_proof") as string;
+    const extra_ids_raw = formData.get("extra_ids") as string;
+    const extra_ids = extra_ids_raw ? extra_ids_raw.split(",").map(Number) : null;
 
     // Usar el business.id capturado del outer scope — no confiar en FormData
     const business_id = business!.id;
@@ -70,6 +72,7 @@ export default async function ReservarSlugPage({
       total_price,
       reference_image,
       payment_proof,
+      extra_ids,
     });
 
     if (insertError) {

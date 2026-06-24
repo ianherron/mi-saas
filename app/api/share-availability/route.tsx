@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       supabase.from("time_slots").select("id, time, day").eq("business_id", business.id),
       supabase
         .from("appointments")
-        .select("date, time")
+        .select("date, time, duration")
         .eq("business_id", business.id)
         .gte("date", fromDate)
         .lte("date", toDate)
@@ -87,6 +87,17 @@ export async function GET(req: NextRequest) {
   const scheduleMode = biz?.schedule_mode === "per-day" ? "per-day" : "unified";
   const slug = biz?.slug ?? "";
 
+  function timeToMinutes(t: string): number {
+    const upper = t.toUpperCase().trim();
+    const isPM = upper.includes("PM");
+    const isAM = upper.includes("AM");
+    const clean = upper.replace(/\s*(AM|PM)\s*/i, "");
+    let [h, m] = clean.split(":").map(Number);
+    if (isAM && h === 12) h = 0;
+    if (isPM && h !== 12) h += 12;
+    return h * 60 + (m || 0);
+  }
+
   type DayEntry = { label: string; times: { time: string; booked: boolean }[] };
   const week: DayEntry[] = dates
     .filter((d) => workingDays.length === 0 || workingDays.includes(d.dow))
@@ -96,13 +107,19 @@ export async function GET(req: NextRequest) {
         scheduleMode === "per-day"
           ? allSlots.filter((s) => s.day === dow)
           : allSlots.filter((s) => s.day === null);
-      const bookedTimes = new Set(
-        (appointments ?? []).filter((a) => a.date === date).map((a) => a.time),
-      );
+      const dayAppts = (appointments ?? []).filter((a) => a.date === date);
       const dayLabel = `${DAY_LABELS[dow]} ${new Date(date + "T12:00:00").getDate()}`;
       return {
         label: dayLabel,
-        times: slotsForDow.map((s) => ({ time: s.time, booked: bookedTimes.has(s.time) })),
+        times: slotsForDow.map((s) => {
+          const slotStart = timeToMinutes(s.time);
+          const booked = dayAppts.some((a) => {
+            const apptStart = timeToMinutes(a.time);
+            const apptEnd = apptStart + (a.duration ?? 30);
+            return slotStart >= apptStart && slotStart < apptEnd;
+          });
+          return { time: s.time, booked };
+        }),
       };
     });
 

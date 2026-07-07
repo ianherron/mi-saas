@@ -43,6 +43,10 @@ export async function POST(request: NextRequest) {
     await supabase.from("businesses").update({
       subscription_status: "active",
     }).eq("id", business.id);
+
+    if (eventType === "INITIAL_PURCHASE") {
+      await creditReferral(business.id);
+    }
   }
 
   if (["CANCELLATION", "EXPIRATION", "BILLING_ISSUE"].includes(eventType)) {
@@ -52,4 +56,71 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+async function creditReferral(businessId: string) {
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("id, referred_by")
+    .eq("id", businessId)
+    .single();
+
+  if (!business?.referred_by) return;
+
+  // Idempotente: no acreditar si ya existe un earning para esta referida
+  const { data: existing } = await supabase
+    .from("referral_earnings")
+    .select("id")
+    .eq("referred_id", businessId)
+    .single();
+
+  if (existing) return;
+
+  // Crear earning
+  await supabase.from("referral_earnings").insert({
+    referrer_id: business.referred_by,
+    referred_id: businessId,
+    amount: 2.00,
+    status: "pending",
+  });
+
+  // Sumar $2 al balance del referidor
+  const { data: referrer } = await supabase
+    .from("businesses")
+    .select("referral_balance")
+    .eq("id", business.referred_by)
+    .single();
+
+  if (referrer) {
+    await supabase.from("businesses")
+      .update({ referral_balance: (referrer.referral_balance ?? 0) + 2 })
+      .eq("id", business.referred_by);
+
+    // Push notification al referidor
+    const { data: referrerFull } = await supabase
+      .from("businesses")
+      .select("expo_push_token, owner_name")
+      .eq("id", business.referred_by)
+      .single();
+
+    const { data: referred } = await supabase
+      .from("businesses")
+      .select("owner_name, name")
+      .eq("id", businessId)
+      .single();
+
+    if (referrerFull?.expo_push_token) {
+      const referredName = referred?.owner_name ?? referred?.name ?? "Tu referida";
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          to: referrerFull.expo_push_token,
+          sound: "default",
+          title: "¡Ganaste $2! 💅",
+          body: `${referredName} activó su cuenta con tu código.`,
+        }),
+      });
+    }
+  }
 }

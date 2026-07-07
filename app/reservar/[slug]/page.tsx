@@ -58,6 +58,37 @@ export default async function ReservarSlugPage({
 
     if (!service) return { error: "Este servicio ya no está disponible." };
 
+    // Verificación server-side de disponibilidad — cubre el caso de página cargada antes de que se agendara otra cita
+    function timeToMinutes(t: string): number {
+      const upper = t.toUpperCase().trim();
+      const isPM = upper.includes("PM");
+      const isAM = upper.includes("AM");
+      const clean = upper.replace(/\s*(AM|PM)\s*/i, "");
+      const [h, m] = clean.split(":").map(Number);
+      let hours = h;
+      if (isAM && hours === 12) hours = 0;
+      if (isPM && hours !== 12) hours += 12;
+      return hours * 60 + (m || 0);
+    }
+
+    const { data: existingAppts } = await supabase
+      .from("appointments")
+      .select("time, duration")
+      .eq("business_id", business_id)
+      .eq("date", date)
+      .neq("status", "cancelled");
+
+    if (existingAppts && existingAppts.length > 0) {
+      const newStart = timeToMinutes(time);
+      const newEnd = newStart + (duration || 30);
+      const hasConflict = existingAppts.some((appt) => {
+        const apptStart = timeToMinutes(appt.time);
+        const apptEnd = apptStart + (appt.duration ?? 30);
+        return newStart < apptEnd && apptStart < newEnd;
+      });
+      if (hasConflict) return { error: "Ese horario ya no está disponible. Por favor elegí otro." };
+    }
+
     const safePrice = typeof total_price === "number" && !isNaN(total_price) ? total_price : 0;
 
     const { error: insertError } = await supabase.from("appointments").insert({

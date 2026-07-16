@@ -114,7 +114,7 @@ export default async function ReservarSlugPage({
 
     // WhatsApp de confirmación al cliente
     if (phone) {
-      await sendWhatsApp(phone, `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. Si necesitás cambiarla, respondé este mensaje. ✦ NailFlow`);
+      await sendWhatsApp(phone, `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. Si necesitás cambiarla, respondé este mensaje. - ${business!.name}`);
     }
 
     // Obtener email del negocio

@@ -84,17 +84,13 @@ async function creditReferral(businessId: string) {
     status: "pending",
   });
 
-  // Sumar $2 al balance del referidor
-  const { data: referrer } = await supabase
-    .from("businesses")
-    .select("referral_balance")
-    .eq("id", business.referred_by)
-    .single();
+  // Incremento atómico — evita race condition si dos referidas convierten al mismo tiempo
+  await supabase.rpc("increment_referral_balance", {
+    business_id: business.referred_by,
+    amount: 2,
+  });
 
-  if (referrer) {
-    await supabase.from("businesses")
-      .update({ referral_balance: (referrer.referral_balance ?? 0) + 2 })
-      .eq("id", business.referred_by);
+  {
 
     // Push notification al referidor
     const { data: referrerFull } = await supabase

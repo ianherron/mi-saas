@@ -111,6 +111,37 @@ export default async function ReservarSlugPage({
       return { error: "No se pudo guardar la cita. Intentá de nuevo." };
     }
 
+    // WhatsApp de confirmación al cliente
+    if (phone) {
+      const digits = phone.replace(/\D/g, "");
+      let formattedPhone: string | null = null;
+      if (digits.length === 8) formattedPhone = `+506${digits}`;
+      else if (digits.length === 11 && digits.startsWith("506")) formattedPhone = `+${digits}`;
+      else if (digits.length >= 10) formattedPhone = `+${digits}`;
+
+      const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+      const twilioToken = process.env.TWILIO_AUTH_TOKEN;
+      const twilioFrom = process.env.TWILIO_WHATSAPP_FROM;
+      const templateSid = process.env.TWILIO_WHATSAPP_TEMPLATE_SID;
+
+      if (formattedPhone && twilioSid && twilioToken && twilioFrom && templateSid) {
+        const credentials = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
+        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            To: `whatsapp:${formattedPhone}`,
+            From: twilioFrom,
+            ContentSid: templateSid,
+            ContentVariables: JSON.stringify({ "1": date, "2": time }),
+          }).toString(),
+        }).catch(() => {});
+      }
+    }
+
     // Obtener email del negocio
     const { data: businessData } = await supabase
       .from("businesses")

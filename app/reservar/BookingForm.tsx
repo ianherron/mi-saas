@@ -136,6 +136,10 @@ export default function BookingForm({
 
   async function handleSubmit(formData: FormData) {
   if (submitting) return;
+  if (paymentsEnabled && sinpeNumber && !paymentProof) {
+    toast.error("Adjuntá el comprobante de pago antes de confirmar la cita.");
+    return;
+  }
   setSubmitting(true);
 
   const { createBrowserClient } = await import("@supabase/ssr");
@@ -758,7 +762,7 @@ export default function BookingForm({
               </div>
               <button
                 type="submit"
-                disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? (
@@ -850,7 +854,7 @@ export default function BookingForm({
                   )}
                   <button
                     type="submit"
-                    disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof && !whatsappNumber)}
+                    disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
                     className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? (

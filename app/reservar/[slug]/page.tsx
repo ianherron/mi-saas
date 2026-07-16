@@ -122,11 +122,10 @@ export default async function ReservarSlugPage({
       const twilioSid = process.env.TWILIO_ACCOUNT_SID;
       const twilioToken = process.env.TWILIO_AUTH_TOKEN;
       const twilioFrom = process.env.TWILIO_WHATSAPP_FROM;
-      const templateSid = process.env.TWILIO_WHATSAPP_TEMPLATE_SID;
 
-      if (formattedPhone && twilioSid && twilioToken && twilioFrom && templateSid) {
+      if (formattedPhone && twilioSid && twilioToken && twilioFrom) {
         const credentials = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+        const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
           method: "POST",
           headers: {
             Authorization: `Basic ${credentials}`,
@@ -135,10 +134,10 @@ export default async function ReservarSlugPage({
           body: new URLSearchParams({
             To: `whatsapp:${formattedPhone}`,
             From: twilioFrom,
-            ContentSid: templateSid,
-            ContentVariables: JSON.stringify({ "1": date, "2": time }),
+            Body: `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. Si necesitás cambiarla, respondé este mensaje. ✦ NailFlow`,
           }).toString(),
-        }).catch(() => {});
+        });
+        if (!res.ok) console.error("Twilio error:", await res.text());
       }
     }
 

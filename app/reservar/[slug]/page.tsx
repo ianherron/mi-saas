@@ -123,6 +123,8 @@ export default async function ReservarSlugPage({
       const twilioToken = process.env.TWILIO_AUTH_TOKEN;
       const twilioFrom = process.env.TWILIO_WHATSAPP_FROM;
 
+      console.log("[WA]", { formattedPhone, hasSid: !!twilioSid, hasToken: !!twilioToken, hasFrom: !!twilioFrom });
+
       if (formattedPhone && twilioSid && twilioToken && twilioFrom) {
         const credentials = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
         const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {

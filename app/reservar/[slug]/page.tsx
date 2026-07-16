@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import BookingForm from "../BookingForm";
 import { resend } from "../../../lib/resend";
 import { renderEmail } from "../../../lib/email-template";
+import { sendWhatsApp } from "../../../lib/twilio";
 
 export default async function ReservarSlugPage({
   params,
@@ -113,34 +114,7 @@ export default async function ReservarSlugPage({
 
     // WhatsApp de confirmación al cliente
     if (phone) {
-      const digits = phone.replace(/\D/g, "");
-      let formattedPhone: string | null = null;
-      if (digits.length === 8) formattedPhone = `+506${digits}`;
-      else if (digits.length === 11 && digits.startsWith("506")) formattedPhone = `+${digits}`;
-      else if (digits.length >= 10) formattedPhone = `+${digits}`;
-
-      const twilioSid = process.env.TWILIO_ACCOUNT_SID;
-      const twilioToken = process.env.TWILIO_AUTH_TOKEN;
-      const twilioFrom = process.env.TWILIO_WHATSAPP_FROM;
-
-      console.log("[WA]", { formattedPhone, hasSid: !!twilioSid, hasToken: !!twilioToken, hasFrom: !!twilioFrom });
-
-      if (formattedPhone && twilioSid && twilioToken && twilioFrom) {
-        const credentials = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-        const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            To: `whatsapp:${formattedPhone}`,
-            From: twilioFrom,
-            Body: `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. Si necesitás cambiarla, respondé este mensaje. ✦ NailFlow`,
-          }).toString(),
-        });
-        if (!res.ok) console.error("Twilio error:", await res.text());
-      }
+      await sendWhatsApp(phone, `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. Si necesitás cambiarla, respondé este mensaje. ✦ NailFlow`);
     }
 
     // Obtener email del negocio

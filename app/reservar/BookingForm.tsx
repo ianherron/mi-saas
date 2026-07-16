@@ -683,6 +683,9 @@ export default function BookingForm({
                       />
                     </label>
 
+                    {!paymentProof && (
+                      <p className="text-xs text-[#b89090]">* Requerido para confirmar tu cita.</p>
+                    )}
                     {whatsappNumber && (
                       <a
                         href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=Hola,%20aquí%20mi%20comprobante%20de%20pago%20para%20mi%20cita%20del%20${date}%20a%20las%20${time}`}

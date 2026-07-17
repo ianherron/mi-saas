@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Términos y condiciones de uso del servicio NailFlow.",
 };
 
-const LAST_UPDATED = "7 de junio de 2026";
+const LAST_UPDATED = "17 de julio de 2026";
 
 export default function TerminosPage() {
   return (
@@ -91,7 +91,49 @@ export default function TerminosPage() {
             </p>
           </Section>
 
-          <Section title="5. Uso aceptable">
+          <Section title="5. Programa de referidos">
+            <p className="mb-3">
+              NailFlow ofrece un programa de referidos voluntario. Al compartir tu código personal,
+              podés ganar créditos en dólares estadounidenses (USD) cuando otra manicurista se registra
+              usando tu código y activa una suscripción de pago.
+            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                El crédito de <strong>$2 USD</strong> se acredita únicamente cuando la persona referida
+                activa su primera suscripción mensual paga. Los períodos de prueba no generan créditos.
+              </li>
+              <li>
+                El mínimo acumulado para solicitar un pago es de <strong>$20 USD</strong>.
+              </li>
+              <li>
+                Los pagos se realizan exclusivamente por <strong>SINPE Móvil</strong> y están
+                disponibles únicamente para usuarios con número de teléfono de Costa Rica.
+              </li>
+              <li>
+                El procesamiento de pagos tarda entre <strong>3 y 5 días hábiles</strong> desde
+                la fecha de solicitud.
+              </li>
+              <li>
+                Para solicitar un pago, debés ingresar tu número de teléfono de SINPE Móvil en la
+                sección &quot;Mis referidos&quot; de la aplicación. Este dato se usa exclusivamente
+                para procesar tu transferencia.
+              </li>
+              <li>
+                Los créditos no son transferibles entre cuentas y no tienen valor monetario hasta
+                ser procesados como pago efectivo.
+              </li>
+              <li>
+                NailFlow se reserva el derecho de retener, ajustar o cancelar créditos si detecta
+                actividad fraudulenta, abuso del programa o incumplimiento de estos términos.
+              </li>
+              <li>
+                NailFlow puede modificar o discontinuar el programa de referidos en cualquier momento,
+                con notificación previa de al menos 30 días a los usuarios con saldo acumulado.
+              </li>
+            </ul>
+          </Section>
+
+          <Section title="6. Uso aceptable">
             <p className="mb-3">Al usar NailFlow, aceptás no:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>Usar el servicio para actividades ilegales o no autorizadas.</li>
@@ -101,7 +143,7 @@ export default function TerminosPage() {
             </ul>
           </Section>
 
-          <Section title="6. Propiedad intelectual">
+          <Section title="7. Propiedad intelectual">
             <p>
               Todo el contenido, diseño, código y marca de NailFlow son propiedad exclusiva
               de NailFlow y están protegidos por las leyes de propiedad intelectual aplicables.
@@ -110,7 +152,7 @@ export default function TerminosPage() {
             </p>
           </Section>
 
-          <Section title="7. Eliminación de cuenta">
+          <Section title="8. Eliminación de cuenta">
             <p>
               Podés eliminar tu cuenta en cualquier momento desde la sección Perfil → Cuenta
               dentro de la aplicación. La eliminación es permanente e irreversible. Te recomendamos
@@ -119,7 +161,7 @@ export default function TerminosPage() {
             </p>
           </Section>
 
-          <Section title="8. Limitación de responsabilidad">
+          <Section title="9. Limitación de responsabilidad">
             <p>
               NailFlow se provee &quot;tal cual&quot;, sin garantías de ningún tipo. En ningún caso
               NailFlow será responsable por daños indirectos, incidentales o consecuentes
@@ -127,7 +169,7 @@ export default function TerminosPage() {
             </p>
           </Section>
 
-          <Section title="9. Modificaciones">
+          <Section title="10. Modificaciones">
             <p>
               Nos reservamos el derecho de modificar estos términos en cualquier momento.
               Te notificaremos de cambios significativos por correo electrónico o mediante
@@ -136,14 +178,14 @@ export default function TerminosPage() {
             </p>
           </Section>
 
-          <Section title="10. Ley aplicable">
+          <Section title="11. Ley aplicable">
             <p>
               Estos términos se rigen por las leyes de Costa Rica. Cualquier disputa se
               resolverá en los tribunales competentes de Costa Rica.
             </p>
           </Section>
 
-          <Section title="11. Contacto">
+          <Section title="12. Contacto">
             <p>
               Para preguntas sobre estos términos, escribinos a:
             </p>

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Cómo NailFlow recopila, usa y protege tu información personal.",
 };
 
-const LAST_UPDATED = "27 de mayo de 2026";
+const LAST_UPDATED = "17 de julio de 2026";
 
 export default function PrivacidadPage() {
   return (
@@ -80,6 +80,13 @@ export default function PrivacidadPage() {
                 <strong>Datos de dispositivo:</strong> token de notificaciones
                 push para enviarte alertas de nuevas reservas.
               </li>
+              <li>
+                <strong>Número de SINPE Móvil:</strong> cuando solicitás un pago
+                a través del programa de referidos, recopilamos el número de
+                teléfono asociado a tu cuenta de SINPE Móvil. Este dato se usa
+                exclusivamente para procesar la transferencia y no se almacena
+                más allá del tiempo necesario para completarla.
+              </li>
             </ul>
           </Section>
 
@@ -93,6 +100,10 @@ export default function PrivacidadPage() {
                 Mostrar tu página de reservas pública a tus clientes.
               </li>
               <li>Generar reportes de ingresos y estadísticas de tu negocio.</li>
+              <li>
+                Procesar pagos del programa de referidos mediante transferencias
+                por SINPE Móvil, cuando así lo solicitás.
+              </li>
               <li>
                 Responder consultas de soporte y mejorar la experiencia de uso.
               </li>

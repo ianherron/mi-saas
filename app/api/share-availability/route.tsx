@@ -174,59 +174,97 @@ function StoryEditorial({ week, slug }: any) {
     <div style={{
       width: 1080, height: 1920, background: "#fbf9f9", color: "#2d2424",
       fontFamily: "sans-serif", display: "flex", flexDirection: "column",
-      padding: "110px 90px", position: "relative",
+      padding: "90px 96px", position: "relative",
     }}>
-      <div style={{ position: "absolute", right: 40, top: 40, display: "flex", opacity: 0.4 }}>
-        <Sparkle size={500} color="#e9cece" />
+      {/* Brand mark */}
+      <div style={{ display: "flex", alignItems: "center", marginBottom: 80 }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14, background: "#2d2424",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Sparkle size={28} color="#e9cece" />
+        </div>
+        <span style={{
+          fontFamily: "Playfair", fontWeight: 500, fontSize: 36,
+          color: "#2d2424", marginLeft: 16, display: "flex", letterSpacing: "-0.02em",
+        }}>NailFlow</span>
       </div>
+
+      {/* Label */}
       <div style={{
-        fontSize: 28, letterSpacing: "0.25em", textTransform: "uppercase",
-        color: "#846262", display: "flex", fontFamily: "sans-serif",
+        fontSize: 26, letterSpacing: "0.28em", textTransform: "uppercase",
+        color: "#b89090", display: "flex",
       }}>
         Esta semana
       </div>
+
+      {/* Heading */}
       <div style={{
         fontFamily: "Playfair", fontWeight: 500,
-        fontSize: 130, lineHeight: 1.02, marginTop: 60, display: "flex",
+        fontSize: 122, lineHeight: 1.02, marginTop: 28, display: "flex", flexWrap: "wrap",
       }}>
         <span>Citas</span>
-        <span style={{ fontStyle: "italic", fontWeight: 400, color: "#846262", marginLeft: 18 }}>disponibles.</span>
+        <span style={{ fontStyle: "italic", fontWeight: 400, color: "#846262", marginLeft: 20 }}>disponibles.</span>
       </div>
-      <div style={{ marginTop: 80, display: "flex", flexDirection: "column" }}>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "rgba(45,36,36,0.12)", marginTop: 64, marginBottom: 64, display: "flex" }} />
+
+      {/* Schedule */}
+      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
         {week.map((d: any, i: number) => (
           <div key={i} style={{
-            display: "flex", alignItems: "baseline", marginBottom: 36,
-            paddingBottom: 28, borderBottom: "1px solid rgba(45,36,36,0.08)",
+            display: "flex", alignItems: "flex-start", marginBottom: 44,
           }}>
             <div style={{
               fontFamily: "Playfair", fontWeight: 500,
-              fontSize: 48, width: 280, display: "flex",
+              fontSize: 44, width: 260, display: "flex", paddingTop: 6,
+              color: "#2d2424",
             }}>{d.label}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: 0 }}>
               {d.times.length === 0 ? (
-                <span style={{ color: "#b89090", fontSize: 36, display: "flex", fontStyle: "italic" }}>cerrado</span>
+                <span style={{ color: "#c8a8a8", fontSize: 34, display: "flex", fontStyle: "italic" }}>cerrado</span>
               ) : d.times.map((t: any, j: number) => (
-                <span key={j} style={{
-                  marginRight: 24, fontSize: 36,
-                  color: t.booked ? "#b89090" : "#2d2424",
-                  textDecoration: t.booked ? "line-through" : "none",
-                  textDecorationColor: "#b86060", display: "flex",
-                }}>{t.time}</span>
+                t.booked ? (
+                  <span key={j} style={{
+                    marginRight: 20, marginBottom: 12, fontSize: 34,
+                    color: "#c8a8a8", textDecoration: "line-through",
+                    textDecorationColor: "#c8a8a8", display: "flex",
+                  }}>{t.time}</span>
+                ) : (
+                  <span key={j} style={{
+                    marginRight: 14, marginBottom: 12,
+                    fontSize: 32, color: "#2d2424", display: "flex",
+                    background: "#f0e8e8", borderRadius: 99,
+                    paddingTop: 10, paddingBottom: 10,
+                    paddingLeft: 22, paddingRight: 22,
+                    fontWeight: 500,
+                  }}>{t.time}</span>
+                )
               ))}
             </div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: "auto", display: "flex", flexDirection: "column" }}>
-        <div style={{
-          fontSize: 26, letterSpacing: "0.2em", textTransform: "uppercase",
-          color: "#b89090", marginBottom: 10, display: "flex",
-        }}>Reservá en</div>
-        <div style={{
-          fontFamily: "Playfair", fontWeight: 500,
-          fontSize: 56, display: "flex",
-        }}>
-          nailflow.app/<span style={{ fontStyle: "italic", color: "#846262", fontWeight: 400 }}>{slug}</span>
+
+      {/* Footer */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        borderTop: "1px solid rgba(45,36,36,0.1)", paddingTop: 48,
+      }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{
+            fontSize: 22, letterSpacing: "0.22em", textTransform: "uppercase",
+            color: "#b89090", marginBottom: 10, display: "flex",
+          }}>Reservá en</div>
+          <div style={{
+            fontFamily: "Playfair", fontWeight: 500, fontSize: 48, display: "flex",
+          }}>
+            nailflow.app/<span style={{ fontStyle: "italic", color: "#846262", fontWeight: 400 }}>{slug}</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", opacity: 0.25 }}>
+          <Sparkle size={80} color="#846262" />
         </div>
       </div>
     </div>

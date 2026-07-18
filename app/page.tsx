@@ -459,7 +459,7 @@ export default function Home() {
                       "Página de reservas personalizada",
                       "Servicios con imagen y descripción",
                       "Galería de trabajos",
-                      "Correos automáticos",
+                      "Confirmación automática por WhatsApp y correo",
                       "Horarios y días configurables",
                       "Extras opcionales",
                       "Dashboard con estadísticas",

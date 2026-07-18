@@ -15,11 +15,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const contactInfo = whatsapp_number
-    ? `Para cambios contactá a ${business_name} al ${whatsapp_number}.`
-    : `Para cambios contactá a ${business_name}.`;
-
-  await sendWhatsApp(phone, `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. ${contactInfo}`);
+  await sendWhatsApp(phone, {
+    first_name: client_name,
+    date,
+    time,
+    business_name,
+    phone: whatsapp_number ?? "",
+  });
 
   return NextResponse.json({ ok: true });
 }

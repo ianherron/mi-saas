@@ -1,4 +1,14 @@
-export async function sendWhatsApp(to: string, message: string): Promise<void> {
+const TEMPLATE_SID = "HXf3624ac2799e3c32180d7d17caa1e09d";
+
+export interface WhatsAppConfirmVars {
+  first_name: string;
+  date: string;
+  time: string;
+  business_name: string;
+  phone: string;
+}
+
+export async function sendWhatsApp(to: string, vars: WhatsAppConfirmVars): Promise<void> {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_WHATSAPP_FROM;
@@ -29,7 +39,8 @@ export async function sendWhatsApp(to: string, message: string): Promise<void> {
     body: new URLSearchParams({
       To: `whatsapp:${formatted}`,
       From: from,
-      Body: message,
+      ContentSid: TEMPLATE_SID,
+      ContentVariables: JSON.stringify(vars),
     }).toString(),
   });
 

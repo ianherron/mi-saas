@@ -123,10 +123,13 @@ export default async function ReservarSlugPage({
 
     // WhatsApp de confirmación al cliente
     if (phone) {
-      const contactInfo = business!.whatsapp_number
-        ? `Para cambios contactá a ${business!.name} al ${business!.whatsapp_number}.`
-        : `Para cambios contactá a ${business!.name}.`;
-      await sendWhatsApp(phone, `Hola ${client_name} 👋 Tu cita está confirmada para el ${date} a las ${time}. ${contactInfo}`);
+      await sendWhatsApp(phone, {
+        first_name: client_name,
+        date,
+        time,
+        business_name: business!.name,
+        phone: business!.whatsapp_number ?? "",
+      });
     }
 
     // Obtener email del negocio

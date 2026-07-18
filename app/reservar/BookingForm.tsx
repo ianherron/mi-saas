@@ -56,7 +56,7 @@ export default function BookingForm({
   createAppointment: (formData: FormData) => Promise<{ error: string } | void>;
 }) {
   const sym = getCurrencySymbol(currency);
-  const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id ?? "");
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -69,15 +69,22 @@ export default function BookingForm({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
-  const selectedService = services.find((s) => s.id === selectedServiceId);
+  const selectedServices = services.filter((s) => selectedServiceIds.includes(s.id));
   const extraMinutes = extras
     .filter((e) => selectedExtras.includes(String(e.id)))
     .reduce((acc, e) => acc + e.duration, 0);
-  const totalDuration = (selectedService?.duration ?? 0) + extraMinutes;
+  const totalDuration = selectedServices.reduce((acc, s) => acc + s.duration, 0) + extraMinutes;
   const extraPrice = extras
     .filter((e) => selectedExtras.includes(String(e.id)))
     .reduce((acc, e) => acc + (e.price ?? 0), 0);
-  const totalPrice = (selectedService?.price ?? 0) + extraPrice;
+  const totalPrice = selectedServices.reduce((acc, s) => acc + s.price, 0) + extraPrice;
+
+  function toggleService(id: string) {
+    setSelectedServiceIds((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+    setTime("");
+  }
 
   function timeToMinutes(t: string): number {
     const upper = t.toUpperCase().trim();
@@ -136,6 +143,10 @@ export default function BookingForm({
 
   async function handleSubmit(formData: FormData) {
   if (submitting) return;
+  if (selectedServiceIds.length === 0) {
+    toast.error("Seleccioná al menos un servicio.");
+    return;
+  }
   if (paymentsEnabled && sinpeNumber && !paymentProof) {
     toast.error("Adjuntá el comprobante de pago antes de confirmar la cita.");
     return;
@@ -247,8 +258,8 @@ export default function BookingForm({
             </div>
             <div className="divide-y divide-slate-100">
               <div className="flex items-center justify-between py-4">
-                <span className="text-sm text-[#846262]">Servicio</span>
-                <span className="text-sm font-medium text-[#2d2424]">{selectedService?.name}</span>
+                <span className="text-sm text-[#846262]">Servicio{selectedServices.length > 1 ? "s" : ""}</span>
+                <span className="text-right text-sm font-medium text-[#2d2424]">{selectedServices.map((s) => s.name).join(", ")}</span>
               </div>
               {selectedExtras.length > 0 && (
                 <div className="flex items-center justify-between py-4">
@@ -317,10 +328,12 @@ export default function BookingForm({
             <input type="hidden" name="reference_image" value="" />
             <input type="hidden" name="payment_proof" value="" />
             <input type="hidden" name="extra_ids" value={selectedExtras.join(",")} />
+            <input type="hidden" name="service_id" value={selectedServiceIds[0] ?? ""} />
+            <input type="hidden" name="service_ids" value={selectedServiceIds.join(",")} />
 
             {/* Step 1 - Services */}
             <section>
-              <StepHeader number={1} title="Elige tu servicio" />
+              <StepHeader number={1} title="Elige tus servicios" />
               {(() => {
                 const categoryKeys = Object.keys(groupedServices);
                 const showHeaders = !(categoryKeys.length === 1 && categoryKeys[0] === "General");
@@ -335,24 +348,18 @@ export default function BookingForm({
                         )}
                         <div className="grid gap-6 sm:grid-cols-2">
                           {groupedServices[cat].map((service) => {
-                            const isSelected = service.id === selectedServiceId;
+                            const isSelected = selectedServiceIds.includes(service.id);
                             return (
-                              <label
+                              <button
                                 key={service.id}
-                                className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-white transition-all duration-300 ${
+                                type="button"
+                                onClick={() => toggleService(service.id)}
+                                className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 bg-white text-left transition-all duration-300 ${
                                   isSelected
                                     ? "border-[#e9cece] shadow-lg shadow-[#e9cece]/20"
                                     : "border-transparent hover:border-[#e9cece]/30 hover:shadow-md"
                                 }`}
                               >
-                                <input
-                                  type="radio"
-                                  name="service_id"
-                                  value={service.id}
-                                  checked={isSelected}
-                                  onChange={() => setSelectedServiceId(service.id)}
-                                  className="sr-only"
-                                />
                                 <div className="aspect-video w-full overflow-hidden">
                                   {service.image_url ? (
                                     <img
@@ -395,7 +402,7 @@ export default function BookingForm({
                                     <Check className="h-4 w-4 text-[#2d2424]" strokeWidth={2.5} />
                                   </div>
                                 )}
-                              </label>
+                              </button>
                             );
                           })}
                         </div>
@@ -725,9 +732,9 @@ export default function BookingForm({
               </div>
               <div className="divide-y divide-slate-100">
                 <div className="pb-3">
-                  <p className="text-xs text-[#846262]">Servicio</p>
+                  <p className="text-xs text-[#846262]">Servicio{selectedServices.length > 1 ? "s" : ""}</p>
                   <p className="serif-heading mt-1 text-base font-medium text-[#2d2424]">
-                    {selectedService?.name ?? "Selecciona un servicio"}
+                    {selectedServices.length > 0 ? selectedServices.map((s) => s.name).join(", ") : "Seleccioná un servicio"}
                   </p>
                 </div>
                 {selectedExtras.length > 0 && (
@@ -765,7 +772,7 @@ export default function BookingForm({
               </div>
               <button
                 type="submit"
-                disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
+                disabled={submitting || selectedServiceIds.length === 0 || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? (
@@ -797,9 +804,9 @@ export default function BookingForm({
                 <div className="p-6">
                   <div className="divide-y divide-slate-100">
                     <div className="pb-4">
-                      <p className="text-xs text-[#846262]">Servicio</p>
+                      <p className="text-xs text-[#846262]">Servicio{selectedServices.length > 1 ? "s" : ""}</p>
                       <p className="serif-heading mt-1 text-lg font-medium text-[#2d2424]">
-                        {selectedService?.name ?? "Selecciona un servicio"}
+                        {selectedServices.length > 0 ? selectedServices.map((s) => s.name).join(", ") : "Seleccioná un servicio"}
                       </p>
                     </div>
                     {selectedExtras.length > 0 && (
@@ -857,7 +864,7 @@ export default function BookingForm({
                   )}
                   <button
                     type="submit"
-                    disabled={submitting || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
+                    disabled={submitting || selectedServiceIds.length === 0 || !date || timeSlots.length === 0 || (paymentsEnabled && !!sinpeNumber && !paymentProof)}
                     className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2d2424] py-4 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? (

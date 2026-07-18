@@ -22,6 +22,7 @@ function buildConfirmationHtml(
   duration: string,
   total: string,
   slug: string,
+  multiService = false,
 ): string {
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#fbf9f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#2d2424;">
@@ -34,7 +35,7 @@ function buildConfirmationHtml(
         <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#846262;">Tu reserva quedó registrada. Estos son los detalles.</p>
         <table cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin:0 0 28px;">
           <tr>
-            <td style="padding:12px 0;font-size:13px;color:#846262;border-bottom:0.5px solid rgba(45,36,36,0.08);">Servicio</td>
+            <td style="padding:12px 0;font-size:13px;color:#846262;border-bottom:0.5px solid rgba(45,36,36,0.08);">${multiService ? "Servicios" : "Servicio"}</td>
             <td style="padding:12px 0;font-size:13px;color:#2d2424;text-align:right;border-bottom:0.5px solid rgba(45,36,36,0.08);">${serviceName}</td>
           </tr>
           <tr>
@@ -88,22 +89,27 @@ Deno.serve(async (req) => {
       .eq("id", record.business_id)
       .single();
 
-    // Obtener nombre y detalles del servicio
+    // Obtener nombre y detalles del servicio(s)
     let serviceName = "";
     let duration = "";
     let total = "";
-    if (record.service_id) {
-      const { data: svc } = await supabase
+    const ids: (string | number)[] = Array.isArray(record.service_ids) && record.service_ids.length > 0
+      ? record.service_ids as (string | number)[]
+      : record.service_id ? [record.service_id as string | number] : [];
+
+    if (ids.length > 0) {
+      const { data: svcs } = await supabase
         .from("services")
         .select("name, duration, price")
-        .eq("id", record.service_id)
-        .single();
-      if (svc) {
-        serviceName = svc.name ?? "";
-        if (svc.duration) duration = `${svc.duration} min`;
-        if (svc.price != null) {
+        .in("id", ids);
+      if (svcs && svcs.length > 0) {
+        serviceName = svcs.map((s: { name: string }) => s.name).join(", ");
+        const totalDur = svcs.reduce((acc: number, s: { duration: number }) => acc + (s.duration ?? 0), 0);
+        const totalPrice = svcs.reduce((acc: number, s: { price: number }) => acc + (s.price ?? 0), 0);
+        if (totalDur) duration = `${totalDur} min`;
+        if (totalPrice) {
           const sym = currencySymbol(biz?.currency ?? "CRC");
-          total = `${sym}${Number(svc.price).toLocaleString("es")}`;
+          total = `${sym}${totalPrice.toLocaleString("es")}`;
         }
       }
     }
@@ -144,6 +150,7 @@ Deno.serve(async (req) => {
         duration,
         total,
         biz?.slug ?? "",
+        ids.length > 1,
       );
 
       const emailRes = await fetch("https://api.resend.com/emails", {

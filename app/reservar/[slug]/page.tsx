@@ -23,17 +23,19 @@ export default async function ReservarSlugPage({
   async function createAppointment(formData: FormData): Promise<{ error: string } | void> {
     "use server";
     const client_name = formData.get("client_name") as string;
-    const service_id = formData.get("service_id") as string;
     const date = formData.get("date") as string;
     const time = formData.get("time") as string;
     const phone = formData.get("phone") as string;
     const email = formData.get("email") as string;
-    const duration = parseInt(formData.get("duration") as string);
-    const total_price = parseInt(formData.get("total_price") as string) || 0;
     const reference_image = formData.get("reference_image") as string;
     const payment_proof = formData.get("payment_proof") as string;
     const extra_ids_raw = formData.get("extra_ids") as string;
     const extra_ids = extra_ids_raw ? extra_ids_raw.split(",").map(Number) : null;
+    const service_ids_raw = formData.get("service_ids") as string;
+    // Deduplicar IDs para evitar que alguien envíe el mismo servicio dos veces
+    const service_ids = service_ids_raw
+      ? [...new Set(service_ids_raw.split(",").filter(Boolean))]
+      : [];
 
     // Usar el business.id capturado del outer scope — no confiar en FormData
     const business_id = business!.id;
@@ -41,23 +43,31 @@ export default async function ReservarSlugPage({
     // Validaciones
     if (!client_name?.trim() || client_name.trim().length < 2) return { error: "El nombre debe tener al menos 2 caracteres." };
     if (client_name.length > 100) return { error: "El nombre es demasiado largo." };
-    if (!service_id) return { error: "Seleccioná un servicio." };
+    if (service_ids.length === 0) return { error: "Seleccioná al menos un servicio." };
+    if (service_ids.length > 10) return { error: "Demasiados servicios seleccionados." };
     if (!date || isNaN(new Date(date).getTime())) return { error: "La fecha no es válida." };
     const today = new Date().toISOString().split("T")[0];
     if (date < today) return { error: "No podés reservar en una fecha pasada." };
     if (!time) return { error: "Seleccioná una hora." };
-    if (isNaN(duration) || duration <= 0) return { error: "La duración no es válida." };
     if (email && !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) return { error: "El correo no es válido." };
     if (phone && !/^[\d\s\-+]{7,15}$/.test(phone)) return { error: "El teléfono no es válido." };
 
-    const { data: service } = await supabase
+    // Validar todos los servicios: deben existir y pertenecer a este negocio
+    const { data: servicesData } = await supabase
       .from("services")
-      .select("name, price")
-      .eq("id", service_id)
-      .eq("business_id", business_id)
-      .single();
+      .select("id, name, price, duration")
+      .in("id", service_ids)
+      .eq("business_id", business_id);
 
-    if (!service) return { error: "Este servicio ya no está disponible." };
+    if (!servicesData || servicesData.length !== service_ids.length) {
+      return { error: "Uno o más servicios no están disponibles." };
+    }
+
+    // Calcular precio y duración server-side — no confiar en los valores del form
+    const service_id = service_ids[0];
+    const serviceNames = servicesData.map((s) => s.name).join(", ");
+    const total_price = servicesData.reduce((acc, s) => acc + s.price, 0);
+    const duration = servicesData.reduce((acc, s) => acc + s.duration, 0);
 
     // Verificación server-side de disponibilidad — cubre el caso de página cargada antes de que se agendara otra cita
     function timeToMinutes(t: string): number {
@@ -90,11 +100,10 @@ export default async function ReservarSlugPage({
       if (hasConflict) return { error: "Ese horario ya no está disponible. Por favor elegí otro." };
     }
 
-    const safePrice = typeof total_price === "number" && !isNaN(total_price) ? total_price : 0;
-
     const { error: insertError } = await supabase.from("appointments").insert({
       client_name,
       service_id,
+      service_ids,
       date,
       time,
       duration,
@@ -134,17 +143,17 @@ export default async function ReservarSlugPage({
         to: businessData.email,
         subject: `Nueva cita — ${client_name}`,
         html: renderEmail({
-          preheader: `${client_name} reservó ${service?.name ?? "una cita"} para el ${date}.`,
+          preheader: `${client_name} reservó ${serviceNames} para el ${date}.`,
           eyebrow: "Nueva reserva",
           heading: `<em>${client_name}</em> reservó una cita.`,
           intro: "Tenés una clienta nueva. Acá los detalles para tu agenda.",
           rows: [
             { label: "Clienta", value: client_name },
-            { label: "Servicio", value: service?.name ?? "—" },
+            { label: servicesData.length > 1 ? "Servicios" : "Servicio", value: serviceNames },
             { label: "Fecha", value: `${date} · ${time}` },
             { label: "Teléfono", value: phone || "—" },
             { label: "Duración", value: `${duration} min` },
-            { label: "Total", value: `₡${safePrice.toLocaleString()}`, total: true },
+            { label: "Total", value: `₡${total_price.toLocaleString()}`, total: true },
           ],
           image: reference_image
             ? { url: reference_image, alt: "Referencia", label: "Foto de referencia" }
